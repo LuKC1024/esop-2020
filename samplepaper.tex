@@ -1,0 +1,2836 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+\usepackage{graphicx}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+\usepackage{booktabs}   %% For formal tables:
+%% http://ctan.org/pkg/booktabs
+\usepackage{subcaption} %% For complex figures with subfigures/subcaptions
+%% http://ctan.org/pkg/subcaption
+\usepackage{xcolor} %% For \color
+\usepackage{todonotes} %% For \todo
+\usepackage{mathtools} %% For \xRightarrow[sub]{sup}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd} %% For \llbracket etc.
+\usepackage{semantic}
+\usepackage[scaled]{beramono}
+\usepackage[T1]{fontenc}
+\usepackage{natbib} %% For more citation commames (\cite etc.)
+\usepackage{listings} %% For typesetting code
+\newcommand{\lstsetgrift}{
+	\lstset{%
+		language=Lisp,%
+		basicstyle=\ttfamily\small,%
+		keywordstyle=\ttfamily\bfseries\small,%
+		columns=flexible,%
+		aboveskip=\smallskipamount,%
+		belowskip=\smallskipamount,%
+		frame=single,%
+		xleftmargin=2pt,%
+		escapeinside={/+}{+/},%
+		mathescape=true,%
+		keywords=[1]{define,if,:,Int,Bool,-,=,open},
+		literate=%
+		{->}{{$\rightarrow$}}2%
+		{=>}{{$\Rightarrow$}}2%
+		{lambda}{{$\lambda$}}1%
+		{→}{{$\rightarrow$ }}2%
+		{Γ}{{$\Gamma$ }}1%
+		{⊢}{{$\vdash$ }}1%
+	}%
+}%%
+\lstsetgrift
+
+% random stuff
+\newcommand{\infr}[2]{\inference{#1}{#2}}
+\newcommand{\highlight}[1]{{\color{red} #1}}
+\newcommand{\sidecond}[1]{\text{if}\;#1}
+
+% abbreviations in figures
+\newcommand{\figreduceto}[3]{#1 & \longmapsto & #2 & #3 \\}
+\newcommand{\figreducetoH}[3]{\highlight{#1} & \highlight{\longmapsto} & 
+\highlight{#2} & \highlight{#3} \\}
+\newcommand{\figequalto}[3]{#1 & = & #2 & #3 \\}
+\newcommand{\figequaltoH}[3]{\highlight{#1} & \highlight{=} & \highlight{#2} & 
+\highlight{#3} \\}
+\newcommand{\stxinrule}[3]{\text{#2} & #1 & \in & #3\\}
+\newcommand{\stxrule}[3]{\text{#2} & #1 & \Coloneqq & #3\\}
+\newcommand{\stxrulecont}[1]{& & | & #1 \\}
+
+% ref figures, sections, etc.
+\newcommand{\figref}[1]{Fig.~\ref{#1}}
+\newcommand{\secref}[1]{Section~\ref{#1}}
+\newcommand{\chapref}[1]{Section~\ref{#1}}
+
+% names
+\newcommand{\LUD}{\ensuremath{\text{Lazy\;UD}}}
+\newcommand{\LD}{\ensuremath{\text{Lazy\;D}}}
+\newcommand{\CastADT}{\ensuremath{\text{Cast ADT}}}
+\newcommand{\RMachine}[1]{\ensuremath{\mathcal{R}(#1)}}
+\newcommand{\LDMachine}{\RMachine{\BLD}}
+\newcommand{\LUDMachine}{\RMachine{\BLUD}}
+\newcommand{\RBMachine}[0]{\RMachine{B}}
+\newcommand{\SMachine}[1]{\ensuremath{\mathcal{S}(#1)}}
+
+% error monad
+\newcommand{\just}[1]{\ensuremath{#1}}
+\newcommand{\error}[1]{\ensuremath{\Uparrow#1}}
+
+% types
+\newcommand{\Tdyn}[0]{\ensuremath{\star}}
+
+%% pre-types
+\newcommand{\Pbool}[0]{\ensuremath{\mathtt{Bool}}}
+\newcommand{\Pfunc}[2]{\ensuremath{#1 \shortrightarrow #2}}
+\newcommand{\Pprod}[2]{\ensuremath{#1 \times #2}}
+
+% ground types
+\newcommand{\Gbool}[0]{\Pbool}
+\newcommand{\Gfunc}[0]{\Pfunc{\Tdyn}{\Tdyn}}
+\newcommand{\Gprod}[0]{\Pprod{\Tdyn}{\Tdyn}}
+
+%% expressions
+\newcommand{\econ}[1]{#1}
+\newcommand{\evar}[1]{#1}
+\newcommand{\elam}[3]{\lambda#1:#2.\;#3}
+\newcommand{\eapp}[2]{#1\;#2}
+\newcommand{\etrue}[0]{\mathtt{true}}
+\newcommand{\efalse}[0]{\mathtt{false}}
+\newcommand{\eif}[3]{\mathtt{if}\;#1\;#2\;#3}
+\newcommand{\econs}[2]{\mathtt{cons} \; #1 \; #2}
+\newcommand{\ecar}[1]{\mathtt{car} \; #1}
+\newcommand{\ecdr}[1]{\mathtt{cdr} \; #1}
+%\newcommand{\ecast}[2]{#1 \langle #2 \rangle}
+\newcommand{\ecast}[2]{\ensuremath{#1 : #2}}
+
+% casts
+\newcommand{\ccast}[3]{#1 \xRightarrow[]{\enskip #2 \enskip} #3}
+% \Rightarrow^{#2}
+
+% values
+\newcommand{\vdyn}[2]{\mathtt{Dyn}_{#1}(#2)}
+\newcommand{\vtrue}[0]{\mathtt{true}}
+\newcommand{\vfalse}[0]{\mathtt{false}}
+\newcommand{\vfunc}[4]{\langle\elam{#1}{#2}{#3},#4\rangle}
+\newcommand{\vfuncc}[6]{\ecast{#1}{\ccast{\Pfunc{#2}{#3}}{#4}{\Pfunc{#5}{#6}}}}
+\newcommand{\vcons}[2]{\econs{#1}{#2}}
+\newcommand{\vconsc}[6]{\ecast{#1}{\ccast{\Pprod{#2}{#3}}{#4}{\Pprod{#5}{#6}}}}
+
+% observables
+\newcommand{\odyn}{\ensuremath{\mathtt{dynamic}}}
+\newcommand{\otrue}[0]{\mathtt{true}}
+\newcommand{\ofalse}[0]{\mathtt{false}}
+\newcommand{\ofunc}[0]{\mathtt{function}}
+\newcommand{\ocons}[0]{\mathtt{cons}}
+\newcommand{\oerror}[1]{\error{#1}}
+
+% blame strategies
+\newcommand{\BLD}[0]{\ensuremath{\mathtt{LD}}}
+\newcommand{\BLUD}[0]{\ensuremath{\mathtt{LUD}}}
+
+% cast _r_esults
+\newcommand{\rsucc}[1]{\mathtt{succ}\;#1}
+\newcommand{\rfail}[1]{\mathtt{fail}\;#1}
+
+% machine _s_tates
+\newcommand{\sexpr}[3]{\ensuremath{\langle#1,#2,#3\rangle}}
+\newcommand{\scont}[2]{\ensuremath{\langle#1,#2\rangle}}
+\newcommand{\shalt}[1]{\ensuremath{\Downarrow #1}}
+
+% continuations
+\newcommand{\Knil}[0]{\Box}
+\newcommand{\Kcons}[2]{[#1]#2}
+
+% frames
+\newcommand{\closure}[2]{\langle#1,#2\rangle}
+\newcommand{\FappXO}[2]{\eapp{\square}{\closure{#1}{#2}}}
+\newcommand{\FappOX}[1]{\eapp{#1}{\square}}
+\newcommand{\Fif}[3]{\eif{\square}{\closure{#1}{#3}}{\closure{#2}{#3}}}
+\newcommand{\FconsXO}[2]{\econs{\square}{\closure{#1}{#2}}}
+\newcommand{\FconsOX}[1]{\econs{#1}{\square}}
+\newcommand{\Fcar}[0]{\ecar{\square}}
+\newcommand{\Fcdr}[0]{\ecdr{\square}}
+\newcommand{\Fcast}[1]{\ecast{\square}{#1}}
+
+% threesomes
+\newcommand{\tscc}[3]{\ccast{#1}{#2}{#3}}
+%\newcommand{\tsTp}[2]{({#1};{#2})}
+\newcommand{\tsTp}[2]{{#2}^{#1}}
+\newcommand{\tsTdyn}[0]{\Tdyn}
+\newcommand{\tsPbool}[0]{\Pbool}
+\newcommand{\tsPfunc}[2]{\Pfunc{#1}{#2}}
+\newcommand{\tsPprod}[2]{\Pprod{#1}{#2}}
+\newcommand{\tsPfail}[2]{\bot^{#1#2}}
+\newcommand{\tsle}[0]{\epsilon}
+%\newcommand{\tsll}[1]{\cnfproj{}{#1}}
+\newcommand{\tsll}[1]{#1}
+
+% coercions in normal form
+\newcommand{\cnfproj}[2]{#1?^{#2}}
+\newcommand{\cnfinj}[1]{#1!}
+\newcommand{\cnfseq}[2]{#1;#2}
+\newcommand{\cnffail}[1]{\bot^{#1}}
+\newcommand{\cnffunc}[2]{\Pfunc{#1}{#2}}
+\newcommand{\cnfprod}[2]{\Pprod{#1}{#2}}
+\newcommand{\cnfid}[1]{\ensuremath{\mathtt{id}_{#1}}}
+
+% hypercoercions
+\newcommand{\hcci}[0]{\cnfid{\Tdyn}}
+\newcommand{\hccc}[3]{\ensuremath{(#1;#2;#3)}}
+\newcommand{\hche}[0]{\ensuremath{\epsilon}}
+\newcommand{\hchp}[2]{\ensuremath{#1?^{#2}}}
+\newcommand{\hcmbool}[0]{\Pbool}
+\newcommand{\hcmfunc}[2]{\Pfunc{#1}{#2}}
+\newcommand{\hcmprod}[2]{\Pprod{#1}{#2}}
+\newcommand{\hcmfail}[1]{\ensuremath{\bot^l}}
+\newcommand{\hcte}[0]{\ensuremath{\epsilon}}
+\newcommand{\hcti}[1]{\ensuremath{#1!}}
+
+% gaps
+\newcommand{\gnone}{\ensuremath{\epsilon}}
+\newcommand{\gsome}[3]{\ccast{#1}{#2}{#3}}
+
+% operators
+\newcommand{\mbind}[0]{\ensuremath{\;\gg=\;}}
+\newcommand{\mcomp}[0]{\ensuremath{\;>=>\;}}
+
+% functions
+\newcommand{\meet}[2]{\ensuremath{#1 \sqcap #2}}
+\newcommand{\denote}[1]{\ensuremath{\llbracket #1 \rrbracket}}
+\newcommand{\proxy}[2]{\ensuremath{\mathit{proxy}(#1,#2)}}
+\newcommand{\applyCast}[2]{\ensuremath{\mathit{applyCast}(#1,#2)}}
+\newcommand{\project}[4]{\ensuremath{\mathit{project}(#1,#2,#3,#4)}}
+\newcommand{\composegap}[3]{\ensuremath{#1 \fatsemi #2 \fatsemi #3}}
+\newcommand{\mkhead}[2]{\ensuremath{\mathit{mkProj}(#1,#2)}}
+\newcommand{\mktail}[2]{\ensuremath{\mathit{mkInj}(#1,#2)}}
+\newcommand{\mkgap}[3]{\ensuremath{\mathit{mkGap}(#1,#2,#3)}}
+\newcommand{\compose}[2]{\ensuremath{#1 \fatsemi #2}}
+\newcommand{\translate}[1]{\ensuremath{\lceil#1\rceil}}
+\newcommand{\castToDyn}[2]{\ensuremath{\mathit{castToDyn}(#1,#2)}}
+\newcommand{\castFromDyn}[2]{\ensuremath{\mathit{castFromDyn}(#1,#2)}}
+\newcommand{\dom}[1]{\ensuremath{\mathit{dom}(#1)}}
+\newcommand{\cod}[1]{\ensuremath{\mathit{cod}(#1)}}
+\newcommand{\car}[1]{\ensuremath{\mathit{car}(#1)}}
+\newcommand{\cdr}[1]{\ensuremath{\mathit{cdr}(#1)}}
+\newcommand{\id}[1]{\ensuremath{\mathit{id}(#1)}}
+\newcommand{\idm}[1]{\ensuremath{\mathit{id}_m(#1)}}
+\newcommand{\idc}[1]{\ensuremath{\mathit{id}_c(#1)}}
+\newcommand{\mkCont}[1]{\ensuremath{\mathit{mkCont}(#1)}}
+\newcommand{\extCont}[2]{\ensuremath{\mathit{extCont}(#1,#2)}}
+\newcommand{\applyCont}[2]{\ensuremath{\langle\langle#1,#2\rangle\rangle}}
+
+% other relations
+\newcommand{\tailable}[2]{\ensuremath{\casttyping{!}{#1}{#2}}}
+\newcommand{\consistent}[2]{\ensuremath{#1\sim#2}}
+\newcommand{\shallowlyconsistent}[2]{\ensuremath{#1\smile#2}}
+\newcommand{\notshallowlyconsistent}[2]{\ensuremath{#1\not\smile#2}}
+\newcommand{\expressiontyping}[3]{\ensuremath{#1 \vdash #2 : #3}}
+\newcommand{\matching}[2]{\ensuremath{#1 \triangleright #2}}
+\newcommand{\valuetyping}[2]{\ensuremath{\vdash #1 : #2}}
+\newcommand{\envtyping}[2]{\ensuremath{#1 \vdash #2}}
+\newcommand{\casttyping}[3]{\ensuremath{\vdash #1 : #2 \Longrightarrow #3}}
+\newcommand{\transitivelyreducetoM}[3]{\ensuremath{#2 \longmapsto_{#1}^{*} #3}}
+\newcommand{\transitivelyreduceto}[2]{\ensuremath{#1 \longmapsto^{*} #2}}
+\newcommand{\transitivelyreducetoD}[2]{
+	\ensuremath{#1 \longmapsto_{\LDMachine}^{*} #2}}
+\newcommand{\transitivelyreducetoUD}[2]{
+	\ensuremath{#1 \longmapsto_{\LUDMachine}^{*} #2}}
+\newcommand{\reduceto}[2]{\ensuremath{#1 \longmapsto #2}}
+\newcommand{\reducetoR}[3]{\ensuremath{#2 \longmapsto_{\RMachine{#1}} #3}}
+\newcommand{\reducetoD}[2]{\reducetoR{\BLD}{#1}{#2}}
+\newcommand{\reducetoUD}[2]{\reducetoR{\BLUD}{#1}{#2}}
+\newcommand{\reducetoS}[3]{\ensuremath{#2 \longmapsto_{\SMachine{#1}} #3}}
+\newcommand{\evalto}[2]{\ensuremath{\mathit{eval}(#1)=#2}}
+\newcommand{\withmachineevalto}[3]{\ensuremath{\mathit{eval}_{#1}(#2)=#3}}
+\newcommand{\evaltoR}[3]{\ensuremath{\mathit{eval}_{\RMachine{#1}}(#2)=#3}}
+\newcommand{\evaltoD}[2]{\evaltoR{\BLD}{#1}{#2}}
+\newcommand{\evaltoUD}[2]{\evaltoR{\BLUD}{#1}{#2}}
+\newcommand{\evaltoS}[3]{\ensuremath{\mathit{eval}_{\SMachine{#1}}(#2)=#3}}
+\newcommand{\compatibletailhead}[2]{\ensuremath{#1\;\mathit{R}\;#2}}
+\newcommand{\goodgap}[1]{\ensuremath{\mathit{good}(#1)}}
+\newcommand{\compileto}[4]{\expressiontyping{#1}{#2\rightsquigarrow#3}{#4}}
+\newcommand{\machineequiv}[2]{
+	\ensuremath{
+		\withmachineevalto{#1}{e}{o}	
+		\text{ if and only if }
+		\withmachineevalto{#2}{e}{o}
+		\text{ for all }
+		\expressiontyping{\emptyset}{e}{T}
+		\text{ and }
+		\valuetyping{o}{T}
+	}}
+\newcommand{\bisimE}[3]{\ensuremath{#1 \vdash #2 \approx #3}}
+\newcommand{\bisimv}[3]{\valuetyping{#1 \approx #2}{#3}}
+\newcommand{\bisimr}[3]{\valuetyping{#1 \approx #2}{#3}}
+\newcommand{\bisimF}[4]{\casttyping{#1 \approx #2}{#3}{#4}}
+\newcommand{\bisimc}[4]{\casttyping{#1 \approx #2}{#3}{#4}}
+\newcommand{\bisimK}[4]{\casttyping{#1 \approx #2}{#3}{#4}}
+\newcommand{\bisims}[3]{\valuetyping{\ensuremath{#1 \approx #2}}{#3}}
+
+\begin{document}
+%
+\title{A Framework for Equivalence of Cast Calculi and a new Cast Representation}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Kuang-Chen Lu\inst{1} \and
+Jeremy G. Siek\inst{1} \and
+Andre Kuhlenschmidt\inst{1}
+}
+%
+\authorrunning{F. Author et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Indiana University, Bloomington IN 47405, USA}
+% \institute{Princeton University, Princeton NJ 08544, USA \and
+% Springer Heidelberg, Tiergartenstr. 17, 69121 Heidelberg, Germany
+% \email{lncs@springer.com}\\
+% \url{http://www.springer.com/gp/computer-science/lncs} \and
+% ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
+% \email{\{abc,lncs\}@uni-heidelberg.de}}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+Gradual typing aims at combining dynamic typing and static typing in one 
+language to provide the advantages of both typing disciplines. Implementing 
+gradual typing with reasonable overhead, however, is not trivial. Casts might 
+accumulate in higher-order values and continuations, thus change the overall 
+space complexity. Several space-efficient cast representations have been 
+proposed, including coercions in normal forms, threesomes, and supercoercions. 
+Drawing an interface between a cast representation and the remaining parts of 
+language implementations would likely help to understand the relation 
+between these cast representations and potentially new ones. We present such an 
+interface, Cast Abstract Data Type. The Cast ADT brings another 
+benefit. Space-efficient cast representations shall be proved not changing the 
+overall behavior of language implementations except saving space. Existing 
+proofs typically go through a whole bisimulation proof between the standard and 
+inefficient semantics and a space-efficient one. If a space-efficient semantics 
+uses the Cast ADT, its behavior would depend solely on the properties of the 
+interface functions. Thus a cast representation is correct if its interface 
+functions work correctly. We present an abstract machine \SMachine{C} that uses 
+Cast ADT to work with casts, a parameterized bisimulation proof, and two 
+subsets of Cast ADT that specify the Lazy D and the Lazy UD blame strategies. We
+also introduce a new cast representation, hypercoercions, that is better than 
+the known cast representations in some aspects.
+
+% The abstract should briefly summarize the contents of the paper in
+% 15--250 words.
+
+\keywords{Gradual Typing \and Blame \and Coercion.}
+\end{abstract}
+%
+%
+%
+
+\section{Introduction}
+Around 2006, several groups of researchers proposed ways to integrate
+dynamic typing and static typing, notably gradual typing
+\citep{siek2006gradual}, hybrid typing \citep{knowles2010hybrid},
+migratory typing \citep{tobin2006interlanguage}, and multi-language
+interoperability \citep{Gray:2005ij,Matthews:2007zr}.
+
+\todo[inline]{Cite "Contracts for higher-order functions" for the proxy-based approach?}
+
+Gradual typing \citep{siek2006gradual,siek2015refined} includes both static typing 
+and dynamic typing in the same language, enables smooth transition between them, while
+enforcing type soundness.
+To allow the smooth transition, gradually typed languages are featuerd by a special type
+typically written as \Tdyn\ or \lstinline|Dyn| or \lstinline|Any|, which enables 
+imprecise type annotations. A gradual type checker would allow programmers to cast 
+implicitly between types that have no conflicting type information.
+Researchers usually define the semantics of gradually typed languages by
+translation to an intermediate language with explicit casts, such as the blame
+calculus \citep{wadler2009well} and other cast calculi \citep{siek2009exploring}.
+At runtime, casts store or check type information to enforce type soundness.
+% To allow the smooth transition, every gradually typed language
+% has a special type typically written as \Tdyn\ or \lstinline|Dyn| or \lstinline|Any|,
+% which enables imprecise type annotations.
+% Programmers can use an expression of type \texttt{T} in any context that \texttt{T} 
+% is consistent to.
+% Two types are consistent if they have no conflicting type information.
+% For instance, \lstinline|(->  Bool Int)| is consistent with \lstinline|(->  $\star$ Int)| but
+% not consistent with \lstinline|(->  Int Int)|.
+% When the type of an expression is consistent but not equal to the type of its 
+% context, there would be a runtime computation (i.e. a cast) that store or check 
+% type information to enforce type soundness.
+
+
+Unfortunately, straightforward implementations of casts impose significant 
+runtime overheads that can change the asymptotic space complexity of a program 
+\citep{herman2010space}.
+For instance, the following module define functions 
+that check the parity of natural numbers. The terms are ordinary, while the 
+type annotations are not -- the output type of \lstinline|even?| is 
+imprecise.
+\begin{lstlisting}
+(define (even? [n : Int]) : $\star$
+  (if (= n 0) #t (odd? (- n 1))))
+(define (odd? [n : Int]) : Bool
+  (if (= n 0) #f (even? (- n 1))))
+\end{lstlisting}
+These functions look tail-recursive, so it is natural to expect that they 
+consumes constant space. This is not the case, however, in a straightforward 
+implementation because there is a cast around each of the 
+``tail call'', one from \lstinline|Bool| to 
+\lstinline|$\star$|, the other goes the other way.
+A straightforward implementation would cast the output of the recursive 
+call \textit{before} returning it, which effectively breaks the tail recursion 
+and thus changes the space complexity.
+
+Continuation is not the only place where casts might accumulate. 
+Consider a variant of the above program written in continuation-passing style. 
+Here, both functions returns \lstinline|Bool| so there is not pending cast in 
+continuations. The continuation argument \lstinline|k|, however, is wrapped in 
+a cast in each recursive call because the type of \lstinline|k| is less 
+precise in \lstinline|even?|.
+\begin{lstlisting}
+(define (even? [n : Int] [k : (-> $\star$ Bool)]) : Bool
+  (if (= n 0) (k #t) (odd? (- n 1) k)))
+(define (odd? [n : Int] [k : (-> Bool Bool)]) : Bool
+  (if (= n 0) (k #f) (even? (- n 1) k)))
+\end{lstlisting}
+Our examples programs are inspired by the examples in \citep{herman2010space}.
+We direct interested readers to their work for more examples and detailed explanation.
+
+A solution to this space-efficiency problem is representing cast information 
+more concisely. There are several known space-efficient cast representations
+\citep{Siek:2015:BCT:2737924.2737968,Siek:2010:TWB:1706299.1706342,Garcia:2013:CTB:2500365.2500603,kuhlenschmidt2018efficient,siek2012interpretations,garcia2014deriving}.
+The current state of the art includes
+\begin{itemize}
+	\item threesomes 
+	\citep{Siek:2010:TWB:1706299.1706342,Garcia:2013:CTB:2500365.2500603},
+	\item supercoercions \citep{Garcia:2013:CTB:2500365.2500603}, and
+	\item coercions in normal form
+	\citep{siek2012interpretations,Siek:2015:BCT:2737924.2737968}.
+\end{itemize}
+
+These cast representations are represented in their own dynamic semantics of a gradually typed language,
+which make it harder to focus on key differences between these representations. 
+Surprisingly, no one has published a dynamic semantics parameterized over cast representations.
+We present in Section~\ref{sec:framework} first of such generic dynamic semantics in the form 
+of a CEK abstract machine and formulate the interface between the machine and cast representations
+as an abstract data type, namely Cast ADT.
+
+Of course, an alternative cast representation must be proved
+correct. That is, a language implementation should give the same output no 
+matter whether it is using a cast representation to reduce space 
+consumption. Our generic CEK machine comes with generic theorems (Section~\ref{sec:framework}),
+with which researchers can prove a cast representation is correct by showing its corresponding
+implementation of Cast ADT satisfies a bunch of properties. We believe this framework can reduce the burden
+ of proving this kind of theorems and help people focusing on the cast representations.
+For illustration, we apply the framework to Lazy UD coercions in normal form
+and Lazy UD threesomes (Chapter~\ref{sec:framework-examples}). 
+We believe the framework is also applicable to other cast representations.
+
+\todo[inline]{Actuallythink twosome's composition is structurally recursive but threesomes' is not}
+The published cast representations have various strengths and weaknesses.
+The major insight of these systems is a compose operator for casts which compress cast information to
+reduce space consumption.
+Threesomes and supercoercions are good for mechanized
+metatheory because their compose operators are structurally recursive,
+making them easy to define in proof assistants such as Agda. In
+contrast, the coercions in normal form have compose operators that are
+not structurally recursive, which makes it more difficult to define in
+Agda, requiring what amounts to an explicit proof of termination.
+%
+On the other hand, coercions in normal form are easier to understand
+than threesomes (with a strange labeled bottom type), and
+supercoercions (10 different kinds).
+
+This paper presents a new cast representation 
+(Section~\ref{chap:hypercoercions}), named
+\emph{hypercoercions}, that is good for both mechanized metatheory and
+good for implementation. The straightforward Agda translation of composition 
+operator for hypercoercions is able to pass the termination check and 
+hypercoercions are suggestive of a bit-level representation that minimizes the 
+need for pointers and fits all first-order casts into 64 bits.
+%
+We present two flavors of hypercoercions to support the two blame
+tracking strategies from the literature: \LD\ and
+\LUD~\citep{siek2009exploring}. With the \LD\ strategy, only 
+\textbf{d}own 
+casts (casts from \Tdyn\ to some other types) are subject to blame. 
+With the 
+\LUD\
+strategy, however, some \textbf{u}p casts are also blamable.
+We are interested in the D blame
+tracking strategy because it comes with a more straightforward notion of
+safe cast compared to \LUD~\citep{siek2009exploring}, which is why \LD\ 
+was
+chosen in the Grift compiler~\citep{kuhlenschmidt2018efficient}. We are also 
+interested in \LUD\ because it plays a
+prominent role in the gradual typing literature
+\citep{wadler2009well}.  The \LUD\ hypercoercions were inspired by the
+supercoercions of \citep{Garcia:2013:CTB:2500365.2500603} (hence the name) and
+the \LD\ hypercoercions were inspired by the normal forms of
+\citep{siek2012interpretations}.
+The semantics of casts can be lazy or
+eager~\citep{siek2009exploring}. In this paper, we focus on lazy cast
+strategies because we suspect that they are more efficient than eager
+strategies and because \citet{new2019gradual} show that the eager
+strategies are incompatible with $\eta$-equivalence of functions.
+
+To summarize, the primary contributions of this paper are:
+\begin{itemize}
+    \item Cast ADT, an abstract data type for cast representations
+    \item a CEK abstract machine parameterized over Cast ADT
+	\item a framework in Agda for proving the correctness of \LD\ or \LUD\ 
+	cast representations when plugging into the CEK machine
+	\item a formal proof that \LUD\ threesomes are correct
+	\item a formal proof that \LUD\ coercions in normal form are correct
+	\item hypercoercions, a new cast representation, which
+	has a more compact memory representation in comparison to coercions in 
+	normal form.
+	\item a formal proof that both \LUD\ hypercoercions are correct
+	\item a formal proof that both \LD\ hypercoercions are correct
+\end{itemize}
+
+\section{Related Works}
+\label{chap:related-works}
+
+\todo[inline]{how to make citet work?}
+
+\subsubsection{Coercions in normal form}
+
+\citet{henglein1994dynamic} introduces coercions to study compilation from 
+dynamic languages to static ones. \citet{herman2010space} proposes using 
+coercions in normal forms to represent casts in gradual typing and proves space 
+efficiency. 
+However, they didn't show the coercion-based semantics is equivalent to the 
+standard (and type-based) one. \citet{Siek:2015:BCT:2737924.2737968} improves 
+the Lazy UD flavor of coercions in normal forms and proves that Lazy UD 
+coercions in normal form is correct, using two bisimulation between three 
+reduction semantics. The first semantics is similar to \LUDMachine, which 
+bisimulates a 
+reduction semantics using coercions (not necessarily in normal form). The last 
+semantics uses coercions in normal form and bisimulates the coercions-based 
+semantics.
+
+\subsubsection{Threesomes}
+
+\citet{Siek:2010:TWB:1706299.1706342} introduces Lazy UD threesomes and prove 
+its correctness, using a bisimulation between two reduction semantics: one is 
+similar to \LUDMachine; the other uses Lazy UD threesomes and is similar to the 
+machine in Section~\ref{sec:framework}. 
+\citet{Garcia:2013:CTB:2500365.2500603} introduces several other flavors of 
+threesomes, including a Lazy D one. Their threesomes are derived from 
+corresponding flavors of coercions in normal form, using correctness-preserving 
+transformation. So the correctness of their threesomes relies on the 
+corrections of the coercions-in-normal-form-based semantics defined in 
+\citet{herman2010space}, which have not been proved correct.
+
+\subsubsection{Parameterized cast calculi}
+
+\citet{garcia2014deriving} presents a dynamic semantics for the Eager D blame 
+strategy, using coercions. They claims that "the artefacts for coercions can be
+replaced by other artefacts implementing different dynamic semantics".
+
+
+\section{Background} \label{sec:background}
+
+In this section, we first review lazy cast calculi (Section~\ref{sec:cast-calculus}), where
+we present an abstract machine that is employed in our framework \ref{sec:framework}. Then
+we review coercions and their normal forms (Section~\ref{sec:coercions-in-normal-form}), which
+motivates and inspires the design of hypercoercions (Section~\ref{sec:hypercoercions}).
+
+\subsection{Cast Calculi} \label{sec:cast-calculi}
+
+\begin{figure}
+Syntax
+\[
+\begin{array}{lrcl}
+\text{Blame Labels} & l \\
+\text{Variables} & x,y,z \\
+\stxrule{S,T}{Types}{
+	\Tdyn \mid{}
+	P
+}
+\stxrule{P,Q}{Pre-types}{
+	\Pbool \mid
+	\Pfunc{T}{T} \mid
+	\Pprod{T}{T}
+}
+\stxrule{G,H}{Ground types}{
+	\Gbool  \mid
+	\Gfunc  \mid
+	\Gprod
+}
+\stxrule{e}{Expressions}{
+	\evar{x}        \mid
+	\elam{x}{S}{e}  \mid
+	\eapp{e}{e}     \mid
+	\econs{e}{e}  \mid
+	\ecar{e}      \mid
+	\ecdr{e}
+}
+\stxrulecont{
+	\ecast{e}{\ccast{S}{l}{T}}  \mid
+	\etrue         \mid
+	\efalse        \mid
+	\eif{e}{e}{e}
+}
+\end{array}
+\]
+	
+	\fbox{\consistent{T}{T}} Consistency
+	\begin{gather*}
+	\infr{}{\consistent{\Tdyn}{\Tdyn}} \quad
+	\infr{}{\consistent{\Tdyn}{P}    } \quad
+	\infr{}{\consistent{P}{\Tdyn}    }
+	\\[1ex]
+	\infr{}{
+		\consistent{\Pbool}{\Pbool}
+	} \quad
+	\infr{
+		\consistent{S_1}{S_2} &
+		\consistent{T_1}{T_2}
+	}{
+		\consistent{\Pfunc{S_1}{T_1}}{\Pfunc{S_2}{T_2}}
+	} \quad
+	\infr{
+		\consistent{S_1}{S_2} &
+		\consistent{T_1}{T_2}
+	}{
+		\consistent{\Pprod{S_1}{T_1}}{\Pprod{S_2}{T_2}}
+	}
+	\end{gather*}
+		
+	\fbox{\shallowlyconsistent{T}{T}} Shallow consistency
+	\begin{gather*}
+	\inference{}{
+		\shallowlyconsistent{\Tdyn}{\Tdyn}
+	} \quad
+	\inference{}{
+		\shallowlyconsistent{\Tdyn}{P}
+	} \quad
+	\inference{}{
+		\shallowlyconsistent{P}{\Tdyn}
+	} \\
+	\inference{}{
+		\shallowlyconsistent{\Pbool}{\Pbool}
+	} \quad
+	\inference{}{
+		\shallowlyconsistent{\Pfunc{S_1}{T_1}}{\Pfunc{S_2}{T_2}}
+	} \quad
+	\inference{}{
+		\shallowlyconsistent{\Pprod{S_1}{T_1}}{\Pprod{S_2}{T_2}}
+	}
+	\end{gather*}
+
+
+\fbox{$\expressiontyping{\Gamma}{e}{T}$} Expression Typing
+\begin{gather*}
+\dots \quad
+\infr{
+	\expressiontyping{\Gamma}{e}{S}  &
+	\consistent{S}{T}
+}{
+	\expressiontyping{\Gamma}{(\ecast{e}{\ccast{S}{l}{T}})}{T}
+}
+\end{gather*}
+
+\caption{Syntax and static semantics of the Cast Calculus.}
+\label{fig:statics}
+\end{figure}
+
+\paragraph{Syntax and Static Semantics}
+
+The syntax and static semantics are the same for the \LD\ and
+\LUD\ cast calculi. They are reviewed in \figref{fig:statics}.
+As usual, the important features are the cast expressions,
+$\ecast{e}{\ccast{S}{l}{T}}$, which are responsible for runtime type
+checking. Polarities of blame labels is not treated but are straightforward to 
+incorporate. The syntax and static semantics is the same as that of 
+\citep{siek2009exploring} except for a few minor exceptions:
+
+\begin{itemize}
+\item We add product type.
+\item We consider only one base type, Boolean, for simplicity.
+\item We separate types into those with a type constructor at the top,
+  the \emph{pre-types}, versus the dynamic type \Tdyn.
+\end{itemize}
+As usual, for every cast $\ecast{e}{\ccast{S}{l}{T}}$, the source type $S$ and 
+the target $T$ must be consistent.
+
+\paragraph{Dynamic Semantics}
+
+The dynamic semantics of a cast calculus is typically defined with a
+reduction semantics. Here we use a CEK machine
+\citep{felleisen1986control} instead. One reason is that environments are 
+easier 
+to deal with than substitutions in formal proof. Also, a CEK machine is more
+convenient to use for the space-efficient semantics in
+\chapref{sec:framework} (recall that a major point of space-efficiency 
+is about compressing continuations and that continuations are part of the CEK 
+machine states). So using a CEK machine for the cast 
+calculi in this section makes it easier to prove the equivalent of these 
+machines. Of course, one should prove that the abstract machine
+presented here is equivalent to the standard reduction semantics for
+cast calculi, but we have not yet done so.
+
+\begin{figure}
+\[
+\begin{array}{lrcl}
+\stxrule{v,u}{Values}{
+  	\vdyn{I}{v}  \mid
+    \vtrue       \mid
+    \vfalse                     
+}
+\stxrulecont{
+    \vfunc{x}{S}{e}{E}  \mid
+	\vfuncc{v}{S}{T}{l}{S}{T}
+}
+\stxrulecont{
+    \vcons{v}{v}               \mid
+	\vconsc{v}{S}{T}{l}{S}{T}
+}
+\stxrule{I,J}{Injectable types}{
+	\text{a subset of $P$ defined by the blame strategy $B$}
+}
+\stxrule{E}{Environments}{
+	\text{a partial function}\;\{\langle x , v \rangle , \dots \}
+}
+\stxrule{F}{Frames}{
+	\FappXO{e}{E}  \mid
+	\FappOX{v}               \mid
+	\Fcast{\ccast{S}{l}{T}}                \mid
+	\Fcar                    
+}
+\stxrulecont{
+	\Fcdr           \mid
+	\FconsXO{e}{E}  \mid
+	\FconsOX{v}
+}
+\stxrule{K}{Continuations}{
+	\Knil         \mid
+	\Kcons{F}{K}
+}
+\stxrule{s}{States}{
+	\sexpr{e}{E}{K}  \mid
+	\scont{v}{K}     \mid
+	\shalt{v}        \mid
+	\error{l}
+}
+\stxrule{o}{Observables}{
+    \odyn    \mid
+    \otrue   \mid
+    \ofalse  \mid
+    \ofunc   \mid
+    \ocons   \mid
+    \error{l}
+}
+\stxrule{r}{Cast results}{
+    v \mid
+    \error{l}
+}
+\end{array}
+\]
+
+\fbox{\valuetyping{v}{T}} Value typing
+\begin{gather*}
+\dots \qquad
+\inference{
+	\valuetyping{v}{I}
+}{
+	\valuetyping{\vdyn{I}{v}}{\Tdyn}
+} \\[1ex]
+\inference{
+	\valuetyping{v}{\Pfunc{S_1}{T_1}}
+}{
+	\valuetyping{(\vfuncc{v}{S_1}{T_1}{l}{S_2}{T_2})}{\Pfunc{S_2}{T_2}}
+} \quad
+\inference{
+	\valuetyping{v}{\Pprod{S_1}{T_1}}
+}{
+	\valuetyping{(\vconsc{v}{S_1}{T_1}{l}{S_2}{T_2})}{\Pprod{S_2}{T_2}}
+}
+\end{gather*}
+
+
+\fbox{$\proxy{v}{\ccast{S}{l}{T}}=v$}
+\[
+\begin{array}{rclr}
+\figequalto{\proxy{v}{\ccast{\Pbool}{l}{\Pbool}}}{v}{}
+\figequalto{\proxy{v}{\ccast{\Pfunc{S_1}{T_1}}{l}{\Pfunc{S_2}{T_2}}}}{
+	\vfuncc{v}{S_1}{T_1}{l}{S_2}{T_2}
+}{}
+\figequalto{\proxy{v}{\ccast{\Pprod{S_1}{T_1}}{l}{\Pprod{S_2}{T_2}}}}{
+	\vconsc{v}{S_1}{T_1}{l}{S_2}{T_2}
+}{}
+\end{array}
+\]
+
+\caption{Syntax of a CEK machine \RMachine{B} and auxiliary definitions.}
+\label{fig:R-machine-syntax}
+\end{figure}
+
+Fig.~\ref{fig:R-machine-dynamics} defines the transition relation of the CEK
+machine (\RMachine{B}) and Fig.~\ref{fig:R-machine-syntax} gives a grammar for machine 
+states $s$, including a definition of values $v$ and value typing.
+%
+This machine is parameterized over blame strategy ($B$), which ranges over
+Lazy D (Fig.~\ref{fig:blame-strategy-LazyD}) and Lazy UD 
+(Fig.~\ref{fig:blame-strategy-LazyD}).
+%
+The transitions involving casts are highlighted in red and described in
+more detail below. The other transitions are standard for a CEK
+machine for an extended simply typed lambda calculus.
+%
+Recall that CEK machines involve two kinds of transitions, (1) those
+that dive further into an expression (looking for a redex) and push an
+entry onto the continuation, and (2) those that return a value to the
+current continuation and possibly perform a computation.
+Corresponding to (1) and (2), the machine state is either in an evaluating
+$\sexpr{e}{E}{K}$ or returning $\scont{v}{K}$ configuration, 
+respectively. Additionally, there are two halting configurations: \shalt{v} 
+halts with a value, while \error{l} halts with a blame label. 
+Observables include all value constructors and blame labels, as in 
+\citep{siek2012interpretations}. 
+The function converting values to observables ($observe(v) = o$) is defined in 
+the obvious way.
+
+Let $v$ range over values. The 
+$\vdyn{I}{v}$ stands for values casted to the dynamic type, as in 
+\citep{wadler2009well}. The inner value must be of an 
+injectable type. The definition of injectable types depends on blame 
+strategies:
+%
+for the \LD\ strategy, every pre-type is injectable 
+(Fig.~\ref{fig:blame-strategy-LazyD});
+%
+for the \LUD\ strategy, only ground types are injectable 
+(Fig.~\ref{fig:blame-strategy-LazyUD}).
+%
+Other kinds of values are either Boolean constants, functions, casted 
+functions, pairs, or casted pairs.
+% In earlier version of this work, 
+% we were tempted to use a generic constructor for all casted value, and use 
+% value typing rules to restrict the cast such that its source and target are 
+% shallowly consistent pre-types. This approach unfortunately considers 
+% $\ecast{\etrue}{\ccast{\Pbool}{l}{\Pbool}}$ as a value.
+
+The syntax \error{l} occurs several times in the syntax definition, we shall 
+view those nonterminals that have \error{l} case as error monads. We use 
+the symbol \mbind as the monad bind operator, which is defined as follows:
+\[
+\begin{array}{rcll}
+(\error{l}) \mbind f & = & \error{l} \\
+          a \mbind f & = & f(a)      & \text{otherwise}
+\end{array}
+\]
+
+\begin{figure}
+	\fbox{\reducetoR{B}{s}{s}} Transition
+	\[
+	\begin{array}{rclr}
+	\figreduceto{\sexpr{\evar{x}}{E}{K}}{\scont{E(x)}{K}}{}
+	\figreduceto{\sexpr{\elam{x}{S}{e}}{E}{K}}{\scont{\vfunc{x}{S}{e}{E}}{K}}{}
+	\figreduceto{\sexpr{\eapp{e_1}{e_2}}{E}{K}}{
+		\sexpr{e_1}{E}{\Kcons{\FappXO{e_2}{E}}{K}}
+	}{}
+	\figreduceto{\sexpr{\etrue}{E}{K}}{\scont{\vtrue}{K}}{}
+	\figreduceto{\sexpr{\efalse}{E}{K}}{\scont{\vfalse}{K}}{}
+	\figreduceto{\sexpr{\eif{e_1}{e_2}{e_3}}{E}{K}}{
+		\scont{e_1}{\Kcons{\Fif{e_2}{e_3}{E}}{K}}
+	}{}
+	\figreduceto{\sexpr{\econs{e_1}{e_2}}{E}{K}}{
+		\sexpr{e_1}{E}{\Kcons{\FconsXO{e_2}{E}}{K}}
+	}{}
+	\figreduceto{\sexpr{\ecar{e}}{E}{K}}{\sexpr{e}{E}{\Kcons{\Fcar}{K}}}{}
+	\figreduceto{\sexpr{\ecdr{e}}{E}{K}}{\sexpr{e}{E}{\Kcons{\Fcdr}{K}}}{}
+	\figreducetoH{
+		\sexpr{\ecast{e}{\ccast{S}{l}{T}}}{E}{K}
+	}{
+		\sexpr{e}{E}{\Kcons{\Fcast{\ccast{S}{l}{T}}}{K}}
+	}{}
+	\figreducetoH{\scont{v}{\Kcons{\Fcast{\ccast{S}{l}{T}}}{K}}}{
+		\applyCast{v}{\ccast{S}{l}{T}} \; \mbind \; \lambda u. \scont{u}{K}
+	}{}
+	\figreduceto{\scont{v_1}{\Kcons{\FappXO{e_2}{E}}{K}}}{\sexpr{e_2}{E}{
+			\Kcons{\FappOX{v_1}}{K}}
+	}{}
+	\figreduceto{\scont{v}{\Kcons{\FappOX{\vfunc{x}{S}{e}{E}}}{K}}}{
+		\sexpr{e}{E[x:=v]}{K}
+	}{}
+	\figreducetoH{\scont{v}{\Kcons{\FappOX{(\vfuncc{u}{S_1}{T_1}{l}{S_2}{T_2})}}{K}}}{
+		\scont{v}{
+			\Kcons{\Fcast{\ccast{S_2}{l}{S_1}}}{
+				\Kcons{\FappOX{u}}{
+					\Kcons{\Fcast{\ccast{T_1}{l}{T_2}}}{K}}}}
+	}{}
+	\figreduceto{\scont{\vtrue}{\Kcons{\Fif{e_2}{e_3}{E}}{K}}}{\sexpr{e_2}{E}{K}}{}
+	\figreduceto{\scont{\vfalse}{\Kcons{\Fif{e_2}{e_3}{E}}{K}}}{\sexpr{e_3}{E}{K}}{}
+	\figreduceto{\scont{v_1}{\Kcons{\FconsXO{e_2}{E}}{K}}}{
+		\sexpr{e_2}{E}{\Kcons{\FconsOX{v_1}}{K}}
+	}{}
+	\figreduceto{\scont{v_2}{\Kcons{\FconsOX{v_1}}{K}}}{
+		\scont{\vcons{v_1}{v_2}}{K}
+	}{}
+	\figreduceto{\scont{\vcons{v_1}{v_2}}{\Kcons{\Fcar}{K}}}{\scont{v_1}{K}}{}
+	\figreducetoH{\scont{\vconsc{u}{S_1}{T_1}{l}{S_2}{T_2}}{\Kcons{\Fcar}{K}}}{
+		\scont{u}{
+			\Kcons{\Fcar}{
+				\Kcons{\Fcast{\ccast{S_1}{l}{S_2}}}{K}}}	
+	}{}
+	\figreduceto{\scont{\vcons{v_1}{v_2}}{\Kcons{\Fcdr}{K}}}{\scont{v_2}{K}}{}
+	\figreducetoH{\scont{\vconsc{u}{S_1}{T_1}{l}{S_2}{T_2}}{\Kcons{\Fcdr}{K}}}{
+		\scont{u}{
+			\Kcons{\Fcdr}{
+				\Kcons{\Fcast{\ccast{T_1}{l}{T_2}}}{K}}}	
+	}{}
+	\figreduceto{\scont{v}{\Knil}}{\shalt{v}}{}
+	\end{array}
+	\]
+	
+	\fbox{\evaltoR{B}{e}{o}} Evaluation
+	\[
+	\inference{
+		\transitivelyreduceto{\sexpr{e}{\emptyset}{\Knil}}{\shalt{v}}
+	}{
+		\evalto{e}{observe(v)}
+	} \quad
+	\infr{
+		\transitivelyreduceto{\sexpr{e}{\emptyset}{\Knil}}{\error{l}}
+	}{
+		\evalto{e}{\error{l}}}
+	\]
+	\caption{Dynamic semantics of the cast calculi as a CEK
+		machine \RMachine{B}. The transitions that involve casts are highlighted
+		in red.}
+	\label{fig:R-machine-dynamics}
+\end{figure}
+
+The transition relation \reduceto{s}{s} invokes the cast application function, 
+noted as $\applyCast{v}{\ccast{S}{l}{T}}$ to allow for the differences 
+between blame strategies (Fig.~\ref{fig:blame-strategy-LazyD} and 
+Fig.~\ref{fig:blame-strategy-LazyUD}).
+%
+When evaluating a cast expression, the machine moves the cast to the
+continuation and evaluates the inner expression.
+%
+To cast a value, the machine invokes the cast application function on the 
+value. The cast result is either a value or an error (\error{l}). If the cast 
+succeeds, the machine returns the value to the next continuation.  If the cast 
+fails, the machine halts with the blame label.
+%
+To apply a casted function, the machine first casts the argument $v$, then
+applies the inner function $u$ to the casted argument, and finally
+casts the return value.
+%
+To take out the first part of a casted pair, the machine takes out the 
+first part of the inner pair $u$ and cast it.
+%
+Taking out the second part is similar.
+
+The reflexive transitive closure of reduction (\transitivelyreduceto{s}{s}) 
+and evaluation (${\evalto{e}{o}}$) are standard~\citep{felleisen03:_pllc}.
+
+\begin{figure}
+\[
+\begin{array}{lrcl}
+\stxrule{I,J}{Injectable types}{P}
+\end{array}
+\]
+	
+\fbox{$\mathit{applyCast}_{\BLD}(v,\ccast{S}{l}{T}) = r$}
+\[
+\begin{array}{rclr}
+\figequalto{
+	applyCast(v,\ccast{\Tdyn}{l}{\Tdyn})
+}{
+	\just{v}
+}{}
+\figequalto{
+applyCast(v,\ccast{P}{l}{\Tdyn})
+}{
+	\just{\vdyn{P}{v}}
+}{}
+\figequalto{
+	applyCast(\vdyn{P}{u},\ccast{\Tdyn}{l}{Q})
+}{
+	applyCast(u,\ccast{P}{l}{Q})
+}{}
+\figequalto{
+	applyCast(v,\ccast{P}{l}{Q})
+}{
+	\just{\proxy{v}{\ccast{P}{l}{Q}}}
+}{\sidecond{\shallowlyconsistent{P}{Q}}}
+\figequalto{
+	applyCast(v,\ccast{P}{l}{Q})
+}{
+	\error{l}
+}{\sidecond{\notshallowlyconsistent{P}{Q}}}
+\end{array}
+\]
+\caption{The \LD\ blame strategy (\BLD)}
+\label{fig:blame-strategy-LazyD}
+\end{figure}
+
+\begin{definition}[\LD\ CEK Machine, \LDMachine]
+The \LD\ CEK machine, written \LDMachine, is the CEK machine of
+\figref{fig:R-machine-dynamics} using the \BLD\ blame strategy defined in 
+\figref{fig:blame-strategy-LazyD}.  We write the transition relations of
+this machine as \reducetoD{s}{s} and \transitivelyreducetoD{s}{s}
+and the evaluator as \evaltoD{e}{o}.
+\end{definition}
+
+We conjecture that \LDMachine\ agrees with the \LD\ cast calculus
+of \citep{siek2009exploring}.
+
+\begin{proposition}[\LDMachine\ is deterministic]
+	If \reducetoD{s}{s_1} and \reducetoD{s}{s_2} then $s_1 = s_2$.
+\end{proposition}
+
+Next, we define the CEK Machine for \LUD. The only differences with
+respect to \LD\ are in the injectable types and in the definition of the 
+${\mathit{applyCast}(v,\ccast{S}{l}{T})}$
+function, in which a cast whose source or target is the dynamic type
+\Tdyn\ is always split into two casts that go through a ground type, that is, a 
+type in which all sub-components are the dynamic type, such as 
+\Pfunc{\Tdyn}{\Tdyn}.
+\begin{definition}[\LUD\ CEK Machine]
+	The \LUD\ CEK machine, written \LUDMachine\, is the CEK machine of
+	\figref{fig:R-machine-dynamics} using the \BLUD\ blame strategy defined in 
+	\figref{fig:blame-strategy-LazyUD}.  We write the transition relations of
+	this machine as \reducetoUD{s}{s} and \transitivelyreducetoUD{s}{s}
+	and the evaluator as \evaltoUD{e}{o}.
+\end{definition}
+
+\begin{figure}
+\[
+\begin{array}{lrcl}
+\stxrule{I,J}{Injectable types}{G}
+\end{array}
+\]
+
+	\fbox{$\mathit{applyCast}_{\mathtt{\BLUD}}(v,\ccast{S}{l}{T}) = r$}
+	\[
+	\begin{array}{rclr}
+	\mathit{applyCast}(v, \ccast{\Tdyn}{l}{\Tdyn}) &=& \just{v} \\
+	\mathit{applyCast}(v, \ccast{G}{l}{\Tdyn}) &=&
+	\just{\vdyn{G}{v}} \\
+	\mathit{applyCast}(v, \ccast{P}{l}{\Tdyn}) &=&
+	\just{\vdyn{G}{\proxy{v}{\ccast{P}{l}{G}}}}
+	& \text{if } G \sim P, G \neq P \\  
+	\mathit{applyCast}(\vdyn{G}{u}, \ccast{\Tdyn}{l}{H}) &=&          
+	\project{u}{G}{l}{H}\\
+	\mathit{applyCast}(\vdyn{G}{u}, \ccast{\Tdyn}{l}{Q}) &=&
+	\project{u}{G}{l}{H} \mbind \lambda v. \proxy{v}{\ccast{H}{l}{Q}}
+	& \text{if } H \sim Q, H \neq Q \\
+	\mathit{applyCast}(v, \ccast{P}{l}{Q}) &=&
+	\just{\proxy{v}{\ccast{P}{l}{Q}}}
+	& \text{if } P \smile Q \\
+	\mathit{applyCast}(v, \ccast{P}{l}{Q}) &=&
+	\error{l}
+	& \text{if } P \not\smile Q
+	\end{array}
+	\]
+	
+	\fbox{$\project{v}{G}{l}{H}=r$}
+	\[
+	\begin{array}{rclr}
+	\figequalto{\project{v}{G}{l}{G}}{v}{}
+	\figequalto{\project{v}{G}{l}{H}}{\error{l}}{\sidecond{G \neq H}}
+	\end{array}
+	\]
+	
+\caption{The \LUD\ blame strategy (\BLUD)}
+	\label{fig:blame-strategy-LazyUD}
+\end{figure}
+
+We conjecture that \LUDMachine\ agrees with the \LUD\ cast
+calculus of \citep{siek2009exploring}.
+
+\begin{proposition}[\LUDMachine\ is deterministic]
+	If $\reducetoUD{s}{s_1}$ and $\reducetoUD{s}{s_2}$ 
+	then $s_1 = s_2$.
+\end{proposition}
+
+\subsection{Coercions and Normal Forms} 
+\label{sec:coercion-calculus}
+
+In this section, we review the
+coercions~\citep{henglein1994dynamic,herman2010space} and the normal form of
+\citet{siek2012interpretations} to motivate the design of hypercoercions.  We
+omit sum types and product types in this section because
+\citet{siek2012interpretations} did not discuss them. We assume a basic
+familiarity with coercions, and suggest that readers unfamiliar with coercions
+to familiarize themselves with \citet{siek2012interpretations} and
+\citet{Siek:2015:BCT:2737924.2737968}.
+
+\begin{figure}
+	\[
+	\begin{array}{lrcl}
+	\stxrule{I,J}{Injectable types (\LD)}{
+		\Pfunc{T}{T} \mid \Pbool}
+	\stxrule{I,J}{Injectable types (\LUD)}{
+		\Pfunc{\Tdyn}{\Tdyn} \mid \Pbool
+	}
+	\stxrule{c,d}{Coercions}{
+		\cnfid{T}       \mid
+		\cnffunc{c}{d}  \mid
+		\cnfprod{c}{d}  \mid
+		\cnffail{l}     \mid
+		\cnfinj{I}      \mid
+		\cnfproj{I}{l}  \mid
+		\cnfseq{c}{d}
+	}
+	\stxrule{s,t}{Coercions in normal form}{
+		\cnfid{\Tdyn}       \mid
+		\cnfseq{\cnfproj{I}{l}}{i} \mid
+		i
+	}
+	\stxrule{i}{Final Coercions}{
+		\cnffail{l} \mid
+		\cnfseq{g}{\cnfinj{I}} \mid
+		g
+	}
+	\stxrule{g}{Middle Coercions}{
+		\cnfid{\Pbool} \mid
+		\cnffunc{s}{t} \mid
+		\cnfprod{s}{t}
+	}
+	\end{array}
+	\]
+	\caption{Syntax of coercions and normal forms {\`a} la 
+		\citep{siek2012interpretations}.}
+	\label{fig:normal-coercion}
+\end{figure}
+
+\figref{fig:normal-coercion} reviews the grammar for coercions,
+written $c$.
+%
+To review, an injection $\cnfinj{I}$ takes a value from an injectable type
+$I$ to type $\Tdyn$. An injectable type is simply a type that can be
+cast directly to and from $\Tdyn$. The
+definition of injectable types depends on the blame strategy, as in 
+Chapter~\ref{chap:background}.
+%
+A projection $I?^l$ takes a value from type $\Tdyn$ to type $I$, or
+halts the program and blames $l$ if the value is inconsistent with 
+the target type.
+The coercion \cnfid{T} is the identity, $\bot^{l}$ is the coercion that
+always fails and blames $l$, and $(\cnfseq{c}{d})$ applies $c$ and
+then $d$ in sequence. The function coercion $\cnffunc{c}{d}$
+applies $c$ to the argument of a function and $d$ to the return
+value.
+
+Coercions come with a reduction relation so it is natural to ask about
+their normal forms. \figref{fig:normal-coercion} defines the syntax of
+coercion in normal form, written $\hat{c}$. Conceptually, a coercion
+in normal form has three parts, all of which are optional.  It may
+start with a projection $I?^l$, followed by a function coercion, and
+then concluded with an injection $I!$ or a failure $\bot^l$. While
+this is a simple idea, there are 10 clauses in the definition for
+$\hat{c}$!
+
+\section{A Framework for Proving Correctness of Cast ADTs}
+\label{sec:framework}
+
+% All cast representation shall be proved correct, that is, besides reducing 
+% space consumption, using a cast representation should not affect the results of 
+% program execution.
+In this section we present a framework for proving the 
+correctness of cast representations. The framework includes an abstract data 
+type named Cast ADT, which specifies the operators of cast representations, 
+a CEK machine $\SMachine{C}$, which uses the cast operators implemented by 
+$C$ to work with casts, and theorems relating $\SMachine{C}$ to $\RMachine{B}$.
+%
+Subsection~\ref{sec:cast-adt-and-space-efficient-cek} describes Cast ADT and the 
+machine \SMachine{C}. We conjecture that the machine \SMachine{C} is 
+space-efficient provided that the cast representation $C$ performs compression.
+%
+Subsection~\ref{sec:good-cast-adt} defines two subset of Cast ADT, namely Lazy D 
+Cast ADT and Lazy UD Cast ADT. As their names suggest, if $C$ is a Lazy D Cast 
+ADT, executing a program in $\SMachine{C}$ would give the same result as in 
+$\LDMachine$. Similarly, if $C$ is a Lazy UD Cast ADT, executing a program in 
+$\SMachine{C}$ would give the same result as in $\LUDMachine$.
+%
+We prove the theorems relating \SMachine{C} and \RMachine{B} in
+Subsection~\ref{sec:S-correct}.
+The framework is written in the Agda language~\citep{norell2008dependently}.
+
+%In Section~\ref{chap:background} we have seen that the standard dynamic 
+%semantic of the cast calculi has a space-efficiency problem 
+%(Section~\ref{sec:space-efficiency-problem}): casts might accumulate in 
+%higher-order values and continuations and consume unbounded space. The 
+%solution 
+%is space-efficient cast representations, such as coercions in normal form and 
+%threesomes.
+%%
+%Every such cast representations shall be proved correct. Actually, 
+%people have done such proofs several times, such as the \emph{Correctness of 
+%the threesome calculus} in \citep{Siek:2010:TWB:1706299.1706342} and the 
+%bisimulation theorems in \citep{Siek:2015:BCT:2737924.2737968}.
+%%
+%These theorems are similar -- conceptually the only difference is the cast 
+%representation.
+%%
+%But having two proofs blurs the similarity between the proofs and the key 
+%differences between cast representations. 
+%%
+%Furthermore, there might be more cast representations in the future.
+%Actually we introduce a new one in Section~\ref{chap:hypercoercions}.
+%%
+%Consequently, it is desirable to have generic proofs that handles many cast 
+%representations that implement a common interface.
+%
+%Our solution is an abstract data type (Cast ADT), which specifies the 
+%operators 
+%of cast representations and a CEK machine ($\SMachine{C}$) parameterized over 
+%Cast ADT (Section~\ref{sec:cast-adt-and-space-efficient-cek}). Then we 
+%prove that if $C$ is a Lazy D Cast ADT then \SMachine{C} is equivalent to 
+%\LDMachine, and that if $C$ is a Lazy UD Cast ADT then \SMachine{C} is 
+%equivalent to \LUDMachine.
+%%
+%We conjecture that the machine \SMachine{C} is space-efficient provided that 
+%the cast representation $C$ performs compression. We will prove or 
+%conjecture that all cast representations defined 
+%in the literature are instances of this ADT. 
+%In \secref{sec:LazyD-correct} we prove that, for any
+%instance $C$ of the Cast ADT, if $C$ satisfies a more refined abstract
+%data type for Lazy D casts, then \SMachine{C} is equivalent to
+%\LDMachine, that is, 
+%\[
+%\machineequiv{\LDMachine}{\SMachine{C}}
+%\]
+%In Section~\ref{sec:LazyUD-correct} we prove a corresponding \LUD\ theorem, 
+%that is, for any instance $C$ of the Cast ADT, if $C$ satisfies a more refined 
+%abstract data type for \LUD\ casts
+%\[
+%\machineequiv{\LUDMachine}{\SMachine{C}}
+%\]
+%
+%Finally, we prove that some cast representations in 
+%the literature (\LD\ and \LUD\ coercions in normal form, and \LUD\ threesomes) 
+%are either instances of the Lazy D Cast ADT or the Lazy UD Cast ADT 
+%(\secref{sec:coercions-correct} and \secref{sec:threesomes-correct}).
+%We conjecture that supercoercions also fit into the two category.
+
+\subsection{Cast Abstract Data Type and a Space-efficient CEK Machine}
+\label{sec:cast-adt-and-space-efficient-cek}
+
+\begin{figure}
+	\[
+	\begin{array}{lrcl}
+	\stxrule{c,d}{Runtime casts}{\text{a data type defined by the 
+	instance of Cast ADT}}
+	\stxrule{v,u}{Values}{
+		\vdyn{I}{v}  \mid
+		\vtrue       \mid
+		\vfalse                     
+	}
+	\stxrulecont{
+		\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{c}{c}} \mid
+		\ecast{\vcons{v}{v}}{\Pprod{c}{c}}
+	}
+	\stxrule{I,J}{Injectable types (\LD)}{P}
+	\stxrule{I,J}{Injectable types (\LUD)}{G}
+	\stxrule{E}{Environments}{
+		\text{a partial function}\;\{\langle x , v \rangle , \dots \}
+	}
+	\stxrule{F}{Frames}{
+		\FappXO{e}{E}  \mid
+		\FappOX{v}     \mid
+		\Fcar          \mid
+		\Fcdr
+	}
+	\stxrulecont{
+		\FconsXO{e}{E}  \mid
+		\FconsOX{v}
+	}
+	\stxrule{K}{Continuations}{
+		\Kcons{\Fcast{c}}{k}
+	}
+	\stxrule{k}{Pre-continuations}{
+		\Knil         \mid
+		\Kcons{F}{K}
+	}
+	\stxrule{s}{States}{
+		\sexpr{e}{E}{K}  \mid
+		\scont{v}{K}     \mid
+		\shalt{v}        \mid
+		\error{l}
+	}
+	\stxrule{r}{Cast results}{
+		v \mid
+		\error{l}
+	}
+	\end{array}
+	\]
+	
+	\caption{Syntax of the space-efficient machine \SMachine{C} and auxiliary 
+	data structures.}
+	\label{fig:SEMachine-state}
+\end{figure}
+
+\figref{fig:SEMachine-state} defines the syntax of the space-efficient CEK 
+machine (\SMachine{C}). This machine is parameterized over Cast ADT $C$.
+%
+The key differences between \SMachine{C} and the \RMachine{B} machine are the 
+places where casts can accumulate~(\secref{sec:space-efficiency-problem}), that 
+is, values and continuations.
+
+Let $u,v$ range over values.
+%
+Recall that in \RMachine{B} we have two value constructors for functions and 
+another two for pairs. That setup allows zero-or-more layers of casts at the 
+top of higher-order values, which might lead to space inefficiency. 
+%
+In \SMachine{C}, we instead have exactly one layer of cast. 
+Thus non-casted values in \RMachine{B} correspond to values 
+in \SMachine{C} where casts are identities ($\mathit{id}(T)$). The 
+$\mathit{id}$ functions is provided by the Cast ADT.
+
+Let $K$ ranges over continuations and $k$ ranges over pre-continuations.
+%
+Pre-continuations are like the continuations in \RMachine{B}, but their 
+top-most frame must not be a cast frames.
+%
+A continuation is now a pre-continuation prefixed with a cast frame.
+%
+Recall that continuations in \RMachine{B} have zero or more casts at the top.
+In \SMachine{C}, however, every continuation has exactly one cast at the 
+top.
+%
+Continuations in \RMachine{B} that have no casts at the top correspond
+to continuations in \SMachine{C}\ whose casts are identities constructed by 
+$\id{T}$.
+Continuations in \RMachine{B} that have many casts at the top 
+correspond
+to continuations in \SMachine{C}\ where those casts are composed by
+$\compose{c}{c}$, another functions provided by the Cast ADT.
+%
+Injectable types ($I,J$), environments ($\mathcal{E}$), states ($s$), and cast 
+results ($r$) are the same as in \RBMachine.
+
+Value typing (\valuetyping{v}{T}), continuation typing 
+(\casttyping{k}{S}{T} and \casttyping{K}{S}{T}), and environment typing 
+(\envtyping{\Gamma}{E}) are defined in the obvious way. 
+They rely on cast typing \casttyping{c}{S}{T}, which shall be provided by the 
+Cast~ADT.
+
+\begin{definition}[Cast Abstract Data Type (Cast ADT)]
+	\label{def:cast-rep}
+	A cast abstract data type is a set $Cast$, which is indexed by two types, 
+	with four operators and two properties of operators:
+\begin{itemize}
+	\item $id(T)=c$: create an identity cast
+	\item $\compose{c}{c}=c$: compose casts
+	\item $\translate{\ccast{S}{l}{T}}=c$: translate cast in source 
+		program to runtime casts
+	\item $\denote{c}(v)=r$: apply a cast to a value
+	\item If $ \valuetyping{v}{T} $ then $\denote{\id{T}}(v)=v$
+	\item If $ \valuetyping{v}{T_1} $ and
+		$ \casttyping{c}{T_1}{T_2} $ and
+		$ \casttyping{d}{T_2}{T_3} $ 
+		then 
+		$ \denote{\compose{c}{d}}(v) = (\denote{c}(v)\mbind\denote{d})$
+\end{itemize}
+We use the syntax \casttyping{c}{S}{T} to mean $c$ is in the set 
+$\textit{Cast}_{S,T}$.
+\end{definition}
+
+Before moving to the transition relation of \SMachine{C}, let's define two 
+helper functions that manipulate continuations.
+%
+The function $\mathit{mkCont}$ construct a continuation from a pre-continuation 
+by topping the pre-continuation with an identity cast. 
+%
+The function $\mathit{extCont}$ composes $c$ with the cast at the top of $K$ by 
+using the composition operator 
+$\fatsemi$.
+\[
+\begin{array}{rclr}
+\figequalto{\mkCont{k}}{\Kcons{\Fcast{\id{S}}}{k}}{\sidecond{\casttyping{k}{S}{T}}}
+\figequalto{\extCont{c}{\Kcons{\Fcast{d}}{k}}}{
+	\Kcons{\Fcast{(\compose{c}{d})}}{k}
+}{}
+\end{array}
+\]
+
+\begin{figure}
+	\fbox{\reducetoS{C}{s}{s}} Transition
+	\[
+	\begin{array}{rclr}
+	\figreduceto{\sexpr{\evar{x}}{E}{K}}{\scont{E(x)}{K}}{}
+	\figreducetoH{
+		\sexpr{\elam{x}{S}{e}}{E}{K}
+	}{
+		\scont{\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{id(S)}{id(T)}}}{K}
+	}{}
+	& &
+	\highlight{
+	\sidecond{
+		\expressiontyping{\Gamma,S}{e}{T}
+		\text{ and }
+		\Gamma \vdash E}
+	}
+	\\
+	\figreduceto{\sexpr{\eapp{e_1}{e_2}}{E}{K}}{
+		\sexpr{e_1}{E}{\mkCont{\Kcons{\FappXO{e_2}{E}}{K}}}
+	}{}
+	\figreduceto{\sexpr{\etrue}{E}{K}}{\scont{\vtrue}{K}}{}
+	\figreduceto{\sexpr{\efalse}{E}{K}}{\scont{\vfalse}{K}}{}
+	\figreduceto{\sexpr{\eif{e_1}{e_2}{e_3}}{E}{K}}{
+		\sexpr{e_1}{E}{\mkCont{\Kcons{\Fif{e_2}{e_3}{E}}{K}}}
+	}{}
+	\figreduceto{\sexpr{\econs{e_1}{e_2}}{E}{K}}{
+		\sexpr{e_1}{E}{\mkCont{\Kcons{\FconsXO{e_2}{E}}{K}}}
+	}{}
+	\figreduceto{\sexpr{\ecar{e}}{E}{K}}{
+		\sexpr{e}{E}{\mkCont{\Kcons{\Fcar}{K}}}
+	}{}
+	\figreduceto{\sexpr{\ecdr{e}}{E}{K}}{
+		\sexpr{e}{E}{\mkCont{\Kcons{\Fcdr}{K}}}
+	}{}
+	\figreducetoH{
+		\sexpr{\ecast{e}{\ccast{S}{l}{T}}}{E}{K}
+	}{
+		\sexpr{e}{E}{\extCont{\translate{\ccast{S}{l}{T}}}{K}}
+	}{}
+	\figreducetoH{\scont{v}{\Kcons{\Fcast{c}}{k}}}{
+		\denote{c}(v) \; \mbind \; \lambda u. \applyCont{u}{K}
+	}{}
+	\end{array}
+	\]
+	
+	\fbox{$\applyCont{v}{k}=s$}
+	\[
+	\begin{array}{rclr}
+	\figequalto{\applyCont{v_1}{\Kcons{\FappXO{e_2}{E}}{K}}}{\sexpr{e_2}{E}{
+			\mkCont{\Kcons{\FappOX{v_1}}{K}}}
+	}{}
+	\figequaltoH{
+		\applyCont{v}{\Kcons{\FappOX{(\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{c}{d}})}}{K}}
+	}{
+		\denote{c}(v) \mbind \lambda u. \
+		\sexpr{e}{E[x:=u]}{\extCont{d}{K}}
+	}{}
+	\figequalto{\applyCont{\vtrue}{\Kcons{\Fif{e_2}{e_3}{E}}{K}}}{\sexpr{e_2}{E}{K}}{}
+	\figequalto{\applyCont{\vfalse}{\Kcons{\Fif{e_2}{e_3}{E}}{K}}}{\sexpr{e_3}{E}{K}}{}
+	\figequalto{\applyCont{v_1}{\Kcons{\FconsXO{e_2}{E}}{K}}}{
+		\sexpr{e_2}{E}{\mkCont{\Kcons{\FconsOX{v_1}}{K}}}
+	}{}
+	\figequaltoH{\applyCont{v_2}{\Kcons{\FconsOX{v_1}}{K}}}{
+		\scont{\ecast{\vcons{v_1}{v_2}}{\Pprod{\id{T_1}}{\id{T_2}}}}{K}
+	}{}
+	& & 
+	\highlight{\sidecond{
+%		\casttyping{K}{\Pprod{T_1}{T_2}}{T'}
+		\valuetyping{v_1}{T_1}
+		\text{ and }
+		\valuetyping{v_2}{T_2}
+	}}
+	\\
+	\figequaltoH{
+		\applyCont{\ecast{\vcons{v_1}{v_2}}{\Pprod{c_1}{c_2}}}{\Kcons{\Fcar}{K}}
+	}{
+		\denote{c_1}(v_1) \mbind \lambda u.
+		\scont{u}{K}
+	}{}
+	\figequaltoH{
+		\applyCont{\ecast{\vcons{v_1}{v_2}}{\Pprod{c_1}{c_2}}}{\Kcons{\Fcdr}{K}}
+	}{
+		\denote{c_2}(v_2) \mbind \lambda u.
+		\scont{u}{K}
+	}{}
+	\figequalto{\applyCont{v}{\Knil}}{\shalt{v}}{}
+	\end{array}
+	\]
+	
+	\fbox{\evalto{e}{o}} Evaluation
+	\[
+	\inference{
+		\transitivelyreduceto{\sexpr{e}{\emptyset}{\mkCont{\Knil}}}{\shalt{v}}
+	}{
+		\evalto{e}{observe(v)}
+	} \quad
+	\infr{
+		\transitivelyreduceto{\sexpr{e}{\emptyset}{\Knil}}{\error{l}}
+	}{
+		\evalto{e}{\error{l}}}
+	\]
+	\caption{Dynamic semantics of the cast calculi as a 
+	space-efficient CEK	machine, \SMachine{C}. The transitions that involve 
+	casts are highlighted
+		in red.}
+	\label{fig:semachine-dynamics}
+\end{figure}
+
+\figref{fig:semachine-dynamics} defines the transition relation 
+$\reducetoS{C}{s}{s}$. They rely on functions provided 
+by $C$ to work with casts.
+%
+To construct a function, the machine fills the casts with identities.
+%
+When evaluating a cast expression, the machine extends the continuation with 
+cast \translate{\ccast{S}{l}{T}}.
+%
+To return a value to a continuation, the machine first applies the top cast to 
+the value. If the cast application fails, the machine halts with the blame 
+label from the failure. Otherwise, the machine handles the pre-continuation 
+with the function $\applyCont{v}{k}$.
+%
+To apply a function, the machine applies the domain cast $c$ to the 
+argument $v$ and evaluates the function body. The codomain cast $d$ is merged 
+into the continuation with $\textit{extCont}$.
+%
+When the machine constructs a pair, it fills the casts with $id$s, just 
+like how it did for functions. 
+%
+To take out the first part of a pair, the machine applies the first pending 
+cast on the first value and returns the result to the continuation.
+%
+Taking out the second part of a pair is similar.
+
+Reflexive transitive closure of reduction ($\reducetoS{C}{s}{s}$) and
+evaluation ($\evaltoS{C}{e}{o}$) are the same as in \RMachine{B}.
+
+\begin{proposition}[\SMachine{C} is deterministic]
+	\label{prop:SEMachine-deterministic}
+	If $\reducetoS{C}{s}{s_1}$ and $\reducetoS{C}{s}{s_2}$ 
+	then $s_1 = s_2$.
+\end{proposition}
+
+\subsection{Specifying good instances of Cast ADT}
+\label{sec:good-cast-adt}
+
+Ultimately, we want to claim that if a $C$ satisfies a collection of 
+properties, \SMachine{C} would be equivalent to \LDMachine\ or \LUDMachine. 
+Cast ADT has specified the behavior of identities and composition, so the only 
+remaining operator is translation.
+%
+Lazy D Cast ADT (Definition~\ref{def:LazyD-CastADT}) and Lazy UD Cast ADT 
+(Definition~\ref{def:LazyUD-CastADT}) specify the behavior 
+of \translate{\ccast{S}{l}{T}}. Readers are encouraged to compare them with the 
+corresponding $\mathit{applyCast}$ functions 
+(Fig.~\ref{fig:blame-strategy-LazyD} and 
+Fig.~\ref{fig:blame-strategy-LazyUD}).
+
+\begin{definition}[Lazy D Cast ADT]
+	\label{def:LazyD-CastADT}
+	A Cast is a Lazy D Cast if:
+	\begin{enumerate}
+		\item $\denote{\translate{\ccast{\Tdyn}{l}{\Tdyn}}}(v) = v$
+		\item $\denote{\translate{\ccast{P}{l}{\Tdyn}}}(v) = \vdyn{P}{v}$
+		\item $\denote{\translate{\ccast{\Tdyn}{l}{Q}}}(\vdyn{P}{u}) = 
+		\denote{\translate{\ccast{P}{l}{Q}}}(u)$
+		\item $\denote{\translate{\ccast{\Pbool}{l}{\Pbool}}}(v) = v$
+		\item 
+		$\denote{\translate{\ccast{\Pfunc{S_1}{T_1}}{l}{\Pfunc{S_2}{T_2}}}}(
+			\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{c}{d}})$\\
+		$=
+		\ecast{\vfunc{x}{S}{e}{E}}{
+			\Pfunc{
+				(\compose{\translate{\ccast{S_2}{l}{S_1}}}{c})}{
+				(\compose{d}{\translate{\ccast{T_1}{l}{T_2}}})}}$
+		\item 
+		$\denote{\translate{\ccast{\Pprod{S_1}{T_1}}{l}{\Pprod{S_2}{T_2}}}}(
+		\ecast{\vcons{v_1}{v_2}}{\Pprod{c}{d}})$\\
+		$=
+		\ecast{\vcons{v_1}{v_2}}{
+			\Pprod{
+				(\compose{c}{\translate{\ccast{S_1}{l}{S_2}}})}{
+				(\compose{d}{\translate{\ccast{T_1}{l}{T_2}}})}}$
+		\item $\denote{\translate{\ccast{P}{l}{Q}}}(v) = \error{l}$\\
+			if $\notshallowlyconsistent{P}{Q}$
+	\end{enumerate}
+\end{definition}
+
+\begin{definition}[Lazy UD Cast ADT]
+	\label{def:LazyUD-CastADT}
+	A Cast is a Lazy UD Cast if:
+	\begin{enumerate}
+	\item $\denote{\translate{\ccast{\Tdyn}{l}{\Tdyn}}}(v) = v$
+	\item $\denote{\translate{\ccast{G}{l}{\Tdyn}}}(v) = \vdyn{G}{v}$
+	\item $\denote{\translate{\ccast{P}{l}{\Tdyn}}}(v) = 
+		\denote{\translate{\ccast{P}{l}{G}}}(v) \mbind 
+		\denote{\ccast{G}{l}{\Tdyn}}$\\
+		if $G \sim P$ and $G \neq P$	
+	\item $\denote{\translate{\ccast{\Tdyn}{l}{G}}}(\vdyn{G}{u}) = u$
+	\item $\denote{\translate{\ccast{\Tdyn}{l}{H}}}(\vdyn{G}{u}) = \error{l}$\\
+		if $G \neq H$
+	\item $\denote{\translate{\ccast{\Tdyn}{l}{Q}}}(v) = 
+		\denote{\translate{\ccast{\Tdyn}{l}{H}}}(v) \mbind
+		\denote{\translate{\ccast{H}{l}{Q}}}$\\
+		if $H \sim Q$ and $H \neq Q$
+	\item $\denote{\translate{\ccast{\Pbool}{l}{\Pbool}}}(v) = v$
+		\item 
+		$\denote{\translate{\ccast{\Pfunc{S_1}{T_1}}{l}{\Pfunc{S_2}{T_2}}}}(
+		\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{c}{d}})$\\
+		$=
+		\ecast{\vfunc{x}{S}{e}{E}}{
+			\Pfunc{
+				(\compose{\translate{\ccast{S_2}{l}{S_1}}}{c})}{
+				(\compose{d}{\translate{\ccast{T_1}{l}{T_2}}})}}$
+		\item 
+		$\denote{\translate{\ccast{\Pprod{S_1}{T_1}}{l}{\Pprod{S_2}{T_2}}}}(
+		\ecast{\vcons{v_1}{v_2}}{\Pprod{c}{d}})$\\
+		$=
+		\ecast{\vcons{v_1}{v_2}}{
+			\Pprod{
+				(\compose{c}{\translate{\ccast{S_1}{l}{S_2}}})}{
+				(\compose{d}{\translate{\ccast{T_1}{l}{T_2}}})}}$
+		\item $\denote{\translate{\ccast{P}{l}{Q}}}(v) = \error{l}$\\
+			if $\notshallowlyconsistent{P}{Q}$
+	\end{enumerate}
+\end{definition}
+
+\subsection{The Space-efficient CEK Machine is Correct}
+\label{sec:S-correct}
+
+In this section, we prove that if $C$ is a Lazy D Cast ADT then
+\[
+\machineequiv{\LDMachine}{\SMachine{C}}
+\]
+and if $C$ is a Lazy UD Cast ADT then
+\[
+\machineequiv{\LUDMachine}{\SMachine{C}}
+\]
+The proof is done via a weak bisimulation.
+
+
+\begin{figure}
+
+\fbox{\bisimc{\overline{\ccast{S}{l}{T}}}{c}{S}{T}}
+\begin{gather*}
+\infr{}{\bisimc{[]}{id(T)}{T}{T}} \quad
+\infr{}{\bisimc{[\ccast{S}{l}{T}]}{\translate{\ccast{S}{l}{T}}}{S}{T}}
+\\[1ex]
+%\infr{
+%	\bisimc{z_1}{c_1}{T_1}{T_2}\\
+%	\bisimc{z_2}{c_2}{T_2}{T_3}
+%}{
+%	\bisimc{(z_1 + z_2)}{(\compose{c_1}{c_2})}{T_1}{T_n}
+%}
+\infr{
+	\bisimc{
+		(\ccast{T_1}{l_1}{T_2}\ldots\ccast{T_{i-1}}{l_{i-1}}{T_i})
+	}{c_1}{T_1}{T_i}\\
+	\bisimc{
+		(\ccast{T_i}{l_i}{T_{i+1}}\ldots\ccast{T_{n-1}}{l_{n-1}}{T_n})
+	}{c_2}{T_i}{T_n}
+}{
+	\bisimc{
+		(\ccast{T_1}{l_1}{T_{2}}\ldots\ccast{T_{n-1}}{l_{n-1}}{T_n})
+	}{
+		(\compose{c_1}{c_2})
+	}{T_1}{T_n}
+}
+\end{gather*}
+
+\fbox{$\bisimK{K}{K}{S}{T}$}
+\begin{gather*}
+\infr{
+	\bisimK{K}{k'}{S_n}{T} \qquad
+	\bisimc{
+		(\ccast{S_1}{l_1}{S_2} \ldots \ccast{S_{n-1}}{l_{n-1}}{S_n})
+	}{c}{S_1}{S_n}
+}{
+	\bisimK{
+		\Kcons{
+			\Fcast{\ccast{S_1}{l_1}{S_2}}
+		}{\ldots\Kcons{\Fcast{\ccast{S_{n-1}}{l_{n-1}}{S_n}}}{K}}
+	}{
+		\Kcons{\Fcast{c'}}{k'}
+	}{S_1}{T}
+}
+\end{gather*}
+
+\fbox{$\bisimv{v}{v}{T}$}
+\begin{gather*}
+\infr{
+	\expressiontyping{\Gamma,x : S_1}{e}{T_1}
+	\qquad
+	\bisimE{\Gamma}{E}{E'}
+	\\
+	\bisimc{
+		(\ccast{S_n}{l_{n-1}}{S_{n-1}} \ldots
+		\ccast{S_2}{l_1}{S_1})
+	}{c}{S_n}{S_1}
+	\\
+	\bisimc{
+		(		\ccast{T_1}{l_{1}}{T_2} \ldots
+		\ccast{T_{n-1}}{l_{n-1}}{T_n}
+		)	}{d}{T_1}{T_n}
+	\\
+	v = \vfuncc{
+		\vfuncc{
+			\vfunc{x}{S_1}{e}{E}
+		}{S_1}{T_1}{l_1}{S_2}{T_2}
+		\ldots
+	}{S_{n-1}}{T_{n-1}}{l_{n-1}}{S_n}{T_n}
+}{
+	\bisimv{v}{
+		(\ecast{\vfunc{x}{S_1}{e}{E'}}{\Pfunc{c}{d}})
+	}{
+		\Pfunc{S_n}{T_n}}
+}
+\\[1ex]
+\infr{
+	\bisimv{v_1}{v_1'}{S_1} \qquad
+	\bisimv{v_2}{v_2'}{T_1} \\
+	\bisimc{
+		(\ccast{S_1}{l_{1}}{S_2} \ldots
+		\ccast{S_{n-1}}{l_{n-1}}{S_n})
+	}{c}{S_1}{S_n} \\
+	\bisimc{
+		(\ccast{T_1}{l_{1}}{T_2} \ldots
+		\ccast{T_{n-1}}{l_{n-1}}{T_n})
+	}{d}{T_1}{T_n}
+	\\ v = \vconsc{
+		\vconsc{
+			\vcons{v_1}{u_1}
+		}{S_1}{T_1}{l_1}{S_2}{T_2}
+		\ldots
+	}{S_{n-1}}{T_{n-1}}{l_{n-1}}{S_n}{T_n}
+}{
+	\bisimv{
+		v
+	}{
+		(\ecast{\vcons{v_2}{u_2}}{\Pprod{c}{d}})
+	}{
+		\Pprod{S_n}{T_n}}
+}
+\end{gather*}
+	
+\fbox{\bisimE{\Gamma}{E}{E}}
+\begin{gather*}
+\inference{
+}{
+	\bisimE{\emptyset}{\emptyset}{\emptyset}
+}
+\quad
+\inference{
+	\Gamma \vdash E \approx E' \qquad
+	v \approx v' : T
+}{
+	\Gamma , x : T \vdash 
+	E [ x := v' ] \approx E' [ x := v' ]
+}
+\end{gather*}
+
+\fbox{\bisims{s}{s}{T}}
+\begin{gather*}
+\infr{}{\bisims{\error{l}}{\error{l}}{T}} \quad
+\infr{
+	\bisimv{v}{v'}{T}
+}{
+	\bisims{\shalt{v}}{\shalt{v'}}{T}
+}
+\\
+\infr{
+	\bisimv{v}{v'}{S} \\
+	\bisimK{K}{K'}{S}{T}
+}{
+	\bisims{\scont{v}{K}}{\scont{v}{K'}}{T}
+} \quad
+\infr{
+	\expressiontyping{\Gamma}{e}{S} \\
+	\bisimE{\Gamma}{E}{E'}          \\
+	\bisimK{K}{K'}{S}{T}
+}{
+	\bisims{\sexpr{e}{E}{K}}{\sexpr{e}{E'}{K'}}{T}
+}
+\end{gather*}
+
+\caption{Bisimulation between \RBMachine\ and \SMachine{C}. It is the smallest 
+congruence relation containing the shown rules. Everything to the left (resp. 
+right) of the 
+symbol $\approx$ is in \RBMachine\ (resp. \SMachine{C}).}
+\label{fig:bisim-SC-D}
+\end{figure}
+
+Fig.~\ref{fig:bisim-SC-D} defines the bisimulation relation between \RBMachine\ 
+and \SMachine{C}. It is the smallest congruence relation containing the rules 
+in Fig.~\ref{fig:bisim-SC-D}.
+%
+The relation $\bisimc{\overline{\ccast{S}{l}{T}}}{c}{S}{T}$ relates a sequence 
+of cast in \RBMachine\ with one cast in \SMachine{C}. This relation is designed 
+to cover all possibly ways to construct a cast representation. The empty 
+sequence is related to the identity cast. A \RBMachine\ cast is related 
+to its translation. Finally, cast sequencing preserves the bisimulation 
+relation.
+%
+We remark that this bisimulation relation is unusual in that it uses
+some ADT operations in its definition, such as $\id{T}$, 
+$\translate{\ccast{S}{l}{T}}$, and $\compose{c}{c}$, which is necessary because 
+\SMachine{C} and the bisimulation is parameterized over the Cast ADT.
+
+The bisimulation relation is mutually defined on continuations and pre-continuations,
+written 
+$\bisimK{K}{K}{S}{T}$ and $\bisimK{K}{k}{S}{T}$, where $S$ and $T$ are their 
+source and target types respectively, values, written $\bisimv{v}{v}{T}$, 
+where $T$ is their type, and environments, written $\bisimE{\Gamma}{E}{E}$, 
+where $\Gamma$ is their type environment. The bisimulation relation for values 
+is designed to make Lemma~\ref{lem:LazyD-apply-cast-preserve-bisim} and 
+Lemma~\ref{lem:LazyUD-apply-cast-preserve-bisim} (described below) true, that 
+is, if $\bisimv{v}{v'}{S}$
+then
+\[
+\bisimr{
+	\applyCast{v}{\ccast{S}{l}{T}}
+}{
+	\denote{\translate{\ccast{S}{l}{T}}}(v')
+}{T}
+\]
+So if two values of type $I$ are related, injecting them to $\Tdyn$
+gives related values.
+%
+To relate function closures, the domain and codomain casts should be related. 
+Closures in \RMachine{B} are proxied with a sequence of function casts, which 
+can be viewed as two cast sequences in the obvious way.
+%
+The rule for products is similar.
+
+One nice aspect of using abstract machines for this proof is that
+the expressions in the machine are simply related by syntactic equality.
+
+\begin{lemma}[Lazy D $\mathit{applyCast}$ Preserves Bisimulation]
+	\label{lem:LazyD-apply-cast-preserve-bisim}
+	Assume $C$ is a Lazy D Cast ADT,
+	$v$ is a value in \LDMachine,
+	$v'$ is a value in \SMachine{C},
+	and $\bisimv{v}{v'}{S}$
+	\[
+	\bisimr{
+		\applyCast{v}{\ccast{S}{l}{T}}
+	}{
+		\denote{\translate{\ccast{S}{l}{T}}}(v')
+	}{T}
+	\]
+\end{lemma}
+\begin{proof}
+	Case splitting whether $S$ is shallowly consistent with $T$.
+	If yes, case splitting how they are shallowly consistent.
+	Then apply properties of Lazy D Cast when applicable.
+\end{proof}
+
+\begin{lemma}[Lazy UD $\mathit{applyCast}$ Preserves Bisimulation]
+	\label{lem:LazyUD-apply-cast-preserve-bisim}
+	Assume $C$ implements Lazy UD Cast ADT,
+	$v$ is a value in \LUDMachine,
+	$v'$ is a value in \SMachine{C},
+	and $\bisimv{v}{v'}{S}$
+	\[
+	\bisimr{
+		\applyCast{v}{\ccast{S}{l}{T}}
+	}{
+		\denote{\translate{\ccast{S}{l}{T}}}(v')
+	}{T}
+	\]
+\end{lemma}
+\begin{proof}
+	Case splitting whether $S$ is shallowly consistent with $T$.
+	If yes, case splitting how they are shallowly consistent.
+	Then apply properties of Lazy UD Cast when applicable.
+\end{proof}
+%
+%
+%Before moving to the bisimulation proof, let's introduce two lemmas that 
+%manipulate continuations.
+%\begin{lemma}[$\mathit{mkCont}$ Preserves Bisimulation]
+%	If \bisimK{K}{k}{S}{T} then
+%	\[
+%	\bisimK{K}{\mkCont{k}}{S}{T}.
+%	\]
+%\end{lemma}
+%\begin{lemma}[$\mathit{extCont}$ Preserves Bisimulation]
+%	If $\bisimc{
+%		(\ccast{S_1}{l_1}{S_2}\ldots\ccast{S_{n-1}}{l_{n-1}}{S_n})
+%	}{c}{S_1}{S_n}$
+%	and $\bisimK{K}{K'}{S_n}{T}$ then
+%	\[
+%	\bisimK{
+%		\Kcons{
+%			\Fcast{\ccast{S_1}{l_1}{S_2}}
+%		}{\ldots\Kcons{\Fcast{\ccast{S_{n-1}}{l_{n-1}}{S_n}}}{K}}
+%	}{
+%		\extCont{c}{K'}
+%	}{S_1}{T}
+%	\]
+%\end{lemma}
+
+We now come to the main lemmas, the weak bisimulation between
+\RBMachine\ and \SMachine{C}.
+
+\begin{lemma}[Lazy D Weak Bisimulation between \LDMachine\ and \SMachine{C}]
+	\label{lem:weak-bisim-SC-D}
+	Assume $C$ implements Lazy D Cast ADT
+	and $s_1$ is a state in \LDMachine\
+	and $s_1'$ is a state in \SMachine{C}
+	and $\bisims{s_1}{s_1'}{T}$
+	then either
+\begin{enumerate}
+\item $s_1  = \error{l}$
+  and $s_1' = \error{l}$
+  for some $l$, or
+\item $s_1 = \shalt{v}$
+  and $s_1' = \shalt{v'}$
+  and $\bisimv{v}{v'}{T}$
+  for some $v$ and $v'$, or
+\item $\reduceto{s_1}{^{+}s_2}$
+  and $\reduceto{s_1'}{^{+}s_2'}$
+  and $\bisims{s_2}{s_2'}{T}$
+\end{enumerate}
+\end{lemma}
+%\begin{proof}
+%We proceed by case analysis on $\bisims{s_1}{s_1'}{T}$. 
+%\begin{description}
+%\item[Case $\inference{
+%}{
+%	\bisims{\error{l}}{\error{l}}{T}
+%}$]
+%This is case (1).
+%\item[Case $\inference{
+%	\bisimv{v}{v'}{T}
+%}{
+%	\bisims{\shalt{v}}{\shalt{v'}}{T}
+%}$]
+%This is case (2).
+%\item[Case $\inference{
+%	\expressiontyping{\Gamma}{e}{T} \\
+%	\bisimE{\Gamma}{E}{E'} \\
+%	K \approx K' : T
+%}{
+%	\bisims{\sexpr{e}{E}{K}}{\sexpr{e}{E'}{K'}}{T}
+%}$]
+%This is case (3). By case analysis on $e$.
+%\item[Case $\inference{
+%	\bisimv{v}{v'}{S} \\
+%	\bisimK{K}{K'}{S}{T}
+%}{
+%	\bisims{\scont{v}{K}}{\scont{v'}{K'}}{T}
+%}$]
+%This is case (3). By inversion on $\bisimK{K}{K'}{S}{T}$, we have
+%\[
+%\begin{array}{rcl}
+%K  & = &
+%\Kcons{
+%	\Fcast{\ccast{S_1}{l_1}{S_2}}
+%}{\ldots\Kcons{\Fcast{\ccast{S_{n-1}}{l_{n-1}}{S}}}{K_1}} \\
+%K' & = &
+%\Kcons{\Fcast{c'}}{k_1'}
+%\end{array}
+%\]
+%After zero or more transition steps, $\scont{v}{K}$ will either transition to 
+%$\scont{u}{K_1}$ for some $u$ or transition to $\error{l}$ for some $l$ if one 
+%of the cast fail. On the \SMachine{C} side, $\scont{v'}{K'}$ will either 
+%transition to $\applyCont{u'}{k_1'}$ for some $u'$ or transition to 
+%$\error{l'}$ for some $l'$ if the cast fail. Because the sequence of casts in 
+%$K$ bisimulates the cast in $K'$, we can show with  
+%Lemma~\ref{lem:LazyD-apply-cast-preserve-bisim} that either
+%\begin{itemize}
+%	\item all casts succeed and	$\bisimv{u}{u'}{S}$, or
+%	\item both machines transition to error state and $l = l'$
+%\end{itemize}
+%When all casts succeeded, we also have $\bisimK{K_1}{k_1'}{S}{T}$ and need to 
+%show that $\reduceto{\scont{u}{K_1}}{s_2}$ and $\applyCont{u'}{k_1'} = s_2'$ 
+%and $\bisims{s_2}{s_2'}{T}$ for some $s_2$ and $s_2'$.
+%%
+%We proceed by case analysis on $K$. The most interesting cases 
+%are function application and pair projection. Due to space limitation, 
+%we only illustrate the general idea with function applications
+%
+%\begin{description}
+%\item[Subcase $\infr{
+%	\bisimv{v_1}{v_1'}{\Pfunc{S}{T_1}} \qquad
+%	\bisimK{K_2}{K_2'}{T_1}{T}
+%}{
+%	\bisimK{
+%		\Kcons{\FappOX{v_1}}{K_2}
+%	}{
+%		\Kcons{\FappOX{v_1'}}{K_2'}
+%	}{S}{T}
+%}$] By inversion on $\bisimv{v_1}{v_1'}{\Pfunc{S}{T_1}}$ we know the proxies 
+%in $v_1$ bisimulate the proxies in $v_1'$. After a reasoning similar to the 
+%above one that we used to reason about casts in continuations, we know that 
+%either both machines will transition to error states if the input proxies fail 
+%in casting the argument, or both machines will transition to a state 
+%evaluation 
+%the function body.
+%\todo{need to elaborate this part, or just delete it.}
+%\end{description}
+%\end{description}
+%\end{proof}
+
+\begin{lemma}[Lazy UD Weak Bisimulation between \LUDMachine\ and \SMachine{C}]
+	\label{lem:weak-bisim-SC-UD}
+	Assume $C$ implements Lazy UD Cast ADT
+	and $\bisims{s_1}{s_1'}{T}$
+	then either
+	\begin{enumerate}
+		\item $s_1  = \error{l}$
+		and $s_1' = \error{l}$
+		for some $l$, or
+		\item $s_1 = \shalt{v}$
+		and $s_1' = \shalt{v'}$
+		and $\bisimv{v}{v'}{T}$
+		for some $v$ and $v'$, or
+		\item $\reduceto{s_1}{^{+}s_2}$
+		and $\reduceto{s_1'}{^{+}s_2'}$
+		and $\bisims{s_2}{s_2'}{T}$
+	\end{enumerate}
+\end{lemma}
+%\begin{proof}
+%	Similar to Lemma~\ref{lem:weak-bisim-SC-D}.
+%\end{proof}
+
+\begin{theorem}[Correctness of Lazy D \SMachine{C}]
+	\label{thm:SD-equiv}
+	Suppose $C$ is a Lazy D Cast ADT
+	\[
+	\machineequiv{\RBMachine}{\SMachine{C}}
+	\]
+\end{theorem}
+\begin{proof}
+	By the definitions of $\textit{eval}$, we need to show 
+	\[
+	\transitivelyreducetoM{\RMachine{B}}{\sexpr{e}{\emptyset}{\Knil}}{
+		s
+	}
+	\;\text{if and only if}\;
+	\transitivelyreducetoM{\SMachine{C}}{\sexpr{e}{\emptyset}{\mkCont{\Knil}}}{
+		s'
+	}
+	\]
+	where $s$ and $s'$ are bisimuated final states, i.e. of the form 
+	$\shalt{v}$ or $\error{l}$. The initial states are related by the 
+	bisimulation relation, so we can prove this theorem with 
+	Lemma~\ref{lem:weak-bisim-SC-D}.
+\end{proof}
+
+\begin{theorem}[Correctness of Lazy UD \SMachine{C}]
+	\label{thm:SUD-equiv}
+	Suppose $C$ is a Lazy UD Cast ADT
+	\[
+	\machineequiv{\RBMachine}{\SMachine{C}}
+	\]
+\end{theorem}
+\begin{proof}
+	Similar to Theorem~\ref{thm:SD-equiv}.
+\end{proof}
+
+\section{Hypercoercions, a New Cast Representation} \label{sec:hypercoercions}
+
+\begin{figure}
+	Syntax of Hypercoercions
+	\[
+	\begin{array}{lrcl}
+	\stxrule{c}{Hypercoercions}{
+		\hcci           \mid
+		\hccc{h}{m}{t}
+	}
+	\stxrule{h}{Heads}{
+		\hche     \mid
+		\hchp{I}{l}
+	}
+	\stxrule{m}{Middles}{
+		\hcmbool       \mid
+		\hcmfunc{c}{c} \mid
+		\hcmprod{c}{c} \mid
+		\hcmfail{l}    
+	}
+	\stxrule{t}{Tails}{
+		\hcte     \mid
+		\hcti{I}
+	}
+	\end{array}
+	\]
+	
+	\fbox{$\mathit{id}( T ) = c$}
+	\[
+	\begin{array}{rclr}
+	\figequalto{id(\star)}{
+		\hcci
+	}{}
+	\figequalto{id(P)}{
+		\hccc{\hche}{id(P)}{\hcte}
+	}{}
+	\end{array}
+	\]
+	
+	\fbox{$\mathit{id}_m( P ) = m$}
+	\[
+	\begin{array}{rclr}
+	\figequalto{id(\Pbool)}{\hcmbool}{}
+	\figequalto{id(\Pfunc{S}{T})}{
+		\hcmfunc{id(S)}{id(T)}
+	}{}
+	\figequalto{id(\Pprod{S}{T})}{
+		\hcmprod{id(S)}{id(T)}
+	}{}
+	\end{array}
+	\]
+	
+	\fbox{\casttyping{c}{S}{T}} Hypercoercion typing 
+	\begin{gather*}
+	\inference{}{\casttyping{\hcci}{\Tdyn}{\Tdyn}}
+	\quad
+	\inference{
+		\casttyping{h}{S}{P} &
+		\casttyping{m}{P}{Q} &
+		\casttyping{t}{Q}{T}
+	}{
+		\casttyping{\hccc{h}{m}{t}}{S}{T}
+	}
+	\end{gather*}
+	
+	\fbox{\casttyping{h}{T}{P}} Head typing
+	\begin{gather*}
+	\inference{}{\casttyping{\hche}{P}{P}}
+	\quad
+	\inference{}{\casttyping{\hchp{I}{l}}{\Tdyn}{I}}
+	\end{gather*}
+	
+	\fbox{$\casttyping{m}{T}{T}$} Middle typing
+	\begin{gather*}
+	\infr{}{\casttyping{\hcmfail{l}}{P}{Q}} \quad
+	\inference{}{\casttyping{\hcmbool}{\Pbool}{\Pbool}} \\
+	\inference{
+		\casttyping{c}{S_2}{S_1} &
+		\casttyping{d}{T_1}{T_2}
+	}{
+		\casttyping{\hcmfunc{c}{d}}{\Pfunc{S_1}{T_1}}{\Pfunc{S_2}{T_2}}
+	}
+	\quad
+	\inference{
+		\casttyping{c}{S_1}{S_2} &
+		\casttyping{d}{T_1}{T_2}
+	}{
+		\casttyping{\hcmprod{c}{d}}{\Pprod{S_1}{T_1}}{\Pprod{S_2}{T_2}}
+	}
+	\end{gather*}
+	
+	\fbox{\casttyping{t}{P}{T}} Tail typing
+	\begin{gather*}
+	\inference{}{\casttyping{\hcte}{P}{P}} \quad
+	\inference{}{\casttyping{\hcti{I}}{I}{\Tdyn}} \quad
+	\end{gather*}
+	
+	\caption{Definition of hypercoercions}
+	\label{fig:hypercoercion}
+\end{figure}
+
+In this section we present a new cast representation called hypercoercions. It 
+comes with two flavors: Lazy D hypercoercions and Lazy UD one.  The design of 
+hypercoercions is motivated by the observation that a normal coercion has at most three
+parts. Hypercoercions make this structure explicit: a hypercoercion $c$ is
+either \hcci, the identity cast for \Tdyn, or it contains
+three parts: a head, middle, and tail, as defined in
+\figref{fig:hypercoercion}.
+\begin{itemize}
+	\item a head is either a projection or the no-op;
+	\item a middle $m$ involves coercions that preserve a type
+	constructor, i.e., coercions between Boolean, function, and pair, and 
+	failure coercions;
+	\item a tail is either an injection or the no-op.
+\end{itemize}
+
+Subsection~\ref{sec:LazyD-Hypercoercions} implements the \CastADT\ with the \LD\ 
+hypercoercions and proves that \LD\ hypercoercions is a Lazy D Cast ADT. 
+Subsection~\ref{sec:LazyUD-Hypercoercions} does the \LUD\ counterparts.
+Finally, we argue in Subsection~\ref{sec:hypercoercions-compact} that 
+hypercoercions would consume less space than coercions in 
+normal form and hence are more suitable for implementation.
+
+\subsection{\LD\ Hypercoercions}
+\label{sec:LazyD-Hypercoercions}
+
+\begin{figure} %% composition 1
+\[
+\begin{array}{lrcl}
+\stxrule{g}{Gaps}{
+	\gnone           \mid
+	\gsome{S}{l}{T}
+}
+\end{array}
+\]
+
+
+\fbox{$\compose{c}{c} = c$} Composition of \LD\ hypercoercions
+\[
+\begin{array}{rclr}
+\figequalto{\compose{c_1}{c_2}}{\composegap{c_1}{\gnone}{c_2}}{}
+\end{array}
+\]
+
+\fbox{$\composegap{c}{g}{c} = c$}
+\[
+\begin{array}{rcll}
+\figequalto{\composegap{\hcci}{g}{\hcci}}{\hcci}{}
+\figequalto{\composegap{\hcci}{g}{\hccc{h}{m}{t}}}{
+	\hccc{\mkhead{g}{h}}{m}{t}
+}{}
+\figequalto{\composegap{\hccc{h}{m}{t}}{g}{\hcci}}{
+	\hccc{h}{m}{\mktail{t}{g}}
+}{}
+\figequalto{\composegap{\hccc{h_1}{m_1}{t_1}}{g}{\hccc{h_2}{m_2}{t_2}}}{
+	\hccc{h_1}{(\composegap{m_1}{\mkgap{t_1}{g}{h_2}}{m_2})}{t_2}
+}{}
+\end{array}
+\]
+
+\fbox{\mkhead{g}{h}}
+\[
+\begin{array}{rclr}
+\figequalto{\mkhead{g}{\hchp{P}{l}}}{\hchp{P}{l}}{}
+\figequalto{\mkhead{\gsome{\Tdyn}{l}{P}}{\hche}}{\hchp{P}{l}}{}
+%\mathit{mkProj(}
+%& g
+%& ,
+%& \hchp{P}{l}
+%& )=
+%& \hchp{P}{l} \\
+%\mathit{mkProj(}
+%& \gsome{\Tdyn}{l}{P}
+%& ,
+%& \hche
+%& )=
+%& \hchp{P}{l}
+\end{array}
+\]
+%\[
+%\begin{array}{rcll}
+%\figequalto{\mkhead{g}{\hchp{P}{l}}}{\hchp{P}{l}}{}
+%\figequalto{\mkhead{\gsome{\Tdyn}{l}{P}}{\hche}}{\hchp{P}{l}}{}
+%\end{array}
+%\]
+
+\fbox{\mktail{t}{g}}
+\[
+\begin{array}{rcll}
+\figequalto{\mktail{\hcti{P}}{g}}{\hcti{P}}{}
+\figequalto{\mktail{\hcte}{\gsome{P}{l}{\Tdyn}}}{\hcti{P}}{}
+\end{array}
+\]
+
+\fbox{\mkgap{t}{g}{h}}
+\[
+\begin{array}{rcll}
+\figequalto{\mkgap{\hcte}{g}{\hche}}{g}{}
+\figequalto{\mkgap{\hcte}{\gsome{P}{l'}{\Tdyn}}{\hchp{Q}{l}}}{
+	\gsome{P}{l}{Q}
+}{}
+\figequalto{\mkgap{\hcti{P}}{g}{\hchp{Q}{l}}}{
+	\gsome{P}{l}{Q}
+}{}
+\figequalto{\mkgap{\hcti{P}}{\gsome{\Tdyn}{l}{Q}}{\hche}}{
+	\gsome{P}{l}{Q}
+}{}
+\end{array}
+\]
+
+\fbox{$\composegap{m}{g}{m} = m$}
+\[ 
+\begin{array}{rclr}
+\figequalto{\composegap{\hcmfail{l}}{g}{m_2}}{
+	\hcmfail{l}
+}{}
+\figequalto{\composegap{m_1}{\gsome{P}{l}{Q}}{m_2}}{
+	\hcmfail{l}
+}{\sidecond{
+		\notshallowlyconsistent{P}{Q}
+		\text{ and } \forall l. m_1 \neq \hcmfail{l}
+}}
+\figequalto{\composegap{m_1}{g}{\hcmfail{l}}}{
+	\hcmfail{l}
+}{\sidecond{
+		\goodgap{g}
+		\text{ and } \forall l. m_1 \neq \hcmfail{l}}}
+\figequalto{\composegap{\hcmbool}{g}{\hcmbool}}{
+	\hcmbool
+}{}
+\figequalto{
+	\composegap{
+		(\hcmfunc{c_1}{d_1})}{
+		g}{
+		(\hcmfunc{c_2}{d_2})}
+}{
+	\hcmfunc{
+		(\composegap{c_2}{\dom{g}}{c_1})}{
+		(\composegap{d_1}{\cod{g}}{d_2})}
+}{}
+\figequalto{
+	\composegap{
+		(\hcmprod{c_1}{d_1})}{
+		g}{
+		(\hcmprod{c_2}{d_2})}
+}{
+	\hcmprod{
+		(\composegap{c_1}{\car{g}}{c_2})}{
+		(\composegap{d_1}{\cdr{g}}{d_2})}
+}{}
+\end{array}
+\]	
+
+\fbox{$\goodgap{g}$}
+\begin{gather*}
+\infr{}{\goodgap{\gnone}} \quad
+\infr{\shallowlyconsistent{P}{Q}}{\goodgap{\gsome{P}{l}{Q}}}
+\end{gather*}
+
+\fbox{$\dom{g}=g$}
+\[
+\begin{array}{rclr}
+\figequalto{\dom{\gnone}}{\gnone}{}
+\figequalto{\dom{\gsome{\Pfunc{S_1}{T_1}}{l}{\Pfunc{S_2}{T_2}}}}{
+	\gsome{S_2}{l}{S_1}
+}{}
+\end{array}
+\]
+
+\fbox{$\cod{g}=g$}
+\[
+\begin{array}{rclr}
+\figequalto{\cod{\gnone}}{\gnone}{}
+\figequalto{\cod{\gsome{\Pfunc{S_1}{T_1}}{l}{\Pfunc{S_2}{T_2}}}}{
+	\gsome{T_1}{l}{T_2}
+}{}
+\end{array}
+\]
+
+\fbox{$\car{g}=g$}
+\[
+\begin{array}{rclr}
+\figequalto{\car{\gnone}}{\gnone}{}
+\figequalto{\car{\gsome{\Pprod{S_1}{T_1}}{l}{\Pprod{S_2}{T_2}}}}{
+	\gsome{S_1}{l}{S_2}
+}{}
+\end{array}
+\]
+
+\fbox{$\cdr{g}=g$}
+\[
+\begin{array}{rclr}
+\figequalto{\cdr{\gnone}}{\gnone}{}
+\figequalto{\cdr{\gsome{\Pprod{S_1}{T_1}}{l}{\Pprod{S_2}{T_2}}}}{
+	\gsome{T_1}{l}{T_2}
+}{}
+\end{array}
+\]
+
+	\caption{Composition of \LD\ Hypercoercions}
+	\label{fig:LazyD-Hypercoercions-composition}
+\end{figure}
+
+
+\figref{fig:LazyD-Hypercoercions-composition} defines the functions 
+\compose{c}{c} that compose \LD\ hypercoercions. We use these functions to 
+implement the \CastADT.
+
+\todo[inline]{KC: Should we mention KC and Deyaa as citation?
+(something like in private communication with KC and Deyaa)}
+
+The \compose{c}{c} operator is the key to compressing coercions and maintaining 
+space-efficiency. The composition operator for Coercions in Normal Form 
+requires the target type of the first coercion to match the source type of the 
+second. This requirement, however, imposes a considerable difficulty in 
+termination proof of the composition of \LD\ Coercions in Normal Form, reported 
+by Kuang-Chen Lu and Deyaaeldeen Almahallawi. So it is useful to relax this 
+restriction for the \LD\ tracking strategy.
+%
+We shall need optional source cast, written $g$, that range over
+$\gnone$ or $\gsome{S}{l}{T}$, to maintain the gap between the hypercoercions 
+to be composed. The source cast is mandatory when the target
+type of the first hypercoercion does not match the source type of the second. 
+Then we write the composition of hypercoercions as \composegap{c_1}{g}{c_2}.
+%  
+When both $c_1$ and $c_2$ are \hcci, their composition is also \hcci. 
+%
+When the first hypercoercion is the \hcci, the output must start with a 
+projection, in which case we invoke the helper function \textit{mkProj}. In 
+\textit{mkProj}, if the head of $c_2$ is a projection, the result is $c_2$.  
+Otherwise, we need a label to build the projection. Since the head of $c_2$ is 
+the no-op, its source type must be a pretype. Thus we know $g$ must be a 
+source cast and we use it to construct the projection.
+%
+Going back to $\composegap{c}{g}{c}$, when the second hypercoercion is the 
+\hcci, the output must end with an injection, in which case we invoke the 
+helper function \textit{mkInj}.
+%
+Finally, when both inputs are of the form \hccc{h}{m}{t}, we compose the middle 
+with an updated gap.
+%
+The second and third cases of \mkgap{t}{g}{h} is interesting, where we choose 
+the label in projection to be responsible for potential inconsistency.
+
+Another interesting operator is the middle composition \composegap{m}{g}{m}. 
+%
+When the first middle is a failure (\hcmfail{l}), the result is the second
+middle. In all the remaining cases, the first middle is not a failure.
+%
+When the gap is a cast between shallowly inconsistent types (i.e. having 
+different top-most constructors). the output is a failure.
+%
+When the gap is good but the second middle is a failure, the output is the same 
+failure. A gap $g$ is good if and only if there is not $P$ and $l$ 
+and $Q$ such that $g = \gsome{P}{l}{Q}$ and \notshallowlyconsistent{P}{Q}.
+%
+The remaining cases are straightforward recursion.
+
+Agda is able to understand that \composegap{c}{g}{c} is terminating. The reason 
+might be that in \composegap{c}{g}{c} both casts become smaller in recursive 
+calls, although their position is swapped in the function case. Readers who
+hate non-structural recursion might add a Boolean parameter to indicate the order
+of composition.
+
+\begin{figure}
+	\fbox{$\translate{\ccast{S}{l}{T}} = c$} Translation of \LD\ hypercoercions
+	\[
+	\begin{array}{rclr}
+	\figequalto{\translate{\ccast{S}{l}{T}}}{\composegap{id(S)}{(\gsome{S}{l}{T})}{id(T)}}{}
+	\end{array}
+	\]
+	\caption{Translatin of \LD\ Hypercoercions}
+	\label{fig:LazyD-Hypercoercions-translation}
+\end{figure}
+
+The definition of translation \translate{\ccast{S}{l}{T}} is straightforward 
+(\figref{fig:LazyD-Hypercoercions-translation}).
+
+\begin{figure}
+\fbox{$\denote{c}(v)=r$}
+\[
+\begin{array}{rclr}
+\figequalto{\denote{\hcci}(v)}{v}{}
+\figequalto{\denote{\hccc{h}{m}{t}}(v)}{
+	(\denote{h}_h(v) \mbind \denote{m}_m)
+	\mbind \denote{t}_t
+}{}
+\end{array}
+\]
+
+\fbox{$\denote{h}_h(v)=r$}
+\[
+\begin{array}{rclr}
+\figequalto{\denote{\hche}(v)}{v}{}
+\figequalto{\denote{\hchp{Q}{l}}(\vdyn{P}{u})}{
+	\denote{\composegap{\idm{P}}{\gsome{P}{l}{Q}}{\idm{Q}}}_m(u)
+}{}
+\end{array}
+\]
+
+\fbox{$\denote{m}_m(v)=r$}
+\[
+\begin{array}{rclr}
+\figequalto{\denote{\hcmfail{l}}(v)}{\error{l}}{}
+\figequalto{\denote{\hcmbool}(v)}{v}{}
+\figequalto{\denote{\hcmfunc{d_1}{d_2}}(\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{c_1}{c_2}})}{
+	\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{(\compose{d_1}{c_1})}{(\compose{c_2}{d_2})}}
+}{}
+\figequalto{\denote{\hcmprod{d_1}{d_2}}(\ecast{\vcons{v_1}{v_2}}{\Pprod{c_1}{c_2}})}{
+	\ecast{\vcons{v_1}{v_2}}{\Pprod{(\compose{c_1}{d_1})}{(\compose{c_2}{d_2})}}
+}{}
+\end{array}
+\]
+
+\fbox{$\denote{t}_t(v)=r$}
+\[
+\begin{array}{rclr}
+\figequalto{\denote{\hcte}(v)}{v}{}
+\figequalto{\denote{\hcti{P}}(v)}{\vdyn{P}{v}}{}
+\end{array}
+\]
+\caption{Application of \LD\ Hypercoercions}
+\label{fig:LazyD-Hypercoercions-application}
+\end{figure}
+
+Fig.~\ref{fig:LazyD-Hypercoercions-application} defines the cast application 
+function for \LD\ hypercoercions.
+Applying the identity cast for the dynamic type succeeds immediately. 
+Otherwise, we apply head, middle, and tail in sequence. 
+%
+In projection case of head application, a new middle is constructed and applied 
+to the injected value.
+%
+Middle applications raises an error if the middle is a failure and extend value 
+proxies otherwise.
+
+\begin{proposition} Lazy D Hypercoercions implement the Lazy D Cast ADT
+\end{proposition}
+\begin{theorem}[Lazy D Hypercoercions are Correct] Let $H$ be the Lazy D 
+hypercoercions,
+\[\machineequiv{\LDMachine}{\SMachine{H}}\]
+\end{theorem}
+
+
+\subsection{\LUD\ Hypercoercions} \label{sec:LazyUD-Hypercoercions}
+
+Hypercoercions for the \LUD\ blame tracking strategy have the same syntax
+as for \LD\ (\figref{fig:hypercoercion}), but the definitions of $\id{T}$ and
+$\translate{\ccast{S}{l}{T}}$ and $\compose{c}{c}$, differ from \LD. Here 
+composition $\compose{c_1}{c_2}$ makes the usual assumption that the
+target type of $c_1$ matches the source type of $c_2$. 
+%
+The definition of composition for \LUD\ is particularly straightforward.
+The first two lines say that \hcci\ acts as the identity on both the left
+and right.
+The third line handles the case when both hypercoercions have three parts. 
+%
+The first three lines of the middle composition $m \fatsemi t \fatsemi h 
+\fatsemi m$ function match its arguments in sequential order to determine which 
+label to blame. The forth and last line is straightforward recursion.
+
+\todo[inline]{KC: I need a better name for \compatibletailhead{t}{h}}
+
+%The third line handles the case when both the tail of $c_1$
+%and the head of $c_2$ are no-ops, in which case the middles types
+%$m_1$ and $m_2$ are composed via an auxiliary composition
+%operator. This compose operator for middle coercions assumes that its
+%inputs are shallowly consistent.  The fourth line handles the
+%important case when the tail of $c_1$ is an injection and the head of
+%$c_2$ is a projection. If the two middle coercions are shallowly
+%consistent, then they can be composed. If not, the tail of the result
+%is a failure coercion with the projection's label.  The last line
+%handles the case when the tail of $c_1$ is a failure, in which case
+%the result of composition is $c_1$. The definition of $id$ is straightforward.
+
+\begin{figure}
+	\fbox{$c \fatsemi c = c$}
+	\[
+	\begin{array}{rclcl}
+		\hcci          
+		& \fatsemi & d
+		& = & d \\
+		\hccc{h}{m}{t}
+		& \fatsemi & \hcci
+		& = & \hccc{h}{m}{t} \\
+		\hccc{h_1}{m_1}{t_1}
+		& \fatsemi & \hccc{h_2}{m_2}{t_2}
+		& = & \hccc{h_1}{(m_1 \fatsemi t_1 \fatsemi h_2 \fatsemi m_2)}{t_2}
+	\end{array}
+	\]
+
+	\fbox{$m \fatsemi t \fatsemi h \fatsemi m = m$}
+	\[
+	\begin{array}{rccccclclr}
+	\hcmfail{l} 
+	& \fatsemi & t
+	& \fatsemi & h
+	& \fatsemi & m_2
+	& = & \hcmfail{l} \\
+	m_1
+	& \fatsemi & \hcti{G}
+	& \fatsemi & \hchp{H}{l}
+	& \fatsemi & m_2
+	& = & \hcmfail{l}
+	& \sidecond{G \neq H \text{ and } \forall l. m_1 \neq \hcmfail{l}} \\
+	m_1
+	& \fatsemi & t
+	& \fatsemi & h
+	& \fatsemi & \hcmfail{l}
+	& = & \hcmfail{l}
+	& \sidecond{\compatibletailhead{t}{h}
+		\text{ and } \forall l. m_1 \neq \hcmfail{l}} \\
+	m_1
+	& \fatsemi & t
+	& \fatsemi & h
+	& \fatsemi & m_2
+	& = & m_1 \fatsemi m_2
+	& \sidecond{
+		\forall l. m_2 \neq \hcmfail{l}
+		\text{ and } \compatibletailhead{t}{h}
+		\text{ and } \forall l. m_1 \neq \hcmfail{l}} \\
+	\end{array}
+	\]
+	
+	\fbox{$m \fatsemi m = m$}
+	\[
+	\begin{array}{rclcl}
+	\hcmbool
+	& \fatsemi & \hcmbool
+	& = & \hcmbool \\
+	\hcmfunc{c_1}{d_1}
+	& \fatsemi & \hcmfunc{c_2}{d_2}
+	& = & \hcmfunc{c_2 \fatsemi c_1}{d_1 \fatsemi d_2} \\
+	\hcmprod{c_1}{d_1}
+	& \fatsemi & \hcmprod{c_2}{d_2}
+	& = & \hcmprod{c_2 \fatsemi c_1}{d_1 \fatsemi d_2} \\
+	\end{array}
+	\]
+	
+	\fbox{\compatibletailhead{t}{h}}
+	\begin{gather*}
+	\infr{}{\compatibletailhead{\hcte}{\hche}}
+	\quad
+	\infr{}{\compatibletailhead{\hcti{G}}{\hchp{G}{l}}}
+	\end{gather*}
+	
+\caption{\LUD\ Hypercoercions (1): composition}
+\label{fig:LazyUD-Hypercoercions-composition}
+\end{figure}
+
+\begin{figure}
+	\fbox{$\translate{\ccast{S}{l}{T}} = c$}
+	\[
+	\begin{array}{rcll}
+	\figequalto{\translate{\ccast{\Tdyn}{l}{\Tdyn}}}{\hcci}{}
+	\figequalto{\translate{\ccast{\Tdyn}{l}{Q}}}{\castFromDyn{l}{Q}}{}
+	\figequalto{\translate{\ccast{P}{l}{\Tdyn}}}{\castToDyn{P}{l}}{}
+	\figequalto{\translate{\ccast{P}{l}{Q}}}{
+		\hccc{\hche}{\hcmfail{l}}{\hcte}
+	}{\sidecond{\notshallowlyconsistent{P}{Q}}}
+	\figequalto{\translate{\ccast{\Pbool}{l}{\Pbool}}}{
+		\hccc{\hche}{\hcmbool}{\hcte}
+	}{}
+	\figequalto{\translate{\ccast{\Pfunc{S_1}{T_1}}{l}{\Pfunc{S_2}{T_2}}}}{
+		\hccc{\hche}{
+			\hcmfunc{
+				\translate{\ccast{S_2}{l}{S_1}}}{
+				\translate{\ccast{T_1}{l}{T_2}}}
+		}{\hcte}
+	}{}
+	\figequalto{\translate{\ccast{\Pprod{S_1}{T_1}}{l}{\Pprod{S_2}{T_2}}}}{
+		\hccc{\hche}{
+			\hcmprod{
+				\translate{\ccast{S_1}{l}{S_2}}}{
+				\translate{\ccast{T_1}{l}{T_2}}}
+		}{\hcte}
+	}{}
+	\end{array}
+	\]
+	
+	\fbox{$\castFromDyn{Q}{l}$}
+	\[
+	\begin{array}{rcll}
+\figequalto{\castFromDyn{\Tdyn}{l}}{\hcci}{}
+\figequalto{\castFromDyn{\Pbool}{l}}{
+	\hccc{\hchp{\Gbool}{l}}{
+		\hcmbool
+	}{\hcte}
+}{}
+\figequalto{\castFromDyn{\Pfunc{S}{T}}{l}}{
+	\hccc{\hchp{\Gfunc}{l}}{
+		\hcmfunc{\castToDyn{S}{l}}{\castFromDyn{T}{l}}
+	}{\hcte}
+}{}
+\figequalto{\castFromDyn{\Pprod{S}{T}}{l}}{
+	\hccc{\hchp{\Gprod}{l}}{
+		\hcmprod{\castFromDyn{S}{l}}{\castFromDyn{T}{l}}
+	}{\hcte}
+}{}
+	\end{array}
+	\]
+	
+	\fbox{$\castToDyn{Q}{l}$}
+	\[
+	\begin{array}{rcll}
+\figequalto{\castToDyn{\Tdyn}{l}}{\hcci}{}
+\figequalto{\castToDyn{\Pbool}{l}}{
+	\hccc{\hche}{
+		\hcmbool
+	}{\hcti{\Gbool}}
+}{}
+\figequalto{\castToDyn{\Pfunc{S}{T}}{l}}{
+	\hccc{\hche}{
+		\hcmfunc{\castFromDyn{S}{l}}{\castToDyn{T}{l}}
+	}{\hcti{\Gfunc}}
+}{}
+\figequalto{\castToDyn{\Pprod{S}{T}}{l}}{
+	\hccc{\hche}{
+		\hcmprod{\castToDyn{S}{l}}{\castToDyn{T}{l}}
+	}{\hcti{\Gprod}}
+}{}
+	\end{array}
+	\]
+\caption{\LUD\ Hypercoercions (2): translation}
+\label{fig:LazyUD-Hypercoercions-translation}
+\end{figure}
+
+The translation function \translate{\ccast{S}{l}{T}} is defined in 
+\figref{fig:LazyUD-Hypercoercions-translation}.  Prior
+presentations of this function do not use auxiliary functions, as we
+do here. The reason that we introduce the auxiliary functions
+$\mathit{castToDyn}$ and $\mathit{castFromDyn}$, is to ensure that each of them 
+is structurally recursive, which makes them straightforward to define in
+Agda.
+
+\begin{figure}
+	\fbox{$\denote{c}_c(v)=r$}
+	\[
+	\begin{array}{rclr}
+	\figequalto{\denote{\hcci}(v)}{v}{}
+	\figequalto{\denote{\hccc{h}{m}{t}}(v)}{
+		(\denote{h}(v) \mbind \denote{m})
+		\mbind \denote{t}
+	}{}
+	\end{array}
+	\]
+	
+	\fbox{$\denote{h}_h(v)=r$}
+	\[
+	\begin{array}{rclr}
+	\figequalto{\denote{\hche}(v)}{v}{}
+	\figequalto{\denote{\hchp{G}{l}}(\vdyn{G}{u})}{u}{}
+	\figequalto{\denote{\hchp{H}{l}}(\vdyn{G}{u})}{\error{l}}{
+		\sidecond{G \neq H}
+	}
+	\end{array}
+	\]
+	
+	\fbox{$\denote{m}_m(v)=r$}
+	\[
+	\begin{array}{rclr}
+	\figequalto{\denote{\hcmfail{l}}(v)}{\error{l}}{}
+	\figequalto{\denote{\hcmbool}(v)}{v}{}
+	\figequalto{\denote{\hcmfunc{d_1}{d_2}}(\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{c_1}{c_2}})}{
+		\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{(\compose{d_1}{c_1})}{(\compose{c_2}{d_2})}}
+	}{}
+	\figequalto{\denote{\hcmprod{d_1}{d_2}}(\ecast{\vcons{v_1}{v_2}}{\Pprod{c_1}{c_2}})}{
+		\ecast{\vcons{v_1}{v_2}}{\Pprod{(\compose{c_1}{d_1})}{(\compose{c_2}{d_2})}}
+	}{}
+	\end{array}
+	\]
+	
+	\fbox{$\denote{t}_t(v)=r$}
+	\[
+	\begin{array}{rclr}
+	\figequalto{\denote{\hcte}(v)}{v}{}
+	\figequalto{\denote{\hcti{G}}(v)}{\vdyn{G}{v}}{}
+	\end{array}
+	\]
+	\caption{Application of \LUD\ Hypercoercions}
+	\label{fig:LazyUD-Hypercoercions-application}
+\end{figure}
+
+Fig.~\ref{fig:LazyUD-Hypercoercions-application} defines the cast application 
+function for \LUD\ hypercoercions.
+Applying the identity cast for the dynamic type succeeds immediately. 
+Otherwise, we apply head, middle, and tail in sequence. 
+%
+In the two projection cases of head application, the result depends on whether 
+the source ground type ($G$) is the same as the target ($H$).
+%
+Middle applications raises an error if the middle is a failure and extend value 
+proxies otherwise.
+
+\begin{proposition} Lazy UD Hypercoercions implement the Lazy UD Cast ADT
+\end{proposition}
+\begin{theorem}[Lazy UD Hypercoercions are Correct] Let $H$ be the Lazy UD 
+	hypercoercions,
+	\[\machineequiv{\LDMachine}{\SMachine{H}}\]
+\end{theorem}
+
+\subsection{Compact Representation of Hypercoercions} \label{sec:hypercoercions-compact}
+
+Hypercoercions enable a bit-level representation that is particularly
+compact for identity coercions and coercions that project from base
+types or inject to base types.  (Here \Pbool\ is the only base
+type, but in a real language the base types would include integers,
+Booleans, etc.)  We conjecture that such coercions occur more
+frequently than the more complex coercions (e.g. between function
+types), especially because such coercions appear in the leaves of
+complex coercions.
+
+Furthermore, values of base types are often stored in CPU registers, so
+it would be nice for coercions on base types to also fit in registers,
+that is, in 64 bits, so that applying a coercion to a value of base
+type would not require access to main memory, which is an order of
+magnitude slower than accessing registers on a modern CPU.
+%
+Coercions involving non-base types, such as function types, may be
+arbitrarily deep, so in those cases, the hypercoercion representation
+has to be a pointer to a heap-allocated structure.
+
+Here is a sketch for the bit-level representation for hypercoercions.
+
+\begin{itemize}
+\item 1 bit to differentiate between \hcci\ and three-part coercions.
+
+\item 1 bit to differentiate between middle coercions of base type
+versus non-base type.
+
+\item If the middle is a non-base type or bottom ($\hcmfail{l}$), then 61 bits 
+represent a
+pointer to a heap-allocated structure. Heap allocated structures are
+usually 8-byte aligned, so there are 3 unused bits in a pointer.
+
+\item If the middle is of base types, then the remaining 62 bits are
+used to represent the head (51 bits), middle (10 bit), and tail (1
+bit).
+\begin{itemize}
+\item The head requires 1 bit to differentiate between $\hche$
+and $\hchp{P}{l}$ and then 50 bits could be used for the label $l$.
+\item The middle would use 10 bits to differentiate all the base types.
+\item The tail requires 1 bits to differentiate between $\hcte$ and $\hcti{P}$, 
+where $P$ must be equal to the middle type.
+\end{itemize}
+The bits for blame labels represent an index into a table of blame information.
+In the event that a program requires too many blame labels, then the 
+implementation
+can fallback to using the heap-allocated structure for more
+coercions.
+\end{itemize}
+
+\section{Conclusion} \label{sec:conclusion}
+
+We present steps toward the first framework for proving the
+correctness of cast representations.
+%
+The framework includes abstract data types for cast representations
+(Cast ADT and its refinements Lazy D Cast ADT and \LUD\ \CastADT), 
+a parameterized abstract machine \effCEK{C}, 
+a theorem which states that \SMachine{C} is equivalent
+to \LDMachine\ when $C$ is a Lazy D Cast ADT, and
+a theorem which states that \SMachine{C} is equivalent
+to \LUDMachine\ when $C$ is a Lazy UD Cast ADT.
+%
+%The Lazy D Cast ADT refines the Cast ADT. 
+%
+We applied this framework to Lazy UD coercions in normal form,
+Lazy UD threesomes, and hypercoercions and conjecture that
+this framework is also applicable to other cast representations.
+
+We also presented hypercoercions, a cast representation that has a 
+theorem-prover-friendly compose operator and a more compact memory
+representation in comparison with coercions in normal forms.
+
+%
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+% \bibliographystyle{splncs04}
+% \bibliography{mybibliography}
+%
+\bibliographystyle{splncs04}
+\bibliography{bibfile,all-modified}{}
+
+\begin{thebibliography}{8}
+\bibitem{ref_article1}
+Author, F.: Article title. Journal \textbf{2}(5), 99--110 (2016)
+
+\bibitem{ref_lncs1}
+Author, F., Author, S.: Title of a proceedings paper. In: Editor,
+F., Editor, S. (eds.) CONFERENCE 2016, LNCS, vol. 9999, pp. 1--13.
+Springer, Heidelberg (2016). \doi{10.10007/1234567890}
+
+\bibitem{ref_book1}
+Author, F., Author, S., Author, T.: Book title. 2nd edn. Publisher,
+Location (1999)
+
+\bibitem{ref_proc1}
+Author, A.-B.: Contribution title. In: 9th International Proceedings
+on Proceedings, pp. 1--2. Publisher, Location (2010)
+
+\bibitem{ref_url1}
+LNCS Homepage, \url{http://www.springer.com/lncs}. Last accessed 4
+Oct 2017
+\end{thebibliography}
+\end{document}
