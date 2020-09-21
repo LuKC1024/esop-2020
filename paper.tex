@@ -13,7 +13,7 @@
 % \renewcommand\UrlFont{\color{blue}\rmfamily}
 \usepackage{booktabs}   %% For formal tables:
 %% http://ctan.org/pkg/booktabs
-\usepackage{subcaption} %% For complex figures with subfigures/subcaptions
+%\usepackage{subcaption} %% For complex figures with subfigures/subcaptions
 %% http://ctan.org/pkg/subcaption
 \usepackage{xcolor} %% For \color
 \usepackage{todonotes} %% For \todo
@@ -24,7 +24,7 @@
 \usepackage{semantic}
 \usepackage[scaled]{beramono}
 \usepackage[T1]{fontenc}
-\usepackage{natbib} %% For more citation commames (\cite etc.)
+\usepackage[numbers]{natbib} %% For more citation commames (\cite etc.)
 \usepackage{listings} %% For typesetting code
 \newcommand{\lstsetgrift}{
 	\lstset{%
@@ -80,6 +80,7 @@
 \newcommand{\LUDMachine}{\RMachine{\BLUD}}
 \newcommand{\RBMachine}[0]{\RMachine{B}}
 \newcommand{\SMachine}[1]{\ensuremath{\mathcal{S}(#1)}}
+\newcommand{\effCEK}[1]{\ensuremath{\mathcal{S}(#1)}}
 
 % error monad
 \newcommand{\just}[1]{\ensuremath{#1}}
