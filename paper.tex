@@ -207,27 +207,28 @@
 % functions
 \newcommand{\meet}[2]{\ensuremath{#1 \sqcap #2}}
 \newcommand{\denote}[1]{\ensuremath{\llbracket #1 \rrbracket}}
-\newcommand{\proxy}[2]{\ensuremath{\mathit{proxy}(#1,#2)}}
-\newcommand{\applyCast}[2]{\ensuremath{\mathit{applyCast}(#1,#2)}}
-\newcommand{\project}[4]{\ensuremath{\mathit{project}(#1,#2,#3,#4)}}
+\newcommand{\proxy}[2]{\ensuremath{\mathrm{proxy}(#1,#2)}}
+\newcommand{\applyCast}[2]{\ensuremath{\mathrm{applyCast}(#1,#2)}}
+\newcommand{\project}[4]{\ensuremath{\mathrm{project}(#1,#2,#3,#4)}}
 \newcommand{\composegap}[3]{\ensuremath{#1 \fatsemi #2 \fatsemi #3}}
-\newcommand{\mkhead}[2]{\ensuremath{\mathit{mkProj}(#1,#2)}}
-\newcommand{\mktail}[2]{\ensuremath{\mathit{mkInj}(#1,#2)}}
-\newcommand{\mkgap}[3]{\ensuremath{\mathit{mkGap}(#1,#2,#3)}}
+\newcommand{\mkhead}[2]{\ensuremath{\mathrm{mkProj}(#1,#2)}}
+\newcommand{\mktail}[2]{\ensuremath{\mathrm{mkInj}(#1,#2)}}
+\newcommand{\mkgap}[3]{\ensuremath{\mathrm{mkGap}(#1,#2,#3)}}
 \newcommand{\compose}[2]{\ensuremath{#1 \fatsemi #2}}
 \newcommand{\translate}[1]{\ensuremath{\lceil#1\rceil}}
-\newcommand{\castToDyn}[2]{\ensuremath{\mathit{castToDyn}(#1,#2)}}
-\newcommand{\castFromDyn}[2]{\ensuremath{\mathit{castFromDyn}(#1,#2)}}
-\newcommand{\dom}[1]{\ensuremath{\mathit{dom}(#1)}}
-\newcommand{\cod}[1]{\ensuremath{\mathit{cod}(#1)}}
-\newcommand{\car}[1]{\ensuremath{\mathit{car}(#1)}}
-\newcommand{\cdr}[1]{\ensuremath{\mathit{cdr}(#1)}}
-\newcommand{\id}[1]{\ensuremath{\mathit{id}(#1)}}
-\newcommand{\idm}[1]{\ensuremath{\mathit{id}_m(#1)}}
-\newcommand{\idc}[1]{\ensuremath{\mathit{id}_c(#1)}}
-\newcommand{\mkCont}[1]{\ensuremath{\mathit{mkCont}(#1)}}
-\newcommand{\extCont}[2]{\ensuremath{\mathit{extCont}(#1,#2)}}
-\newcommand{\applyCont}[2]{\ensuremath{\langle\langle#1,#2\rangle\rangle}}
+\newcommand{\castToDyn}[2]{\ensuremath{\mathrm{castToDyn}(#1,#2)}}
+\newcommand{\castFromDyn}[2]{\ensuremath{\mathrm{castFromDyn}(#1,#2)}}
+\newcommand{\dom}[1]{\ensuremath{\mathrm{dom}(#1)}}
+\newcommand{\cod}[1]{\ensuremath{\mathrm{cod}(#1)}}
+\newcommand{\car}[1]{\ensuremath{\mathrm{fst}(#1)}}
+\newcommand{\cdr}[1]{\ensuremath{\mathrm{snd}(#1)}}
+\newcommand{\id}[1]{\ensuremath{\mathrm{id}(#1)}}
+\newcommand{\idm}[1]{\ensuremath{\mathrm{id}_m(#1)}}
+\newcommand{\idc}[1]{\ensuremath{\mathrm{id}_c(#1)}}
+\newcommand{\mkCont}[1]{\ensuremath{\mathrm{mkK}(#1)}}
+\newcommand{\extCont}[2]{\ensuremath{\mathrm{extK}(#1,#2)}}
+% \newcommand{\applyCont}[2]{\ensuremath{\langle\langle#1,#2\rangle\rangle}}
+\newcommand{\applyCont}[2]{\ensuremath{\mathrm{applyK}(#1,#2)}}
 
 % other relations
 \newcommand{\tailable}[2]{\ensuremath{\casttyping{!}{#1}{#2}}}
@@ -286,15 +287,16 @@
 % an abbreviated paper title here
 %
 \author{Kuang-Chen Lu\inst{1} \and
-Jeremy G. Siek\inst{1} \and
-Andre Kuhlenschmidt\inst{1}
+Jeremy G. Siek\inst{2} \and
+Andre Kuhlenschmidt\inst{2}
 }
 %
 \authorrunning{F. Author et al.}
 % First names are abbreviated in the running head.
 % If there are more than two authors, 'et al.' is used.
 %
-\institute{Indiana University, Bloomington IN 47405, USA}
+\institute{Brown University, Providence RI 02912, USA \and
+Indiana University, Bloomington IN 47405, USA}
 % \institute{Princeton University, Princeton NJ 08544, USA \and
 % Springer Heidelberg, Tiergartenstr. 17, 69121 Heidelberg, Germany
 % \email{lncs@springer.com}\\
@@ -310,22 +312,23 @@ language to provide the advantages of both typing disciplines. Implementing
 gradual typing with reasonable overhead, however, is not trivial. Casts might 
 accumulate in higher-order values and continuations, thus change the overall 
 space complexity. Several space-efficient cast representations have been 
-proposed, including coercions in normal forms, threesomes, and supercoercions. 
-Drawing an interface between a cast representation and the remaining parts of 
-language implementations would likely help to understand the relation 
-between these cast representations and potentially new ones. We present such an 
-interface, Cast Abstract Data Type. The Cast ADT brings another 
-benefit. Space-efficient cast representations shall be proved not changing the 
-overall behavior of language implementations except saving space. Existing 
-proofs typically go through a whole bisimulation proof between the standard and 
-inefficient semantics and a space-efficient one. If a space-efficient semantics 
-uses the Cast ADT, its behavior would depend solely on the properties of the 
-interface functions. Thus a cast representation is correct if its interface 
-functions work correctly. We present an abstract machine \SMachine{C} that uses 
-Cast ADT to work with casts, a parameterized bisimulation proof, and two 
-subsets of Cast ADT that specify the Lazy D and the Lazy UD blame strategies. We
-also introduce a new cast representation, hypercoercions, that is better than 
-the known cast representations in some aspects.
+proposed, notably coercions in normal forms and threesomes. But they are
+presented in different dynamic semantics, which make it difficult to compare
+the key differences between the cast representations. We present a abstrat
+data type, namely Cast ADT, that captures interface functions a cast representations
+typically includes, and an abstract machine parameterized over Cast ADTs.
+The Cast ADT brings another benefit: space-efficient cast representations 
+shall be proved not changing the 
+overall behavior of language implementations except saving space.
+With our generic abstract machine, these proofs can be done by proving properties
+of a specific Cast ADT, which is simpler than going through a bisimulation proof 
+between a space-efficient dynamic semantics and the definitional dynamic semantics.
+We have successfully applied our new approach of proving the correctness of cast 
+representations to several known cast representations and believe this framework
+is also applicable to other cast representations.
+We also present a new cast representation, hypercoercions, that is more friendly
+to mechanized meta-theory and hypothetically consume less memory than coercions
+in normal forms.
 
 % The abstract should briefly summarize the contents of the paper in
 % 15--250 words.
@@ -343,14 +346,14 @@ dynamic typing and static typing, notably gradual typing
 migratory typing \citep{tobin2006interlanguage}, and multi-language
 interoperability \citep{Gray:2005ij,Matthews:2007zr}.
 
-\todo[inline]{Cite "Contracts for higher-order functions" for the proxy-based approach?}
+\todo[inline]{KC: Cite "Contracts for higher-order functions" for the proxy-based approach maybe?}
 
 Gradual typing \citep{siek2006gradual,siek2015refined} includes both static typing 
 and dynamic typing in the same language, enables smooth transition between them, while
 enforcing type soundness.
 To allow the smooth transition, gradually typed languages are featuerd by a special type
 typically written as \Tdyn\ or \lstinline|Dyn| or \lstinline|Any|, which enables 
-imprecise type annotations. A gradual type checker would allow programmers to cast 
+imprecise type annotations. A gradual type checker allows programmers to cast 
 implicitly between types that have no conflicting type information.
 Researchers usually define the semantics of gradually typed languages by
 translation to an intermediate language with explicit casts, such as the blame
@@ -433,10 +436,12 @@ with which researchers can prove a cast representation is correct by showing its
 implementation of Cast ADT satisfies a bunch of properties. We believe this framework can reduce the burden
  of proving this kind of theorems and help people focusing on the cast representations.
 For illustration, we apply the framework to Lazy UD coercions in normal form
-and Lazy UD threesomes (Chapter~\ref{sec:framework-examples}). 
+and Lazy UD threesomes. 
 We believe the framework is also applicable to other cast representations.
+\todo[inline]{KC: (about the p above) I want to put the illustration part on the same github repo, adding description as
+Agda comments. }
 
-\todo[inline]{Actuallythink twosome's composition is structurally recursive but threesomes' is not}
+\todo[inline]{KC: (about the p below) Actually I think twosome's composition is structurally recursive but threesomes' is not}
 The published cast representations have various strengths and weaknesses.
 The major insight of these systems is a compose operator for casts which compress cast information to
 reduce space consumption.
@@ -452,7 +457,7 @@ than threesomes (with a strange labeled bottom type), and
 supercoercions (10 different kinds).
 
 This paper presents a new cast representation 
-(Section~\ref{chap:hypercoercions}), named
+(Section~\ref{sec:hypercoercions}), named
 \emph{hypercoercions}, that is good for both mechanized metatheory and
 good for implementation. The straightforward Agda translation of composition 
 operator for hypercoercions is able to pass the termination check and 
@@ -502,7 +507,7 @@ To summarize, the primary contributions of this paper are:
 \section{Related Works}
 \label{chap:related-works}
 
-\todo[inline]{how to make citet work?}
+\todo[inline]{KC: how to make \textbackslash citet work?}
 
 \subsubsection{Coercions in normal form}
 
@@ -542,10 +547,10 @@ replaced by other artefacts implementing different dynamic semantics".
 
 \section{Background} \label{sec:background}
 
-In this section, we first review lazy cast calculi (Section~\ref{sec:cast-calculus}), where
-we present an abstract machine that is employed in our framework \ref{sec:framework}. Then
-we review coercions and their normal forms (Section~\ref{sec:coercions-in-normal-form}), which
-motivates and inspires the design of hypercoercions (Section~\ref{sec:hypercoercions}).
+In this section, we first review lazy cast calculi (Subsection~\ref{sec:cast-calculi}), where
+we present an abstract machine that is employed in our framework. Then
+we review coercions and their normal forms (Subsection~\ref{sec:coercions-in-normal-form}), which
+motivates and inspires the design of hypercoercions.
 
 \subsection{Cast Calculi} \label{sec:cast-calculi}
 
@@ -672,13 +677,13 @@ The dynamic semantics of a cast calculus is typically defined with a
 reduction semantics. Here we use a CEK machine
 \citep{felleisen1986control} instead. One reason is that environments are 
 easier 
-to deal with than substitutions in formal proof. Also, a CEK machine is more
+to deal with than substitutions in formal proofs. Also, a CEK machine is more
 convenient to use for the space-efficient semantics in
 \chapref{sec:framework} (recall that a major point of space-efficiency 
 is about compressing continuations and that continuations are part of the CEK 
 machine states). So using a CEK machine for the cast 
-calculi in this section makes it easier to prove the equivalent of these 
-machines. Of course, one should prove that the abstract machine
+calculi in this section makes it easier to prove these machines are equivalent.
+Of course, one should also prove that the abstract machine
 presented here is equivalent to the standard reduction semantics for
 cast calculi, but we have not yet done so.
 
@@ -706,12 +711,13 @@ cast calculi, but we have not yet done so.
 }
 \stxrule{F}{Frames}{
 	\FappXO{e}{E}  \mid
-	\FappOX{v}               \mid
-	\Fcast{\ccast{S}{l}{T}}                \mid
-	\Fcar                    
+	\FappOX{v}     \mid
+	\Fcast{\ccast{S}{l}{T}} \mid
+	\Fif{e}{e}{E}
 }
 \stxrulecont{
-	\Fcdr           \mid
+	\Fcar \mid
+	\Fcdr \mid
 	\FconsXO{e}{E}  \mid
 	\FconsOX{v}
 }
@@ -790,11 +796,11 @@ The transitions involving casts are highlighted in red and described in
 more detail below. The other transitions are standard for a CEK
 machine for an extended simply typed lambda calculus.
 %
-Recall that CEK machines involve two kinds of transitions, (1) those
+Recall that CEK machines involve two kinds of transitions: those
 that dive further into an expression (looking for a redex) and push an
-entry onto the continuation, and (2) those that return a value to the
+entry onto the continuation and those that return a value to the
 current continuation and possibly perform a computation.
-Corresponding to (1) and (2), the machine state is either in an evaluating
+That is, the machine state is either in an evaluating
 $\sexpr{e}{E}{K}$ or returning $\scont{v}{K}$ configuration, 
 respectively. Additionally, there are two halting configurations: \shalt{v} 
 halts with a value, while \error{l} halts with a blame label. 
@@ -817,6 +823,9 @@ for the \LUD\ strategy, only ground types are injectable
 %
 Other kinds of values are either Boolean constants, functions, casted 
 functions, pairs, or casted pairs.
+%
+The \proxy{v}{\ccast{S}{l}{T}} partial function applies the cast to $v$, which must
+have type $S$. This function is handy when we describe the dynamic semantics.
 % In earlier version of this work, 
 % we were tempted to use a generic constructor for all casted value, and use 
 % value typing rules to restrict the cast such that its source and target are 
@@ -936,8 +945,8 @@ first part of the inner pair $u$ and cast it.
 %
 Taking out the second part is similar.
 
-The reflexive transitive closure of reduction (\transitivelyreduceto{s}{s}) 
-and evaluation (${\evalto{e}{o}}$) are standard~\citep{felleisen03:_pllc}.
+The reflexive transitive closure of reduction \transitivelyreduceto{s}{s}
+and evaluation partial function ${\evalto{e}{o}}$ are standard~\citep{felleisen03:_pllc}.
 
 \begin{figure}
 \[
@@ -1025,18 +1034,21 @@ type in which all sub-components are the dynamic type, such as
 	\just{\vdyn{G}{v}} \\
 	\mathit{applyCast}(v, \ccast{P}{l}{\Tdyn}) &=&
 	\just{\vdyn{G}{\proxy{v}{\ccast{P}{l}{G}}}}
-	& \text{if } G \sim P, G \neq P \\  
+	\\ && \text{if } G \sim P, G \neq P \\  
+% 	& \text{if } G \sim P, G \neq P \\  
 	\mathit{applyCast}(\vdyn{G}{u}, \ccast{\Tdyn}{l}{H}) &=&          
 	\project{u}{G}{l}{H}\\
 	\mathit{applyCast}(\vdyn{G}{u}, \ccast{\Tdyn}{l}{Q}) &=&
 	\project{u}{G}{l}{H} \mbind \lambda v. \proxy{v}{\ccast{H}{l}{Q}}
-	& \text{if } H \sim Q, H \neq Q \\
+	\\
+	&& \text{if } H \sim Q, H \neq Q \\
+% 	& \text{if } H \sim Q, H \neq Q \\
 	\mathit{applyCast}(v, \ccast{P}{l}{Q}) &=&
 	\just{\proxy{v}{\ccast{P}{l}{Q}}}
-	& \text{if } P \smile Q \\
+	\\&& \text{if } P \smile Q \\
 	\mathit{applyCast}(v, \ccast{P}{l}{Q}) &=&
 	\error{l}
-	& \text{if } P \not\smile Q
+	\\&& \text{if } P \not\smile Q
 	\end{array}
 	\]
 	
@@ -1147,8 +1159,9 @@ $\hat{c}$!
 In this section we present a framework for proving the 
 correctness of cast representations. The framework includes an abstract data 
 type named Cast ADT, which specifies the operators of cast representations, 
-a CEK machine $\SMachine{C}$, which uses the cast operators implemented by 
-$C$ to work with casts, and theorems relating $\SMachine{C}$ to $\RMachine{B}$.
+a CEK machine $\SMachine{C}$ parameterized over a Cast ADT,
+which uses the cast operators implemented by $C$ to work with casts, 
+and theorems relating $\SMachine{C}$ to $\RMachine{B}$.
 %
 Subsection~\ref{sec:cast-adt-and-space-efficient-cek} describes Cast ADT and the 
 machine \SMachine{C}. We conjecture that the machine \SMachine{C} is 
@@ -1246,10 +1259,11 @@ The framework is written in the Agda language~\citep{norell2008dependently}.
 	\stxrule{F}{Frames}{
 		\FappXO{e}{E}  \mid
 		\FappOX{v}     \mid
-		\Fcar          \mid
-		\Fcdr
+		\Fif{e}{e}{E}
 	}
 	\stxrulecont{
+		\Fcar \mid
+		\Fcdr \mid
 		\FconsXO{e}{E}  \mid
 		\FconsOX{v}
 	}
@@ -1279,44 +1293,42 @@ The framework is written in the Agda language~\citep{norell2008dependently}.
 \end{figure}
 
 \figref{fig:SEMachine-state} defines the syntax of the space-efficient CEK 
-machine (\SMachine{C}). This machine is parameterized over Cast ADT $C$.
-%
-The key differences between \SMachine{C} and the \RMachine{B} machine are the 
-places where casts can accumulate~(\secref{sec:space-efficiency-problem}), that 
-is, values and continuations.
+machine \SMachine{C}.
+The key differences between \SMachine{C} and \RMachine{B} are in the definitions
+of values and continuations, that is, places where casts can accumulate.
 
 Let $u,v$ range over values.
 %
 Recall that in \RMachine{B} we have two value constructors for functions and 
 another two for pairs. That setup allows zero-or-more layers of casts at the 
-top of higher-order values, which might lead to space inefficiency. 
+top of higher-order values, which might consume unbounded space. 
 %
-In \SMachine{C}, we instead have exactly one layer of cast. 
-Thus non-casted values in \RMachine{B} correspond to values 
-in \SMachine{C} where casts are identities ($\mathit{id}(T)$). The 
+\SMachine{C} instead has exactly one layer of cast.
+Thus non-casted values in \RMachine{B} correspond to \SMachine{C} values
+where casts are identities ($\mathit{id}(T)$). The 
 $\mathit{id}$ functions is provided by the Cast ADT.
 
 Let $K$ ranges over continuations and $k$ ranges over pre-continuations.
-%
-Pre-continuations are like the continuations in \RMachine{B}, but their 
-top-most frame must not be a cast frames.
-%
-A continuation is now a pre-continuation prefixed with a cast frame.
-%
-Recall that continuations in \RMachine{B} have zero or more casts at the top.
-In \SMachine{C}, however, every continuation has exactly one cast at the 
-top.
-%
-Continuations in \RMachine{B} that have no casts at the top correspond
-to continuations in \SMachine{C}\ whose casts are identities constructed by 
-$\id{T}$.
-Continuations in \RMachine{B} that have many casts at the top 
-correspond
-to continuations in \SMachine{C}\ where those casts are composed by
+This setup is essentially saying that cast frames and non-cast frames should
+appear alternatively in continuations, and that a continuation always start
+with a cast frame.
+% %
+% Pre-continuations are like the continuations in \RMachine{B}, but their 
+% top-most frame must not be a cast frames.
+% %
+% A continuation is now a pre-continuation prefixed with a cast frame.
+% %
+% Recall that continuations in \RMachine{B} have zero or more casts at the top.
+% In \SMachine{C}, however, every continuation has exactly one cast at the 
+% top.
+% %
+\RMachine{B} continuations that have no casts at the top correspond
+to \SMachine{C} continuations whose casts are identities.
+\RMachine{B} continuations that have many casts at the top correspond
+to \SMachine{C} continuations in where those casts are composed by
 $\compose{c}{c}$, another functions provided by the Cast ADT.
 %
-Injectable types ($I,J$), environments ($\mathcal{E}$), states ($s$), and cast 
-results ($r$) are the same as in \RBMachine.
+Injectable types, environments, states, and cast results are the same as in \RBMachine.
 
 Value typing (\valuetyping{v}{T}), continuation typing 
 (\casttyping{k}{S}{T} and \casttyping{K}{S}{T}), and environment typing 
@@ -1324,15 +1336,17 @@ Value typing (\valuetyping{v}{T}), continuation typing
 They rely on cast typing \casttyping{c}{S}{T}, which shall be provided by the 
 Cast~ADT.
 
+\todo[inline]{KC: I changed some wording in the following definition:
+"a family"; translate a cast ...}
 \begin{definition}[Cast Abstract Data Type (Cast ADT)]
 	\label{def:cast-rep}
-	A cast abstract data type is a set $Cast$, which is indexed by two types, 
+	A cast abstract data type is a family, namely $Cast$, indexed by two types, 
 	with four operators and two properties of operators:
 \begin{itemize}
-	\item $id(T)=c$: create an identity cast
+	\item $\id{T}=c$: create an identity cast
 	\item $\compose{c}{c}=c$: compose casts
-	\item $\translate{\ccast{S}{l}{T}}=c$: translate cast in source 
-		program to runtime casts
+	\item $\translate{\ccast{S}{l}{T}}=c$: translate a cast in source 
+		program to a $\textit{Cast}_{S,T}$
 	\item $\denote{c}(v)=r$: apply a cast to a value
 	\item If $ \valuetyping{v}{T} $ then $\denote{\id{T}}(v)=v$
 	\item If $ \valuetyping{v}{T_1} $ and
@@ -1476,10 +1490,10 @@ $\fatsemi$.
 $\reducetoS{C}{s}{s}$. They rely on functions provided 
 by $C$ to work with casts.
 %
-To construct a function, the machine fills the casts with identities.
+To construct a function value, the machine fills the casts with identities.
 %
 When evaluating a cast expression, the machine extends the continuation with 
-cast \translate{\ccast{S}{l}{T}}.
+\translate{\ccast{S}{l}{T}}.
 %
 To return a value to a continuation, the machine first applies the top cast to 
 the value. If the cast application fails, the machine halts with the blame 
@@ -1488,18 +1502,19 @@ with the function $\applyCont{v}{k}$.
 %
 To apply a function, the machine applies the domain cast $c$ to the 
 argument $v$ and evaluates the function body. The codomain cast $d$ is merged 
-into the continuation with $\textit{extCont}$.
+into the continuation with $\mathrm{extK}$.
 %
-When the machine constructs a pair, it fills the casts with $id$s, just 
-like how it did for functions. 
+When the machine constructs a pair, it fills the casts with identities, just 
+like how it does for function values. 
 %
 To take out the first part of a pair, the machine applies the first pending 
 cast on the first value and returns the result to the continuation.
 %
 Taking out the second part of a pair is similar.
+\todo[inline]{KC: I want to give a brief discussion on inert v.s. active pairs.}
 
-Reflexive transitive closure of reduction ($\reducetoS{C}{s}{s}$) and
-evaluation ($\evaltoS{C}{e}{o}$) are the same as in \RMachine{B}.
+Reflexive transitive closure of reduction $\reducetoS{C}{s}{s}$ and
+the evaluation partial function $\evaltoS{C}{e}{o}$ are the same as in \RMachine{B}.
 
 \begin{proposition}[\SMachine{C} is deterministic]
 	\label{prop:SEMachine-deterministic}
@@ -1507,24 +1522,23 @@ evaluation ($\evaltoS{C}{e}{o}$) are the same as in \RMachine{B}.
 	then $s_1 = s_2$.
 \end{proposition}
 
-\subsection{Specifying good instances of Cast ADT}
-\label{sec:good-cast-adt}
+\subsection{Specifying good instances of Cast ADT} \label{sec:good-cast-adt}
 
-Ultimately, we want to claim that if a $C$ satisfies a collection of 
-properties, \SMachine{C} would be equivalent to \LDMachine\ or \LUDMachine. 
-Cast ADT has specified the behavior of identities and composition, so the only 
+Recall that our goal is to prove that \SMachine{C} would be equivalent to
+\LDMachine\ or \LUDMachine\ when $C$ satisfies some properties.
+Cast ADT has fixed the behavior of identities and composition, so the only 
 remaining operator is translation.
 %
 Lazy D Cast ADT (Definition~\ref{def:LazyD-CastADT}) and Lazy UD Cast ADT 
 (Definition~\ref{def:LazyUD-CastADT}) specify the behavior 
 of \translate{\ccast{S}{l}{T}}. Readers are encouraged to compare them with the 
-corresponding $\mathit{applyCast}$ functions 
+corresponding $\mathrm{applyCast}$ functions 
 (Fig.~\ref{fig:blame-strategy-LazyD} and 
 Fig.~\ref{fig:blame-strategy-LazyUD}).
 
 \begin{definition}[Lazy D Cast ADT]
 	\label{def:LazyD-CastADT}
-	A Cast is a Lazy D Cast if:
+	A Cast ADT is a Lazy D Cast ADT if:
 	\begin{enumerate}
 		\item $\denote{\translate{\ccast{\Tdyn}{l}{\Tdyn}}}(v) = v$
 		\item $\denote{\translate{\ccast{P}{l}{\Tdyn}}}(v) = \vdyn{P}{v}$
@@ -1594,16 +1608,18 @@ Fig.~\ref{fig:blame-strategy-LazyUD}).
 \subsection{The Space-efficient CEK Machine is Correct}
 \label{sec:S-correct}
 
-In this section, we prove that if $C$ is a Lazy D Cast ADT then
+Now we are ready to prove that if $C$ is a Lazy D Cast ADT then
 \[
 \machineequiv{\LDMachine}{\SMachine{C}}
 \]
-and if $C$ is a Lazy UD Cast ADT then
+and that if $C$ is a Lazy UD Cast ADT then
 \[
 \machineequiv{\LUDMachine}{\SMachine{C}}
 \]
-The proof is done via a weak bisimulation.
 
+\todo[inline]{KC: In the latex file, below are two versions of a figure.
+One is the same as in our WGT paper. The other uses Z as the meta variable of sequences of 
+source-code casts, which is similar to the blame-and-coercion paper.}
 
 \begin{figure}
 
@@ -1751,13 +1767,146 @@ The proof is done via a weak bisimulation.
 
 \caption{Bisimulation between \RBMachine\ and \SMachine{C}. It is the smallest 
 congruence relation containing the shown rules. Everything to the left (resp. 
-right) of the 
-symbol $\approx$ is in \RBMachine\ (resp. \SMachine{C}).}
+right) of $\approx$ is in \RBMachine\ (resp. in \SMachine{C}).}
 \label{fig:bisim-SC-D}
 \end{figure}
 
-Fig.~\ref{fig:bisim-SC-D} defines the bisimulation relation between \RBMachine\ 
-and \SMachine{C}. It is the smallest congruence relation containing the rules 
+\begin{figure}
+
+\fbox{\bisimc{Z}{c}{S}{T}}
+\begin{gather*}
+\infr{}{\bisimc{[]}{id(T)}{T}{T}} \quad
+\infr{}{\bisimc{[\ccast{S}{l}{T}]}{\translate{\ccast{S}{l}{T}}}{S}{T}}
+\\[1ex]
+\infr{
+	\bisimc{Z_1}{c_1}{T_1}{T_2}\\
+	\bisimc{Z_2}{c_2}{T_2}{T_3}
+}{
+	\bisimc{(Z_1 \mathrm{++} Z_2)}{(\compose{c_1}{c_2})}{T_1}{T_3}
+}
+\end{gather*}
+
+\fbox{$\bisimK{K}{K}{S}{T}$}
+\begin{gather*}
+\infr{
+	\bisimK{K}{k'}{S_n}{T} \qquad
+	\bisimc{Z}{c}{S_1}{S_n}
+}{
+	\bisimK{
+		\Kcons{\Fcast{Z}}{K}
+	}{
+		\Kcons{\Fcast{c'}}{k'}
+	}{S_1}{T}
+}
+\end{gather*}
+
+\fbox{$\bisimv{v}{v}{T}$}
+\begin{gather*}
+\infr{
+	\expressiontyping{\Gamma,x : S_1}{e}{T_1}
+	\qquad
+	\bisimE{\Gamma}{E}{E'}
+	\\
+	\bisimc{
+		(\ccast{S_n}{l_{n-1}}{S_{n-1}} \ldots
+		\ccast{S_2}{l_1}{S_1})
+	}{c}{S_n}{S_1}
+	\\
+	\bisimc{
+		(		\ccast{T_1}{l_{1}}{T_2} \ldots
+		\ccast{T_{n-1}}{l_{n-1}}{T_n}
+		)	}{d}{T_1}{T_n}
+	\\
+	v = \vfuncc{
+		\vfuncc{
+			\vfunc{x}{S_1}{e}{E}
+		}{S_1}{T_1}{l_1}{S_2}{T_2}
+		\ldots
+	}{S_{n-1}}{T_{n-1}}{l_{n-1}}{S_n}{T_n}
+}{
+	\bisimv{v}{
+		(\ecast{\vfunc{x}{S_1}{e}{E'}}{\Pfunc{c}{d}})
+	}{
+		\Pfunc{S_n}{T_n}}
+}
+\\[1ex]
+\infr{
+	\bisimv{v_1}{v_1'}{S_1} \qquad
+	\bisimv{v_2}{v_2'}{T_1} \\
+	\bisimc{
+		(\ccast{S_1}{l_{1}}{S_2} \ldots
+		\ccast{S_{n-1}}{l_{n-1}}{S_n})
+	}{c}{S_1}{S_n} \\
+	\bisimc{
+		(\ccast{T_1}{l_{1}}{T_2} \ldots
+		\ccast{T_{n-1}}{l_{n-1}}{T_n})
+	}{d}{T_1}{T_n}
+	\\ v = \vconsc{
+		\vconsc{
+			\vcons{v_1}{u_1}
+		}{S_1}{T_1}{l_1}{S_2}{T_2}
+		\ldots
+	}{S_{n-1}}{T_{n-1}}{l_{n-1}}{S_n}{T_n}
+}{
+	\bisimv{
+		v
+	}{
+		(\ecast{\vcons{v_2}{u_2}}{\Pprod{c}{d}})
+	}{
+		\Pprod{S_n}{T_n}}
+}
+\end{gather*}
+	
+\fbox{\bisimE{\Gamma}{E}{E}}
+\begin{gather*}
+\inference{
+}{
+	\bisimE{\emptyset}{\emptyset}{\emptyset}
+}
+\quad
+\inference{
+	\Gamma \vdash E \approx E' \qquad
+	v \approx v' : T
+}{
+	\Gamma , x : T \vdash 
+	E [ x := v' ] \approx E' [ x := v' ]
+}
+\end{gather*}
+
+\fbox{\bisims{s}{s}{T}}
+\begin{gather*}
+\infr{}{\bisims{\error{l}}{\error{l}}{T}} \quad
+\infr{
+	\bisimv{v}{v'}{T}
+}{
+	\bisims{\shalt{v}}{\shalt{v'}}{T}
+}
+\\
+\infr{
+	\bisimv{v}{v'}{S} \\
+	\bisimK{K}{K'}{S}{T}
+}{
+	\bisims{\scont{v}{K}}{\scont{v}{K'}}{T}
+} \quad
+\infr{
+	\expressiontyping{\Gamma}{e}{S} \\
+	\bisimE{\Gamma}{E}{E'}          \\
+	\bisimK{K}{K'}{S}{T}
+}{
+	\bisims{\sexpr{e}{E}{K}}{\sexpr{e}{E'}{K'}}{T}
+}
+\end{gather*}
+
+\caption{Bisimulation between \RBMachine\ and \SMachine{C}. It is the smallest 
+congruence relation containing the shown rules. Everything to the left (resp. 
+right) of $\approx$ is in \RBMachine\ (resp. in \SMachine{C}).}
+\label{fig:bisim-SC-D}
+\end{figure}
+
+
+The central part of the proofs is a weak bisimulation between \RMachine{B} and \SMachine{C}.
+Fig.~\ref{fig:bisim-SC-D} defines the bisimulation relation.
+It is the smallest congruence relation containing the rules 
 in Fig.~\ref{fig:bisim-SC-D}.
 %
 The relation $\bisimc{\overline{\ccast{S}{l}{T}}}{c}{S}{T}$ relates a sequence 
@@ -1801,7 +1950,7 @@ The rule for products is similar.
 One nice aspect of using abstract machines for this proof is that
 the expressions in the machine are simply related by syntactic equality.
 
-\begin{lemma}[Lazy D $\mathit{applyCast}$ Preserves Bisimulation]
+\begin{lemma}[Lazy D $\denote{c}(v)$ Preserves Bisimulation]
 	\label{lem:LazyD-apply-cast-preserve-bisim}
 	Assume $C$ is a Lazy D Cast ADT,
 	$v$ is a value in \LDMachine,
@@ -1821,7 +1970,7 @@ the expressions in the machine are simply related by syntactic equality.
 	Then apply properties of Lazy D Cast when applicable.
 \end{proof}
 
-\begin{lemma}[Lazy UD $\mathit{applyCast}$ Preserves Bisimulation]
+\begin{lemma}[Lazy UD $\denote{c}(v)$ Preserves Bisimulation]
 	\label{lem:LazyUD-apply-cast-preserve-bisim}
 	Assume $C$ implements Lazy UD Cast ADT,
 	$v$ is a value in \LUDMachine,
@@ -1869,127 +2018,150 @@ the expressions in the machine are simply related by syntactic equality.
 We now come to the main lemmas, the weak bisimulation between
 \RBMachine\ and \SMachine{C}.
 
-\begin{lemma}[Lazy D Weak Bisimulation between \LDMachine\ and \SMachine{C}]
-	\label{lem:weak-bisim-SC-D}
-	Assume $C$ implements Lazy D Cast ADT
-	and $s_1$ is a state in \LDMachine\
-	and $s_1'$ is a state in \SMachine{C}
-	and $\bisims{s_1}{s_1'}{T}$
-	then either
+\begin{lemma}[Weak Bisimulation between \RMachine{B} and \SMachine{C}] \label{lem:weak-bisimulation}
+Assume
 \begin{enumerate}
-\item $s_1  = \error{l}$
-  and $s_1' = \error{l}$
-  for some $l$, or
-\item $s_1 = \shalt{v}$
-  and $s_1' = \shalt{v'}$
-  and $\bisimv{v}{v'}{T}$
-  for some $v$ and $v'$, or
+    \item the blame strategy $B$ and $C$ agrees on the set of injectable types and
+    \item $\denote{c}(v)$ preserves the bisimulation relation (e.g. Lemma~\ref{lem:LazyD-apply-cast-preserve-bisim} and \ref{lem:LazyUD-apply-cast-preserve-bisim}) and
+    \item $s_1$ is a state in \RMachine{B} and
+    \item $s_1'$ is a state in \SMachine{C} and
+    \item $\bisims{s_1}{s_1'}{T}$
+\end{enumerate}	then either
+\begin{enumerate}
+\item $s_1  \text{ final}$ and $s_1' \text{ final}$ or
 \item $\reduceto{s_1}{^{+}s_2}$
   and $\reduceto{s_1'}{^{+}s_2'}$
   and $\bisims{s_2}{s_2'}{T}$
 \end{enumerate}
+where
+\begin{gather*}
+\infr{}{(\error{l})\text{ final}} \quad
+\infr{}{(\shalt{v})\text{ final}}
+\end{gather*}
 \end{lemma}
-%\begin{proof}
-%We proceed by case analysis on $\bisims{s_1}{s_1'}{T}$. 
-%\begin{description}
-%\item[Case $\inference{
-%}{
-%	\bisims{\error{l}}{\error{l}}{T}
-%}$]
-%This is case (1).
-%\item[Case $\inference{
-%	\bisimv{v}{v'}{T}
-%}{
-%	\bisims{\shalt{v}}{\shalt{v'}}{T}
-%}$]
-%This is case (2).
-%\item[Case $\inference{
-%	\expressiontyping{\Gamma}{e}{T} \\
-%	\bisimE{\Gamma}{E}{E'} \\
-%	K \approx K' : T
-%}{
-%	\bisims{\sexpr{e}{E}{K}}{\sexpr{e}{E'}{K'}}{T}
-%}$]
-%This is case (3). By case analysis on $e$.
-%\item[Case $\inference{
-%	\bisimv{v}{v'}{S} \\
-%	\bisimK{K}{K'}{S}{T}
-%}{
-%	\bisims{\scont{v}{K}}{\scont{v'}{K'}}{T}
-%}$]
-%This is case (3). By inversion on $\bisimK{K}{K'}{S}{T}$, we have
-%\[
-%\begin{array}{rcl}
-%K  & = &
-%\Kcons{
-%	\Fcast{\ccast{S_1}{l_1}{S_2}}
-%}{\ldots\Kcons{\Fcast{\ccast{S_{n-1}}{l_{n-1}}{S}}}{K_1}} \\
-%K' & = &
-%\Kcons{\Fcast{c'}}{k_1'}
-%\end{array}
-%\]
-%After zero or more transition steps, $\scont{v}{K}$ will either transition to 
-%$\scont{u}{K_1}$ for some $u$ or transition to $\error{l}$ for some $l$ if one 
-%of the cast fail. On the \SMachine{C} side, $\scont{v'}{K'}$ will either 
-%transition to $\applyCont{u'}{k_1'}$ for some $u'$ or transition to 
-%$\error{l'}$ for some $l'$ if the cast fail. Because the sequence of casts in 
-%$K$ bisimulates the cast in $K'$, we can show with  
-%Lemma~\ref{lem:LazyD-apply-cast-preserve-bisim} that either
-%\begin{itemize}
-%	\item all casts succeed and	$\bisimv{u}{u'}{S}$, or
-%	\item both machines transition to error state and $l = l'$
-%\end{itemize}
-%When all casts succeeded, we also have $\bisimK{K_1}{k_1'}{S}{T}$ and need to 
-%show that $\reduceto{\scont{u}{K_1}}{s_2}$ and $\applyCont{u'}{k_1'} = s_2'$ 
-%and $\bisims{s_2}{s_2'}{T}$ for some $s_2$ and $s_2'$.
-%%
-%We proceed by case analysis on $K$. The most interesting cases 
-%are function application and pair projection. Due to space limitation, 
-%we only illustrate the general idea with function applications
-%
-%\begin{description}
-%\item[Subcase $\infr{
-%	\bisimv{v_1}{v_1'}{\Pfunc{S}{T_1}} \qquad
-%	\bisimK{K_2}{K_2'}{T_1}{T}
-%}{
-%	\bisimK{
-%		\Kcons{\FappOX{v_1}}{K_2}
-%	}{
-%		\Kcons{\FappOX{v_1'}}{K_2'}
-%	}{S}{T}
-%}$] By inversion on $\bisimv{v_1}{v_1'}{\Pfunc{S}{T_1}}$ we know the proxies 
-%in $v_1$ bisimulate the proxies in $v_1'$. After a reasoning similar to the 
-%above one that we used to reason about casts in continuations, we know that 
-%either both machines will transition to error states if the input proxies fail 
-%in casting the argument, or both machines will transition to a state 
-%evaluation 
-%the function body.
-%\todo{need to elaborate this part, or just delete it.}
-%\end{description}
-%\end{description}
-%\end{proof}
+\todo[inline]{KC: wouldn't it be great if I can describe the main ideas of the proof?}
 
-\begin{lemma}[Lazy UD Weak Bisimulation between \LUDMachine\ and \SMachine{C}]
-	\label{lem:weak-bisim-SC-UD}
-	Assume $C$ implements Lazy UD Cast ADT
-	and $\bisims{s_1}{s_1'}{T}$
-	then either
-	\begin{enumerate}
-		\item $s_1  = \error{l}$
-		and $s_1' = \error{l}$
-		for some $l$, or
-		\item $s_1 = \shalt{v}$
-		and $s_1' = \shalt{v'}$
-		and $\bisimv{v}{v'}{T}$
-		for some $v$ and $v'$, or
-		\item $\reduceto{s_1}{^{+}s_2}$
-		and $\reduceto{s_1'}{^{+}s_2'}$
-		and $\bisims{s_2}{s_2'}{T}$
-	\end{enumerate}
-\end{lemma}
-%\begin{proof}
-%	Similar to Lemma~\ref{lem:weak-bisim-SC-D}.
-%\end{proof}
+% \begin{lemma}[Lazy D Weak Bisimulation between \LDMachine\ and \SMachine{C}]
+% 	\label{lem:weak-bisim-SC-D}
+% 	Assume $C$ implements Lazy D Cast ADT
+% 	and $s_1$ is a state in \LDMachine\
+% 	and $s_1'$ is a state in \SMachine{C}
+% 	and $\bisims{s_1}{s_1'}{T}$
+% 	then either
+% \begin{enumerate}
+% \item $s_1  = \error{l}$
+%   and $s_1' = \error{l}$
+%   for some $l$, or
+% \item $s_1 = \shalt{v}$
+%   and $s_1' = \shalt{v'}$
+%   and $\bisimv{v}{v'}{T}$
+%   for some $v$ and $v'$, or
+% \item $\reduceto{s_1}{^{+}s_2}$
+%   and $\reduceto{s_1'}{^{+}s_2'}$
+%   and $\bisims{s_2}{s_2'}{T}$
+% \end{enumerate}
+% \end{lemma}
+% %\begin{proof}
+% %We proceed by case analysis on $\bisims{s_1}{s_1'}{T}$. 
+% %\begin{description}
+% %\item[Case $\inference{
+% %}{
+% %	\bisims{\error{l}}{\error{l}}{T}
+% %}$]
+% %This is case (1).
+% %\item[Case $\inference{
+% %	\bisimv{v}{v'}{T}
+% %}{
+% %	\bisims{\shalt{v}}{\shalt{v'}}{T}
+% %}$]
+% %This is case (2).
+% %\item[Case $\inference{
+% %	\expressiontyping{\Gamma}{e}{T} \\
+% %	\bisimE{\Gamma}{E}{E'} \\
+% %	K \approx K' : T
+% %}{
+% %	\bisims{\sexpr{e}{E}{K}}{\sexpr{e}{E'}{K'}}{T}
+% %}$]
+% %This is case (3). By case analysis on $e$.
+% %\item[Case $\inference{
+% %	\bisimv{v}{v'}{S} \\
+% %	\bisimK{K}{K'}{S}{T}
+% %}{
+% %	\bisims{\scont{v}{K}}{\scont{v'}{K'}}{T}
+% %}$]
+% %This is case (3). By inversion on $\bisimK{K}{K'}{S}{T}$, we have
+% %\[
+% %\begin{array}{rcl}
+% %K  & = &
+% %\Kcons{
+% %	\Fcast{\ccast{S_1}{l_1}{S_2}}
+% %}{\ldots\Kcons{\Fcast{\ccast{S_{n-1}}{l_{n-1}}{S}}}{K_1}} \\
+% %K' & = &
+% %\Kcons{\Fcast{c'}}{k_1'}
+% %\end{array}
+% %\]
+% %After zero or more transition steps, $\scont{v}{K}$ will either transition to 
+% %$\scont{u}{K_1}$ for some $u$ or transition to $\error{l}$ for some $l$ if one 
+% %of the cast fail. On the \SMachine{C} side, $\scont{v'}{K'}$ will either 
+% %transition to $\applyCont{u'}{k_1'}$ for some $u'$ or transition to 
+% %$\error{l'}$ for some $l'$ if the cast fail. Because the sequence of casts in 
+% %$K$ bisimulates the cast in $K'$, we can show with  
+% %Lemma~\ref{lem:LazyD-apply-cast-preserve-bisim} that either
+% %\begin{itemize}
+% %	\item all casts succeed and	$\bisimv{u}{u'}{S}$, or
+% %	\item both machines transition to error state and $l = l'$
+% %\end{itemize}
+% %When all casts succeeded, we also have $\bisimK{K_1}{k_1'}{S}{T}$ and need to 
+% %show that $\reduceto{\scont{u}{K_1}}{s_2}$ and $\applyCont{u'}{k_1'} = s_2'$ 
+% %and $\bisims{s_2}{s_2'}{T}$ for some $s_2$ and $s_2'$.
+% %%
+% %We proceed by case analysis on $K$. The most interesting cases 
+% %are function application and pair projection. Due to space limitation, 
+% %we only illustrate the general idea with function applications
+% %
+% %\begin{description}
+% %\item[Subcase $\infr{
+% %	\bisimv{v_1}{v_1'}{\Pfunc{S}{T_1}} \qquad
+% %	\bisimK{K_2}{K_2'}{T_1}{T}
+% %}{
+% %	\bisimK{
+% %		\Kcons{\FappOX{v_1}}{K_2}
+% %	}{
+% %		\Kcons{\FappOX{v_1'}}{K_2'}
+% %	}{S}{T}
+% %}$] By inversion on $\bisimv{v_1}{v_1'}{\Pfunc{S}{T_1}}$ we know the proxies 
+% %in $v_1$ bisimulate the proxies in $v_1'$. After a reasoning similar to the 
+% %above one that we used to reason about casts in continuations, we know that 
+% %either both machines will transition to error states if the input proxies fail 
+% %in casting the argument, or both machines will transition to a state 
+% %evaluation 
+% %the function body.
+% %\todo{need to elaborate this part, or just delete it.}
+% %\end{description}
+% %\end{description}
+% %\end{proof}
+
+% \begin{lemma}[Lazy UD Weak Bisimulation between \LUDMachine\ and \SMachine{C}]
+% 	\label{lem:weak-bisim-SC-UD}
+% 	Assume $C$ implements Lazy UD Cast ADT
+% 	and $\bisims{s_1}{s_1'}{T}$
+% 	then either
+% 	\begin{enumerate}
+% 		\item $s_1  = \error{l}$
+% 		and $s_1' = \error{l}$
+% 		for some $l$, or
+% 		\item $s_1 = \shalt{v}$
+% 		and $s_1' = \shalt{v'}$
+% 		and $\bisimv{v}{v'}{T}$
+% 		for some $v$ and $v'$, or
+% 		\item $\reduceto{s_1}{^{+}s_2}$
+% 		and $\reduceto{s_1'}{^{+}s_2'}$
+% 		and $\bisims{s_2}{s_2'}{T}$
+% 	\end{enumerate}
+% \end{lemma}
+% \begin{proof}
+% 	Similar to Lemma~\ref{lem:weak-bisim-SC-D}.
+% \end{proof}
 
 \begin{theorem}[Correctness of Lazy D \SMachine{C}]
 	\label{thm:SD-equiv}
@@ -1998,22 +2170,22 @@ We now come to the main lemmas, the weak bisimulation between
 	\machineequiv{\RBMachine}{\SMachine{C}}
 	\]
 \end{theorem}
-\begin{proof}
-	By the definitions of $\textit{eval}$, we need to show 
-	\[
-	\transitivelyreducetoM{\RMachine{B}}{\sexpr{e}{\emptyset}{\Knil}}{
-		s
-	}
-	\;\text{if and only if}\;
-	\transitivelyreducetoM{\SMachine{C}}{\sexpr{e}{\emptyset}{\mkCont{\Knil}}}{
-		s'
-	}
-	\]
-	where $s$ and $s'$ are bisimuated final states, i.e. of the form 
-	$\shalt{v}$ or $\error{l}$. The initial states are related by the 
-	bisimulation relation, so we can prove this theorem with 
-	Lemma~\ref{lem:weak-bisim-SC-D}.
-\end{proof}
+% \begin{proof}
+% 	By the definitions of $\textit{eval}$, we need to show 
+% 	\[
+% 	\transitivelyreducetoM{\RMachine{B}}{\sexpr{e}{\emptyset}{\Knil}}{
+% 		s
+% 	}
+% 	\;\text{if and only if}\;
+% 	\transitivelyreducetoM{\SMachine{C}}{\sexpr{e}{\emptyset}{\mkCont{\Knil}}}{
+% 		s'
+% 	}
+% 	\]
+% 	where $s$ and $s'$ are bisimuated final states, i.e. of the form 
+% 	$\shalt{v}$ or $\error{l}$. The initial states are related by the 
+% 	bisimulation relation, so we can prove this theorem with 
+% 	Lemma~\ref{lem:weak-bisim-SC-D}.
+% \end{proof}
 
 \begin{theorem}[Correctness of Lazy UD \SMachine{C}]
 	\label{thm:SUD-equiv}
@@ -2022,9 +2194,9 @@ We now come to the main lemmas, the weak bisimulation between
 	\machineequiv{\RBMachine}{\SMachine{C}}
 	\]
 \end{theorem}
-\begin{proof}
-	Similar to Theorem~\ref{thm:SD-equiv}.
-\end{proof}
+% \begin{proof}
+% 	Similar to Theorem~\ref{thm:SD-equiv}.
+% \end{proof}
 
 \section{Hypercoercions, a New Cast Representation} \label{sec:hypercoercions}
 
@@ -2334,7 +2506,7 @@ normal form and hence are more suitable for implementation.
 \compose{c}{c} that compose \LD\ hypercoercions. We use these functions to 
 implement the \CastADT.
 
-\todo[inline]{KC: Should we mention KC and Deyaa as citation?
+\todo[inline]{KC: (About the following paragraph) Should we mention KC and Deyaa as citation?
 (something like in private communication with KC and Deyaa)}
 
 The \compose{c}{c} operator is the key to compressing coercions and maintaining 
@@ -2785,7 +2957,7 @@ correctness of cast representations.
 %
 The framework includes abstract data types for cast representations
 (Cast ADT and its refinements Lazy D Cast ADT and \LUD\ \CastADT), 
-a parameterized abstract machine \effCEK{C}, 
+a parameterized abstract machine \SMachine{C}, 
 a theorem which states that \SMachine{C} is equivalent
 to \LDMachine\ when $C$ is a Lazy D Cast ADT, and
 a theorem which states that \SMachine{C} is equivalent
@@ -2813,25 +2985,4 @@ representation in comparison with coercions in normal forms.
 \bibliographystyle{splncs04}
 \bibliography{bibfile,all-modified}{}
 
-\begin{thebibliography}{8}
-\bibitem{ref_article1}
-Author, F.: Article title. Journal \textbf{2}(5), 99--110 (2016)
-
-\bibitem{ref_lncs1}
-Author, F., Author, S.: Title of a proceedings paper. In: Editor,
-F., Editor, S. (eds.) CONFERENCE 2016, LNCS, vol. 9999, pp. 1--13.
-Springer, Heidelberg (2016). \doi{10.10007/1234567890}
-
-\bibitem{ref_book1}
-Author, F., Author, S., Author, T.: Book title. 2nd edn. Publisher,
-Location (1999)
-
-\bibitem{ref_proc1}
-Author, A.-B.: Contribution title. In: 9th International Proceedings
-on Proceedings, pp. 1--2. Publisher, Location (2010)
-
-\bibitem{ref_url1}
-LNCS Homepage, \url{http://www.springer.com/lncs}. Last accessed 4
-Oct 2017
-\end{thebibliography}
 \end{document}
