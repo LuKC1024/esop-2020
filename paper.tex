@@ -1,5 +1,3 @@
-% This is samplepaper.tex, a sample chapter demonstrating the
-% LLNCS macro package for Springer Computer Science proceedings;
 % Version 2.20 of 2017/10/04
 %
 \documentclass[runningheads]{llncs}
@@ -108,8 +106,8 @@
 \newcommand{\efalse}[0]{\mathtt{false}}
 \newcommand{\eif}[3]{\mathtt{if}\;#1\;#2\;#3}
 \newcommand{\econs}[2]{\mathtt{cons} \; #1 \; #2}
-\newcommand{\ecar}[1]{\mathtt{car} \; #1}
-\newcommand{\ecdr}[1]{\mathtt{cdr} \; #1}
+\newcommand{\efst}[1]{\mathtt{fst} \; #1}
+\newcommand{\esnd}[1]{\mathtt{snd} \; #1}
 %\newcommand{\ecast}[2]{#1 \langle #2 \rangle}
 \newcommand{\ecast}[2]{\ensuremath{#1 : #2}}
 
@@ -158,8 +156,8 @@
 \newcommand{\Fif}[3]{\eif{\square}{\closure{#1}{#3}}{\closure{#2}{#3}}}
 \newcommand{\FconsXO}[2]{\econs{\square}{\closure{#1}{#2}}}
 \newcommand{\FconsOX}[1]{\econs{#1}{\square}}
-\newcommand{\Fcar}[0]{\ecar{\square}}
-\newcommand{\Fcdr}[0]{\ecdr{\square}}
+\newcommand{\Ffst}[0]{\efst{\square}}
+\newcommand{\Fsnd}[0]{\esnd{\square}}
 \newcommand{\Fcast}[1]{\ecast{\square}{#1}}
 
 % threesomes
@@ -220,8 +218,8 @@
 \newcommand{\castFromDyn}[2]{\ensuremath{\mathrm{castFromDyn}(#1,#2)}}
 \newcommand{\dom}[1]{\ensuremath{\mathrm{dom}(#1)}}
 \newcommand{\cod}[1]{\ensuremath{\mathrm{cod}(#1)}}
-\newcommand{\car}[1]{\ensuremath{\mathrm{fst}(#1)}}
-\newcommand{\cdr}[1]{\ensuremath{\mathrm{snd}(#1)}}
+\newcommand{\fst}[1]{\ensuremath{\mathrm{fst}(#1)}}
+\newcommand{\snd}[1]{\ensuremath{\mathrm{snd}(#1)}}
 \newcommand{\id}[1]{\ensuremath{\mathrm{id}(#1)}}
 \newcommand{\idm}[1]{\ensuremath{\mathrm{id}_m(#1)}}
 \newcommand{\idc}[1]{\ensuremath{\mathrm{id}_c(#1)}}
@@ -549,7 +547,7 @@ replaced by other artefacts implementing different dynamic semantics".
 
 In this section, we first review lazy cast calculi (Subsection~\ref{sec:cast-calculi}), where
 we present an abstract machine that is employed in our framework. Then
-we review coercions and their normal forms (Subsection~\ref{sec:coercions-in-normal-form}), which
+we review coercions and their normal forms (Subsection~\ref{sec:coercions}), which
 motivates and inspires the design of hypercoercions.
 
 \subsection{Cast Calculi} \label{sec:cast-calculi}
@@ -558,7 +556,7 @@ motivates and inspires the design of hypercoercions.
 Syntax
 \[
 \begin{array}{lrcl}
-\text{Blame Labels} & l \\
+\text{Blame Labels} & l,\bar{l} \\
 \text{Variables} & x,y,z \\
 \stxrule{S,T}{Types}{
 	\Tdyn \mid{}
@@ -579,8 +577,8 @@ Syntax
 	\elam{x}{S}{e}  \mid
 	\eapp{e}{e}     \mid
 	\econs{e}{e}  \mid
-	\ecar{e}      \mid
-	\ecdr{e}
+	\efst{e}      \mid
+	\esnd{e}
 }
 \stxrulecont{
 	\ecast{e}{\ccast{S}{l}{T}}  \mid
@@ -658,8 +656,9 @@ The syntax and static semantics are the same for the \LD\ and
 \LUD\ cast calculi. They are reviewed in \figref{fig:statics}.
 As usual, the important features are the cast expressions,
 $\ecast{e}{\ccast{S}{l}{T}}$, which are responsible for runtime type
-checking. Polarities of blame labels is not treated but are straightforward to 
-incorporate. The syntax and static semantics is the same as that of 
+checking. Blame labels can be positive (blaming the expression inside the cast)
+or negative (blaming the context outside the cast), as in \cite{Wadler:2009qv,Siek:2015ab}.
+The syntax and static semantics is the same as that of 
 \citep{siek2009exploring} except for a few minor exceptions:
 
 \begin{itemize}
@@ -716,8 +715,8 @@ cast calculi, but we have not yet done so.
 	\Fif{e}{e}{E}
 }
 \stxrulecont{
-	\Fcar \mid
-	\Fcdr \mid
+	\Ffst \mid
+	\Fsnd \mid
 	\FconsXO{e}{E}  \mid
 	\FconsOX{v}
 }
@@ -859,8 +858,8 @@ the symbol \mbind as the monad bind operator, which is defined as follows:
 	\figreduceto{\sexpr{\econs{e_1}{e_2}}{E}{K}}{
 		\sexpr{e_1}{E}{\Kcons{\FconsXO{e_2}{E}}{K}}
 	}{}
-	\figreduceto{\sexpr{\ecar{e}}{E}{K}}{\sexpr{e}{E}{\Kcons{\Fcar}{K}}}{}
-	\figreduceto{\sexpr{\ecdr{e}}{E}{K}}{\sexpr{e}{E}{\Kcons{\Fcdr}{K}}}{}
+	\figreduceto{\sexpr{\efst{e}}{E}{K}}{\sexpr{e}{E}{\Kcons{\Ffst}{K}}}{}
+	\figreduceto{\sexpr{\esnd{e}}{E}{K}}{\sexpr{e}{E}{\Kcons{\Fsnd}{K}}}{}
 	\figreducetoH{
 		\sexpr{\ecast{e}{\ccast{S}{l}{T}}}{E}{K}
 	}{
@@ -877,7 +876,7 @@ the symbol \mbind as the monad bind operator, which is defined as follows:
 	}{}
 	\figreducetoH{\scont{v}{\Kcons{\FappOX{(\vfuncc{u}{S_1}{T_1}{l}{S_2}{T_2})}}{K}}}{
 		\scont{v}{
-			\Kcons{\Fcast{\ccast{S_2}{l}{S_1}}}{
+			\Kcons{\Fcast{\ccast{S_2}{\bar{l}}{S_1}}}{
 				\Kcons{\FappOX{u}}{
 					\Kcons{\Fcast{\ccast{T_1}{l}{T_2}}}{K}}}}
 	}{}
@@ -889,16 +888,16 @@ the symbol \mbind as the monad bind operator, which is defined as follows:
 	\figreduceto{\scont{v_2}{\Kcons{\FconsOX{v_1}}{K}}}{
 		\scont{\vcons{v_1}{v_2}}{K}
 	}{}
-	\figreduceto{\scont{\vcons{v_1}{v_2}}{\Kcons{\Fcar}{K}}}{\scont{v_1}{K}}{}
-	\figreducetoH{\scont{\vconsc{u}{S_1}{T_1}{l}{S_2}{T_2}}{\Kcons{\Fcar}{K}}}{
+	\figreduceto{\scont{\vcons{v_1}{v_2}}{\Kcons{\Ffst}{K}}}{\scont{v_1}{K}}{}
+	\figreducetoH{\scont{\vconsc{u}{S_1}{T_1}{l}{S_2}{T_2}}{\Kcons{\Ffst}{K}}}{
 		\scont{u}{
-			\Kcons{\Fcar}{
+			\Kcons{\Ffst}{
 				\Kcons{\Fcast{\ccast{S_1}{l}{S_2}}}{K}}}	
 	}{}
-	\figreduceto{\scont{\vcons{v_1}{v_2}}{\Kcons{\Fcdr}{K}}}{\scont{v_2}{K}}{}
-	\figreducetoH{\scont{\vconsc{u}{S_1}{T_1}{l}{S_2}{T_2}}{\Kcons{\Fcdr}{K}}}{
+	\figreduceto{\scont{\vcons{v_1}{v_2}}{\Kcons{\Fsnd}{K}}}{\scont{v_2}{K}}{}
+	\figreducetoH{\scont{\vconsc{u}{S_1}{T_1}{l}{S_2}{T_2}}{\Kcons{\Fsnd}{K}}}{
 		\scont{u}{
-			\Kcons{\Fcdr}{
+			\Kcons{\Fsnd}{
 				\Kcons{\Fcast{\ccast{T_1}{l}{T_2}}}{K}}}	
 	}{}
 	\figreduceto{\scont{v}{\Knil}}{\shalt{v}}{}
@@ -1073,7 +1072,7 @@ calculus of \citep{siek2009exploring}.
 \end{proposition}
 
 \subsection{Coercions and Normal Forms} 
-\label{sec:coercion-calculus}
+\label{sec:coercions}
 
 In this section, we review the
 coercions~\citep{henglein1994dynamic,herman2010space} and the normal form of
@@ -1087,11 +1086,8 @@ to familiarize themselves with \citet{siek2012interpretations} and
 \begin{figure}
 	\[
 	\begin{array}{lrcl}
-	\stxrule{I,J}{Injectable types (\LD)}{
-		\Pfunc{T}{T} \mid \Pbool}
-	\stxrule{I,J}{Injectable types (\LUD)}{
-		\Pfunc{\Tdyn}{\Tdyn} \mid \Pbool
-	}
+	\stxrule{I,J}{Injectable types (\LD)}{P}
+	\stxrule{I,J}{Injectable types (\LUD)}{G}
 	\stxrule{c,d}{Coercions}{
 		\cnfid{T}       \mid
 		\cnffunc{c}{d}  \mid
@@ -1130,7 +1126,7 @@ To review, an injection $\cnfinj{I}$ takes a value from an injectable type
 $I$ to type $\Tdyn$. An injectable type is simply a type that can be
 cast directly to and from $\Tdyn$. The
 definition of injectable types depends on the blame strategy, as in 
-Chapter~\ref{chap:background}.
+Subsection~\ref{sec:cast-calculi}.
 %
 A projection $I?^l$ takes a value from type $\Tdyn$ to type $I$, or
 halts the program and blames $l$ if the value is inconsistent with 
@@ -1262,8 +1258,8 @@ The framework is written in the Agda language~\citep{norell2008dependently}.
 		\Fif{e}{e}{E}
 	}
 	\stxrulecont{
-		\Fcar \mid
-		\Fcdr \mid
+		\Ffst \mid
+		\Fsnd \mid
 		\FconsXO{e}{E}  \mid
 		\FconsOX{v}
 	}
@@ -1406,11 +1402,11 @@ $\fatsemi$.
 	\figreduceto{\sexpr{\econs{e_1}{e_2}}{E}{K}}{
 		\sexpr{e_1}{E}{\mkCont{\Kcons{\FconsXO{e_2}{E}}{K}}}
 	}{}
-	\figreduceto{\sexpr{\ecar{e}}{E}{K}}{
-		\sexpr{e}{E}{\mkCont{\Kcons{\Fcar}{K}}}
+	\figreduceto{\sexpr{\efst{e}}{E}{K}}{
+		\sexpr{e}{E}{\mkCont{\Kcons{\Ffst}{K}}}
 	}{}
-	\figreduceto{\sexpr{\ecdr{e}}{E}{K}}{
-		\sexpr{e}{E}{\mkCont{\Kcons{\Fcdr}{K}}}
+	\figreduceto{\sexpr{\esnd{e}}{E}{K}}{
+		\sexpr{e}{E}{\mkCont{\Kcons{\Fsnd}{K}}}
 	}{}
 	\figreducetoH{
 		\sexpr{\ecast{e}{\ccast{S}{l}{T}}}{E}{K}
@@ -1452,13 +1448,13 @@ $\fatsemi$.
 	}}
 	\\
 	\figequaltoH{
-		\applyCont{\ecast{\vcons{v_1}{v_2}}{\Pprod{c_1}{c_2}}}{\Kcons{\Fcar}{K}}
+		\applyCont{\ecast{\vcons{v_1}{v_2}}{\Pprod{c_1}{c_2}}}{\Kcons{\Ffst}{K}}
 	}{
 		\denote{c_1}(v_1) \mbind \lambda u.
 		\scont{u}{K}
 	}{}
 	\figequaltoH{
-		\applyCont{\ecast{\vcons{v_1}{v_2}}{\Pprod{c_1}{c_2}}}{\Kcons{\Fcdr}{K}}
+		\applyCont{\ecast{\vcons{v_1}{v_2}}{\Pprod{c_1}{c_2}}}{\Kcons{\Fsnd}{K}}
 	}{
 		\denote{c_2}(v_2) \mbind \lambda u.
 		\scont{u}{K}
@@ -1551,7 +1547,7 @@ Fig.~\ref{fig:blame-strategy-LazyUD}).
 		$=
 		\ecast{\vfunc{x}{S}{e}{E}}{
 			\Pfunc{
-				(\compose{\translate{\ccast{S_2}{l}{S_1}}}{c})}{
+				(\compose{\translate{\ccast{S_2}{\bar{l}}{S_1}}}{c})}{
 				(\compose{d}{\translate{\ccast{T_1}{l}{T_2}}})}}$
 		\item 
 		$\denote{\translate{\ccast{\Pprod{S_1}{T_1}}{l}{\Pprod{S_2}{T_2}}}}(
@@ -1590,7 +1586,7 @@ Fig.~\ref{fig:blame-strategy-LazyUD}).
 		$=
 		\ecast{\vfunc{x}{S}{e}{E}}{
 			\Pfunc{
-				(\compose{\translate{\ccast{S_2}{l}{S_1}}}{c})}{
+				(\compose{\translate{\ccast{S_2}{\bar{l}}{S_1}}}{c})}{
 				(\compose{d}{\translate{\ccast{T_1}{l}{T_2}}})}}$
 		\item 
 		$\denote{\translate{\ccast{\Pprod{S_1}{T_1}}{l}{\Pprod{S_2}{T_2}}}}(
@@ -1808,8 +1804,8 @@ right) of $\approx$ is in \RBMachine\ (resp. in \SMachine{C}).}
 	\bisimE{\Gamma}{E}{E'}
 	\\
 	\bisimc{
-		(\ccast{S_n}{l_{n-1}}{S_{n-1}} \ldots
-		\ccast{S_2}{l_1}{S_1})
+		(\ccast{S_n}{\bar{l}_{n-1}}{S_{n-1}} \ldots
+		\ccast{S_2}{\bar{l}_1}{S_1})
 	}{c}{S_n}{S_1}
 	\\
 	\bisimc{
@@ -2445,8 +2441,8 @@ normal form and hence are more suitable for implementation.
 		(\hcmprod{c_2}{d_2})}
 }{
 	\hcmprod{
-		(\composegap{c_1}{\car{g}}{c_2})}{
-		(\composegap{d_1}{\cdr{g}}{d_2})}
+		(\composegap{c_1}{\fst{g}}{c_2})}{
+		(\composegap{d_1}{\snd{g}}{d_2})}
 }{}
 \end{array}
 \]	
@@ -2477,21 +2473,21 @@ normal form and hence are more suitable for implementation.
 \end{array}
 \]
 
-\fbox{$\car{g}=g$}
+\fbox{$\fst{g}=g$}
 \[
 \begin{array}{rclr}
-\figequalto{\car{\gnone}}{\gnone}{}
-\figequalto{\car{\gsome{\Pprod{S_1}{T_1}}{l}{\Pprod{S_2}{T_2}}}}{
+\figequalto{\fst{\gnone}}{\gnone}{}
+\figequalto{\fst{\gsome{\Pprod{S_1}{T_1}}{l}{\Pprod{S_2}{T_2}}}}{
 	\gsome{S_1}{l}{S_2}
 }{}
 \end{array}
 \]
 
-\fbox{$\cdr{g}=g$}
+\fbox{$\snd{g}=g$}
 \[
 \begin{array}{rclr}
-\figequalto{\cdr{\gnone}}{\gnone}{}
-\figequalto{\cdr{\gsome{\Pprod{S_1}{T_1}}{l}{\Pprod{S_2}{T_2}}}}{
+\figequalto{\snd{\gnone}}{\gnone}{}
+\figequalto{\snd{\gsome{\Pprod{S_1}{T_1}}{l}{\Pprod{S_2}{T_2}}}}{
 	\gsome{T_1}{l}{T_2}
 }{}
 \end{array}
