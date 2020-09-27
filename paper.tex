@@ -52,6 +52,9 @@
 \newcommand{\infr}[2]{\inference{#1}{#2}}
 \newcommand{\highlight}[1]{{\color{red} #1}}
 \newcommand{\sidecond}[1]{\text{if}\;#1}
+\newcommand{\urlFrameworkAndIllustration}{
+	\url{https://github.com/LuKC1024/esop-2020}
+}
 
 % abbreviations in figures
 \newcommand{\figreduceto}[3]{#1 & \longmapsto & #2 & #3 \\}
@@ -353,10 +356,10 @@ To allow the smooth transition, gradually typed languages are featuerd by a spec
 typically written as \Tdyn\ or \lstinline|Dyn| or \lstinline|Any|, which enables 
 imprecise type annotations. A gradual type checker allows programmers to cast 
 implicitly between types that have no conflicting type information.
+At runtime, casts store or check type information to enforce type soundness.
 Researchers usually define the semantics of gradually typed languages by
 translation to an intermediate language with explicit casts, such as the blame
 calculus \citep{wadler2009well} and other cast calculi \citep{siek2009exploring}.
-At runtime, casts store or check type information to enforce type soundness.
 % To allow the smooth transition, every gradually typed language
 % has a special type typically written as \Tdyn\ or \lstinline|Dyn| or \lstinline|Any|,
 % which enables imprecise type annotations.
@@ -436,8 +439,8 @@ implementation of Cast ADT satisfies a bunch of properties. We believe this fram
 For illustration, we apply the framework to Lazy UD coercions in normal form
 and Lazy UD threesomes. 
 We believe the framework is also applicable to other cast representations.
-\todo[inline]{KC: (about the p above) I want to put the illustration part on the same github repo, adding description as
-Agda comments. }
+The framework and the illustration are available at the following URL:
+\[\text{\urlFrameworkAndIllustration}\]
 
 \todo[inline]{KC: (about the p below) Actually I think twosome's composition is structurally recursive but threesomes' is not}
 The published cast representations have various strengths and weaknesses.
@@ -1004,10 +1007,10 @@ of \citep{siek2009exploring}.
 \end{proposition}
 
 Next, we define the CEK Machine for \LUD. The only differences with
-respect to \LD\ are in the injectable types and in the definition of the 
-${\mathit{applyCast}(v,\ccast{S}{l}{T})}$
-function, in which a cast whose source or target is the dynamic type
-\Tdyn\ is always split into two casts that go through a ground type, that is, a 
+respect to \LD\ are in the injectable types and in 
+${\mathit{applyCast}(v,\ccast{S}{l}{T})}$, in which a cast whose source or
+target is the dynamic type \Tdyn\ is always split into two casts that
+go through a ground type, that is, a 
 type in which all sub-components are the dynamic type, such as 
 \Pfunc{\Tdyn}{\Tdyn}.
 \begin{definition}[\LUD\ CEK Machine]
@@ -1507,7 +1510,6 @@ To take out the first part of a pair, the machine applies the first pending
 cast on the first value and returns the result to the continuation.
 %
 Taking out the second part of a pair is similar.
-\todo[inline]{KC: I want to give a brief discussion on inert v.s. active pairs.}
 
 Reflexive transitive closure of reduction $\reducetoS{C}{s}{s}$ and
 the evaluation partial function $\evaltoS{C}{e}{o}$ are the same as in \RMachine{B}.
@@ -1613,10 +1615,6 @@ and that if $C$ is a Lazy UD Cast ADT then
 \machineequiv{\LUDMachine}{\SMachine{C}}
 \]
 
-\todo[inline]{KC: In the latex file, below are two versions of a figure.
-One is the same as in our WGT paper. The other uses Z as the meta variable of sequences of 
-source-code casts, which is similar to the blame-and-coercion paper.}
-
 \begin{figure}
 
 \fbox{\bisimc{\overline{\ccast{S}{l}{T}}}{c}{S}{T}}
@@ -1658,138 +1656,6 @@ source-code casts, which is similar to the blame-and-coercion paper.}
 		\Kcons{
 			\Fcast{\ccast{S_1}{l_1}{S_2}}
 		}{\ldots\Kcons{\Fcast{\ccast{S_{n-1}}{l_{n-1}}{S_n}}}{K}}
-	}{
-		\Kcons{\Fcast{c'}}{k'}
-	}{S_1}{T}
-}
-\end{gather*}
-
-\fbox{$\bisimv{v}{v}{T}$}
-\begin{gather*}
-\infr{
-	\expressiontyping{\Gamma,x : S_1}{e}{T_1}
-	\qquad
-	\bisimE{\Gamma}{E}{E'}
-	\\
-	\bisimc{
-		(\ccast{S_n}{l_{n-1}}{S_{n-1}} \ldots
-		\ccast{S_2}{l_1}{S_1})
-	}{c}{S_n}{S_1}
-	\\
-	\bisimc{
-		(		\ccast{T_1}{l_{1}}{T_2} \ldots
-		\ccast{T_{n-1}}{l_{n-1}}{T_n}
-		)	}{d}{T_1}{T_n}
-	\\
-	v = \vfuncc{
-		\vfuncc{
-			\vfunc{x}{S_1}{e}{E}
-		}{S_1}{T_1}{l_1}{S_2}{T_2}
-		\ldots
-	}{S_{n-1}}{T_{n-1}}{l_{n-1}}{S_n}{T_n}
-}{
-	\bisimv{v}{
-		(\ecast{\vfunc{x}{S_1}{e}{E'}}{\Pfunc{c}{d}})
-	}{
-		\Pfunc{S_n}{T_n}}
-}
-\\[1ex]
-\infr{
-	\bisimv{v_1}{v_1'}{S_1} \qquad
-	\bisimv{v_2}{v_2'}{T_1} \\
-	\bisimc{
-		(\ccast{S_1}{l_{1}}{S_2} \ldots
-		\ccast{S_{n-1}}{l_{n-1}}{S_n})
-	}{c}{S_1}{S_n} \\
-	\bisimc{
-		(\ccast{T_1}{l_{1}}{T_2} \ldots
-		\ccast{T_{n-1}}{l_{n-1}}{T_n})
-	}{d}{T_1}{T_n}
-	\\ v = \vconsc{
-		\vconsc{
-			\vcons{v_1}{u_1}
-		}{S_1}{T_1}{l_1}{S_2}{T_2}
-		\ldots
-	}{S_{n-1}}{T_{n-1}}{l_{n-1}}{S_n}{T_n}
-}{
-	\bisimv{
-		v
-	}{
-		(\ecast{\vcons{v_2}{u_2}}{\Pprod{c}{d}})
-	}{
-		\Pprod{S_n}{T_n}}
-}
-\end{gather*}
-	
-\fbox{\bisimE{\Gamma}{E}{E}}
-\begin{gather*}
-\inference{
-}{
-	\bisimE{\emptyset}{\emptyset}{\emptyset}
-}
-\quad
-\inference{
-	\Gamma \vdash E \approx E' \qquad
-	v \approx v' : T
-}{
-	\Gamma , x : T \vdash 
-	E [ x := v' ] \approx E' [ x := v' ]
-}
-\end{gather*}
-
-\fbox{\bisims{s}{s}{T}}
-\begin{gather*}
-\infr{}{\bisims{\error{l}}{\error{l}}{T}} \quad
-\infr{
-	\bisimv{v}{v'}{T}
-}{
-	\bisims{\shalt{v}}{\shalt{v'}}{T}
-}
-\\
-\infr{
-	\bisimv{v}{v'}{S} \\
-	\bisimK{K}{K'}{S}{T}
-}{
-	\bisims{\scont{v}{K}}{\scont{v}{K'}}{T}
-} \quad
-\infr{
-	\expressiontyping{\Gamma}{e}{S} \\
-	\bisimE{\Gamma}{E}{E'}          \\
-	\bisimK{K}{K'}{S}{T}
-}{
-	\bisims{\sexpr{e}{E}{K}}{\sexpr{e}{E'}{K'}}{T}
-}
-\end{gather*}
-
-\caption{Bisimulation between \RBMachine\ and \SMachine{C}. It is the smallest 
-congruence relation containing the shown rules. Everything to the left (resp. 
-right) of $\approx$ is in \RBMachine\ (resp. in \SMachine{C}).}
-\label{fig:bisim-SC-D}
-\end{figure}
-
-\begin{figure}
-
-\fbox{\bisimc{Z}{c}{S}{T}}
-\begin{gather*}
-\infr{}{\bisimc{[]}{id(T)}{T}{T}} \quad
-\infr{}{\bisimc{[\ccast{S}{l}{T}]}{\translate{\ccast{S}{l}{T}}}{S}{T}}
-\\[1ex]
-\infr{
-	\bisimc{Z_1}{c_1}{T_1}{T_2}\\
-	\bisimc{Z_2}{c_2}{T_2}{T_3}
-}{
-	\bisimc{(Z_1 \mathrm{++} Z_2)}{(\compose{c_1}{c_2})}{T_1}{T_3}
-}
-\end{gather*}
-
-\fbox{$\bisimK{K}{K}{S}{T}$}
-\begin{gather*}
-\infr{
-	\bisimK{K}{k'}{S_n}{T} \qquad
-	\bisimc{Z}{c}{S_1}{S_n}
-}{
-	\bisimK{
-		\Kcons{\Fcast{Z}}{K}
 	}{
 		\Kcons{\Fcast{c'}}{k'}
 	}{S_1}{T}
@@ -1898,6 +1764,138 @@ congruence relation containing the shown rules. Everything to the left (resp.
 right) of $\approx$ is in \RBMachine\ (resp. in \SMachine{C}).}
 \label{fig:bisim-SC-D}
 \end{figure}
+
+% \begin{figure}
+
+% \fbox{\bisimc{Z}{c}{S}{T}}
+% \begin{gather*}
+% \infr{}{\bisimc{[]}{id(T)}{T}{T}} \quad
+% \infr{}{\bisimc{[\ccast{S}{l}{T}]}{\translate{\ccast{S}{l}{T}}}{S}{T}}
+% \\[1ex]
+% \infr{
+% 	\bisimc{Z_1}{c_1}{T_1}{T_2}\\
+% 	\bisimc{Z_2}{c_2}{T_2}{T_3}
+% }{
+% 	\bisimc{(Z_1 \mathrm{++} Z_2)}{(\compose{c_1}{c_2})}{T_1}{T_3}
+% }
+% \end{gather*}
+
+% \fbox{$\bisimK{K}{K}{S}{T}$}
+% \begin{gather*}
+% \infr{
+% 	\bisimK{K}{k'}{S_n}{T} \qquad
+% 	\bisimc{Z}{c}{S_1}{S_n}
+% }{
+% 	\bisimK{
+% 		\Kcons{\Fcast{Z}}{K}
+% 	}{
+% 		\Kcons{\Fcast{c'}}{k'}
+% 	}{S_1}{T}
+% }
+% \end{gather*}
+
+% \fbox{$\bisimv{v}{v}{T}$}
+% \begin{gather*}
+% \infr{
+% 	\expressiontyping{\Gamma,x : S_1}{e}{T_1}
+% 	\qquad
+% 	\bisimE{\Gamma}{E}{E'}
+% 	\\
+% 	\bisimc{
+% 		(\ccast{S_n}{\bar{l}_{n-1}}{S_{n-1}} \ldots
+% 		\ccast{S_2}{\bar{l}_1}{S_1})
+% 	}{c}{S_n}{S_1}
+% 	\\
+% 	\bisimc{
+% 		(		\ccast{T_1}{l_{1}}{T_2} \ldots
+% 		\ccast{T_{n-1}}{l_{n-1}}{T_n}
+% 		)	}{d}{T_1}{T_n}
+% 	\\
+% 	v = \vfuncc{
+% 		\vfuncc{
+% 			\vfunc{x}{S_1}{e}{E}
+% 		}{S_1}{T_1}{l_1}{S_2}{T_2}
+% 		\ldots
+% 	}{S_{n-1}}{T_{n-1}}{l_{n-1}}{S_n}{T_n}
+% }{
+% 	\bisimv{v}{
+% 		(\ecast{\vfunc{x}{S_1}{e}{E'}}{\Pfunc{c}{d}})
+% 	}{
+% 		\Pfunc{S_n}{T_n}}
+% }
+% \\[1ex]
+% \infr{
+% 	\bisimv{v_1}{v_1'}{S_1} \qquad
+% 	\bisimv{v_2}{v_2'}{T_1} \\
+% 	\bisimc{
+% 		(\ccast{S_1}{l_{1}}{S_2} \ldots
+% 		\ccast{S_{n-1}}{l_{n-1}}{S_n})
+% 	}{c}{S_1}{S_n} \\
+% 	\bisimc{
+% 		(\ccast{T_1}{l_{1}}{T_2} \ldots
+% 		\ccast{T_{n-1}}{l_{n-1}}{T_n})
+% 	}{d}{T_1}{T_n}
+% 	\\ v = \vconsc{
+% 		\vconsc{
+% 			\vcons{v_1}{u_1}
+% 		}{S_1}{T_1}{l_1}{S_2}{T_2}
+% 		\ldots
+% 	}{S_{n-1}}{T_{n-1}}{l_{n-1}}{S_n}{T_n}
+% }{
+% 	\bisimv{
+% 		v
+% 	}{
+% 		(\ecast{\vcons{v_2}{u_2}}{\Pprod{c}{d}})
+% 	}{
+% 		\Pprod{S_n}{T_n}}
+% }
+% \end{gather*}
+	
+% \fbox{\bisimE{\Gamma}{E}{E}}
+% \begin{gather*}
+% \inference{
+% }{
+% 	\bisimE{\emptyset}{\emptyset}{\emptyset}
+% }
+% \quad
+% \inference{
+% 	\Gamma \vdash E \approx E' \qquad
+% 	v \approx v' : T
+% }{
+% 	\Gamma , x : T \vdash 
+% 	E [ x := v' ] \approx E' [ x := v' ]
+% }
+% \end{gather*}
+
+% \fbox{\bisims{s}{s}{T}}
+% \begin{gather*}
+% \infr{}{\bisims{\error{l}}{\error{l}}{T}} \quad
+% \infr{
+% 	\bisimv{v}{v'}{T}
+% }{
+% 	\bisims{\shalt{v}}{\shalt{v'}}{T}
+% }
+% \\
+% \infr{
+% 	\bisimv{v}{v'}{S} \\
+% 	\bisimK{K}{K'}{S}{T}
+% }{
+% 	\bisims{\scont{v}{K}}{\scont{v}{K'}}{T}
+% } \quad
+% \infr{
+% 	\expressiontyping{\Gamma}{e}{S} \\
+% 	\bisimE{\Gamma}{E}{E'}          \\
+% 	\bisimK{K}{K'}{S}{T}
+% }{
+% 	\bisims{\sexpr{e}{E}{K}}{\sexpr{e}{E'}{K'}}{T}
+% }
+% \end{gather*}
+
+% \caption{Bisimulation between \RBMachine\ and \SMachine{C}. It is the smallest 
+% congruence relation containing the shown rules. Everything to the left (resp. 
+% right) of $\approx$ is in \RBMachine\ (resp. in \SMachine{C}).}
+% \label{fig:bisim-SC-D}
+% \end{figure}
 
 
 The central part of the proofs is a weak bisimulation between \RMachine{B} and \SMachine{C}.
@@ -2412,13 +2410,13 @@ normal form and hence are more suitable for implementation.
 }{}
 \figequalto{\composegap{m_1}{\gsome{P}{l}{Q}}{m_2}}{
 	\hcmfail{l}
-}{\sidecond{
+}{\\&&\sidecond{
 		\notshallowlyconsistent{P}{Q}
 		\text{ and } \forall l. m_1 \neq \hcmfail{l}
 }}
 \figequalto{\composegap{m_1}{g}{\hcmfail{l}}}{
 	\hcmfail{l}
-}{\sidecond{
+}{\\&&\sidecond{
 		\goodgap{g}
 		\text{ and } \forall l. m_1 \neq \hcmfail{l}}}
 \figequalto{\composegap{\hcmbool}{g}{\hcmbool}}{
