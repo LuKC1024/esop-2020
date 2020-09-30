@@ -348,16 +348,20 @@ migratory typing \citep{tobin2006interlanguage}, and multi-language
 interoperability \citep{Gray:2005ij,Matthews:2007zr}.
 
 \todo[inline]{KC: Cite "Contracts for higher-order functions" for the proxy-based approach maybe?}
+\todo[inline]{JS: That paper doesn't exactly fit into what you're talking about in the above
+sentence. It might be appopriate to cite it elsewhere in the paper. Also,
+there are earlier papers about coercive subtyping (Computing with coercions by Breazu-Tannen et al)
+that use a proxy-based approach. The contracts paper may be the first to propose blame tracking.}
 
 Gradual typing \citep{siek2006gradual,siek2015refined} includes both static typing 
-and dynamic typing in the same language, enables smooth transition between them, while
+and dynamic typing in the same language and enables a smooth transition between them while
 enforcing type soundness.
-To allow the smooth transition, gradually typed languages are featuerd by a special type
-typically written as \Tdyn\ or \lstinline|Dyn| or \lstinline|Any|, which enables 
-imprecise type annotations. A gradual type checker allows programmers to cast 
+To enable a smooth transition, gradually typed languages feature a special type
+typically written as \Tdyn{}, \lstinline|Dyn|, or \lstinline|Any|, which
+provides a way to write imprecise type annotations. A gradual type checker allows programmers to cast 
 implicitly between types that have no conflicting type information.
-At runtime, casts store or check type information to enforce type soundness.
-Researchers usually define the semantics of gradually typed languages by
+At runtime, casts record and check type information to enforce type soundness.
+Researchers often define the semantics of gradually typed languages by
 translation to an intermediate language with explicit casts, such as the blame
 calculus \citep{wadler2009well} and other cast calculi \citep{siek2009exploring}.
 % To allow the smooth transition, every gradually typed language
@@ -376,7 +380,7 @@ calculus \citep{wadler2009well} and other cast calculi \citep{siek2009exploring}
 Unfortunately, straightforward implementations of casts impose significant 
 runtime overheads that can change the asymptotic space complexity of a program 
 \citep{herman2010space}.
-For instance, the following module define functions 
+For instance, consider the following functions 
 that check the parity of natural numbers. The terms are ordinary, while the 
 type annotations are not -- the output type of \lstinline|even?| is 
 imprecise.
@@ -386,32 +390,35 @@ imprecise.
 (define (odd? [n : Int]) : Bool
   (if (= n 0) #f (even? (- n 1))))
 \end{lstlisting}
-These functions look tail-recursive, so it is natural to expect that they 
-consumes constant space. This is not the case, however, in a straightforward 
-implementation because there is a cast around each of the 
-``tail call'', one from \lstinline|Bool| to 
-\lstinline|$\star$|, the other goes the other way.
-A straightforward implementation would cast the output of the recursive 
-call \textit{before} returning it, which effectively breaks the tail recursion 
-and thus changes the space complexity.
+These functions look tail-recursive, so it is natural to expect that
+they consumes constant space. This is not the case, however, in a
+straightforward implementation because there is an implicit cast
+around each of the recursive calls, one from \lstinline|Bool| to
+\lstinline|$\star$| and the other from \lstinline|$\star$| to
+\lstinline|Bool|.  A straightforward implementation would perform this
+cast after the recursive calls but \textit{before} returning from the
+current function. So the calls are not in fact tail calls and the
+space complexity is linear instead of constant.
 
-Continuation is not the only place where casts might accumulate. 
-Consider a variant of the above program written in continuation-passing style. 
-Here, both functions returns \lstinline|Bool| so there is not pending cast in 
-continuations. The continuation argument \lstinline|k|, however, is wrapped in 
-a cast in each recursive call because the type of \lstinline|k| is less 
-precise in \lstinline|even?|.
+Continuations are not the only place where casts can accumulate.
+Consider a variant of the above program written in
+continuation-passing style.  Here, both functions returns
+\lstinline|Bool| so there is no implicit cast in tail position.
+However, the argument \lstinline|k| is wrapped in a cast in each
+recursive call because the type of \lstinline|k| is less precise in
+\lstinline|even?| than it is in \lstinline|odd?|.
 \begin{lstlisting}
 (define (even? [n : Int] [k : (-> $\star$ Bool)]) : Bool
   (if (= n 0) (k #t) (odd? (- n 1) k)))
 (define (odd? [n : Int] [k : (-> Bool Bool)]) : Bool
   (if (= n 0) (k #f) (even? (- n 1) k)))
 \end{lstlisting}
-Our examples programs are inspired by the examples in \citep{herman2010space}.
-We direct interested readers to their work for more examples and detailed explanation.
+These example programs are adapted from those of Herman et al.~\citep{herman2010space}.
+We direct readers to their work for more examples and a detailed explanation.
 
-A solution to this space-efficiency problem is representing cast information 
-more concisely. There are several known space-efficient cast representations
+One solution to this space-efficiency problem is to represent cast
+information more concisely. There are several known space-efficient
+cast representations
 \citep{Siek:2015:BCT:2737924.2737968,Siek:2010:TWB:1706299.1706342,Garcia:2013:CTB:2500365.2500603,kuhlenschmidt2018efficient,siek2012interpretations,garcia2014deriving}.
 The current state of the art includes
 \begin{itemize}
@@ -422,48 +429,57 @@ The current state of the art includes
 	\citep{siek2012interpretations,Siek:2015:BCT:2737924.2737968}.
 \end{itemize}
 
-These cast representations are represented in their own dynamic semantics of a gradually typed language,
-which make it harder to focus on key differences between these representations. 
-Surprisingly, no one has published a dynamic semantics parameterized over cast representations.
-We present in Section~\ref{sec:framework} first of such generic dynamic semantics in the form 
-of a CEK abstract machine and formulate the interface between the machine and cast representations
-as an abstract data type, namely Cast ADT.
+The semantics of these cast representations are defined in many
+different papers with separate reduction rules, which makes it
+difficult to isolate the key differences between them.  In this paper
+we present the first set of reduction rules for a cast calculus that
+is parameterized over the cast representation
+(Section~\ref{sec:framework}). The semantics takes the form of a CEK
+abstract machine and it formulates the interface between the machine
+and the different cast representations as an abstract data type,
+namely the \emph{Cast ADT}.
 
-Of course, an alternative cast representation must be proved
-correct. That is, a language implementation should give the same output no 
-matter whether it is using a cast representation to reduce space 
-consumption. Our generic CEK machine comes with generic theorems (Section~\ref{sec:framework}),
-with which researchers can prove a cast representation is correct by showing its corresponding
-implementation of Cast ADT satisfies a bunch of properties. We believe this framework can reduce the burden
- of proving this kind of theorems and help people focusing on the cast representations.
-For illustration, we apply the framework to Lazy UD coercions in normal form
-and Lazy UD threesomes. 
-We believe the framework is also applicable to other cast representations.
-The framework and the illustration are available at the following URL:
+Of course, a space-efficient cast representation must be proved
+correct. That is, a language implementation that uses space-efficient
+casts should give the same output as the language semantics. Our
+generic CEK machine comes with generic theorems
+(Section~\ref{sec:framework}) that researchers can use to prove a cast
+representation correct.  We believe this framework can reduce the
+burden of proving correctness theorems and help people focus on the
+cast representations.  For illustration, we apply the framework to
+Lazy UD coercions in normal form~\citep{Siek:2015:BCT:2737924.2737968}
+and Lazy UD threesomes~\citep{Siek:2010:TWB:1706299.1706342}. We
+believe the framework is also applicable to other cast
+representations.  The framework and illustrations are available at the
+following URL:
 \[\text{\urlFrameworkAndIllustration}\]
 
-\todo[inline]{KC: (about the p below) Actually I think twosome's composition is structurally recursive but threesomes' is not}
-The published cast representations have various strengths and weaknesses.
-The major insight of these systems is a compose operator for casts which compress cast information to
-reduce space consumption.
-Threesomes and supercoercions are good for mechanized
-metatheory because their compose operators are structurally recursive,
-making them easy to define in proof assistants such as Agda. In
-contrast, the coercions in normal form have compose operators that are
-not structurally recursive, which makes it more difficult to define in
-Agda, requiring what amounts to an explicit proof of termination.
+\todo[inline]{KC: (about the p below) Actually I think twosome's
+  composition is structurally recursive but threesomes' is not}
+
+The published space-efficient cast representations have various
+strengths and weaknesses.  The major insight of these systems is a
+compose operator for casts which compresses cast information to reduce
+space consumption.  Threesomes and supercoercions are good for
+mechanized metatheory because their compose operators are structurally
+recursive, making them easy to define in proof assistants such as
+Agda. In contrast, the coercions in normal form have compose operators
+that are not structurally recursive, which makes it more difficult to
+define in Agda, requiring what amounts to an explicit proof of
+termination.
 %
 On the other hand, coercions in normal form are easier to understand
-than threesomes (with a strange labeled bottom type), and
+than threesomes (with their strange labeled bottom type), and
 supercoercions (10 different kinds).
 
-This paper presents a new cast representation 
-(Section~\ref{sec:hypercoercions}), named
+This paper presents a new cast representation named
 \emph{hypercoercions}, that is good for both mechanized metatheory and
-good for implementation. The straightforward Agda translation of composition 
-operator for hypercoercions is able to pass the termination check and 
-hypercoercions are suggestive of a bit-level representation that minimizes the 
-need for pointers and fits all first-order casts into 64 bits.
+good for implementation (Section~\ref{sec:hypercoercions}). The
+straightforward Agda translation of the composition operator for
+hypercoercions is able to pass Agda's termination check and
+hypercoercions are suggestive of a bit-level representation that
+minimizes the need for pointers and fits all first-order casts into 64
+bits.
 %
 We present two flavors of hypercoercions to support the two blame
 tracking strategies from the literature: \LD\ and
@@ -472,7 +488,7 @@ tracking strategies from the literature: \LD\ and
 casts (casts from \Tdyn\ to some other types) are subject to blame. 
 With the 
 \LUD\
-strategy, however, some \textbf{u}p casts are also blamable.
+strategy, however, some \textbf{u}p casts may also be blamed.
 We are interested in the D blame
 tracking strategy because it comes with a more straightforward notion of
 safe cast compared to \LUD~\citep{siek2009exploring}, which is why \LD\ 
@@ -483,11 +499,11 @@ prominent role in the gradual typing literature
 \citep{wadler2009well}.  The \LUD\ hypercoercions were inspired by the
 supercoercions of \citep{Garcia:2013:CTB:2500365.2500603} (hence the name) and
 the \LD\ hypercoercions were inspired by the normal forms of
-\citep{siek2012interpretations}.
+Siek and Garcia~\citep{siek2012interpretations}.
 The semantics of casts can be lazy or
 eager~\citep{siek2009exploring}. In this paper, we focus on lazy cast
 strategies because we suspect that they are more efficient than eager
-strategies and because \citet{new2019gradual} show that the eager
+strategies and because New et al.~\citep{new2019gradual} show that the eager
 strategies are incompatible with $\eta$-equivalence of functions.
 
 To summarize, the primary contributions of this paper are:
@@ -505,10 +521,11 @@ To summarize, the primary contributions of this paper are:
 	\item a formal proof that both \LD\ hypercoercions are correct
 \end{itemize}
 
-\section{Related Works}
+\section{Related Work}
 \label{chap:related-works}
 
 \todo[inline]{KC: how to make \textbackslash citet work?}
+\todo[inline]{JS: Good question! I would like to use citet as well.}
 
 \subsubsection{Coercions in normal form}
 
