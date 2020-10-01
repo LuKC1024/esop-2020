@@ -509,18 +509,17 @@ strategies are incompatible with $\eta$-equivalence of functions.
 
 To summarize, the primary contributions of this paper are:
 \begin{itemize}
-    \item Cast ADT, an abstract data type for cast representations
-    \item a CEK abstract machine parameterized over Cast ADT
-	\item a framework in Agda for proving the correctness of \LD\ or \LUD\ 
-	cast representations when plugging into the CEK machine
-	\item a formal proof that \LUD\ threesomes are correct
-	\item a formal proof that \LUD\ coercions in normal form are correct
-	\item hypercoercions, a new cast representation, which
-	has a more compact memory representation in comparison to coercions in 
-	normal form.
-	\item a formal proof that both \LUD\ hypercoercions are correct
-	\item a formal proof that both \LD\ hypercoercions are correct
+\item Cast ADT, an abstract data type for cast representations, and a
+  CEK abstract machine parameterized over the Cast ADT,
+\item a framework in Agda for proving the correctness of cast
+  representations,
+\item hypercoercions, a new cast representation with a more compact
+  memory representation compared to coercions in normal form, and
+\item proofs of correctness in Agda for \LUD\ threesomes,
+  \LUD\ coercions in normal form, \LUD\ hypercoercions, and
+  \LD\ hypercoercions.
 \end{itemize}
+
 
 \section{Related Work}
 \label{chap:related-works}
