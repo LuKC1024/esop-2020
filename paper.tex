@@ -500,11 +500,11 @@ prominent role in the gradual typing literature
 \citep{wadler2009well}.  The \LUD\ hypercoercions were inspired by the
 supercoercions of \citep{Garcia:2013:CTB:2500365.2500603} (hence the name) and
 the \LD\ hypercoercions were inspired by the normal forms of
-Siek and Garcia~\citep{siek2012interpretations}.
+\citet{siek2012interpretations}.
 The semantics of casts can be lazy or
 eager~\citep{siek2009exploring}. In this paper, we focus on lazy cast
 strategies because we suspect that they are more efficient than eager
-strategies and because New et al.~\citep{new2019gradual} show that the eager
+strategies and because \citet{new2019gradual} show that the eager
 strategies are incompatible with $\eta$-equivalence of functions.
 
 To summarize, the primary contributions of this paper are:
@@ -525,43 +525,55 @@ To summarize, the primary contributions of this paper are:
 \section{Related Work}
 \label{chap:related-works}
 
-\todo[inline]{KC: how to make \textbackslash citet work?}
-\todo[inline]{JS: Good question! I would like to use citet as well.}
+We review closely related work in three areas: coercions in normal
+form, threesomes, and parameterized cast calculi.
 
 \subsubsection{Coercions in normal form}
 
-\citet{henglein1994dynamic} introduces coercions to study compilation from 
-dynamic languages to static ones. \citet{herman2010space} proposes using 
-coercions in normal forms to represent casts in gradual typing and proves space 
-efficiency. 
-However, they didn't show the coercion-based semantics is equivalent to the 
-standard (and type-based) one. \citet{Siek:2015:BCT:2737924.2737968} improves 
-the Lazy UD flavor of coercions in normal forms and proves that Lazy UD 
-coercions in normal form is correct, using two bisimulation between three 
-reduction semantics. The first semantics is similar to \LUDMachine, which 
-bisimulates a 
-reduction semantics using coercions (not necessarily in normal form). The last 
-semantics uses coercions in normal form and bisimulates the coercions-based 
-semantics.
+\citet{henglein1994dynamic} introduces coercions to study compilation
+from dynamic languages to statically typed
+ones. \citet{herman2010space} proposes using coercions in normal forms
+to represent casts in gradual typing and proves space efficiency.
+However, they did not prove that the coercion-based semantics is
+equivalent to the standard (and type-based)
+one. \citet{Siek:2015:BCT:2737924.2737968} improve the Lazy UD style
+of coercions in normal forms and prove that Lazy UD coercions in
+normal form are correct, using two bisimulation between three
+reduction semantics. The first semantics is similar to \LUDMachine,
+which bisimulates a reduction semantics using coercions (not
+necessarily in normal form). The last semantics uses coercions in
+normal form and bisimulates the coercions-based semantics.
+
+\todo[inline]{JS: say something about the difference between the above
+  and what is in this paper. That's the whole point of the related work
+  section from the eyes of the reviewer.}
 
 \subsubsection{Threesomes}
 
-\citet{Siek:2010:TWB:1706299.1706342} introduces Lazy UD threesomes and prove 
-its correctness, using a bisimulation between two reduction semantics: one is 
-similar to \LUDMachine; the other uses Lazy UD threesomes and is similar to the 
-machine in Section~\ref{sec:framework}. 
-\citet{Garcia:2013:CTB:2500365.2500603} introduces several other flavors of 
-threesomes, including a Lazy D one. Their threesomes are derived from 
-corresponding flavors of coercions in normal form, using correctness-preserving 
-transformation. So the correctness of their threesomes relies on the 
-corrections of the coercions-in-normal-form-based semantics defined in 
-\citet{herman2010space}, which have not been proved correct.
+\citet{Siek:2010:TWB:1706299.1706342} introduce Lazy UD threesomes and
+prove them correct, using a bisimulation between two reduction
+semantics: one is analogous to the \LUDMachine; the other uses Lazy UD
+threesomes and is analogous to the machine in
+Section~\ref{sec:framework}.  \citet{Garcia:2013:CTB:2500365.2500603}
+introduces several other flavors of threesomes, including a Lazy D
+one. Their threesomes are derived from the corresponding styles of
+coercions in normal form, using correctness-preserving
+transformation. So the correctness of their threesomes relies on the
+correctness of the coercions-in-normal-form-based semantics defined in
+\citet{herman2010space}, which has not been proved correct.
+
+\todo[inline]{JS: again, say something about the difference between
+  the above and what is in this paper.}
 
 \subsubsection{Parameterized cast calculi}
 
-\citet{garcia2014deriving} presents a dynamic semantics for the Eager D blame 
-strategy, using coercions. They claims that "the artefacts for coercions can be
-replaced by other artefacts implementing different dynamic semantics".
+\citet{garcia2014deriving} presents a dynamic semantics for the Eager
+D blame strategy, using coercions. They claim that ``the artefacts for
+coercions can be replaced by other artefacts implementing different
+dynamic semantics''.
+
+\todo[inline]{JS: The above is too short of a description of that related
+work.}
 
 
 \section{Background} \label{sec:background}
