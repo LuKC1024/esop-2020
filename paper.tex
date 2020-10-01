@@ -447,7 +447,9 @@ generic CEK machine comes with generic theorems
 (Section~\ref{sec:framework}) that researchers can use to prove a cast
 representation correct.  We believe this framework can reduce the
 burden of proving correctness theorems and help people focus on the
-cast representations.  For illustration, we apply the framework to
+cast representations.
+\todo[inline]{JS: Say the framework is in Agda.}
+For illustration, we apply the framework to
 Lazy UD coercions in normal form~\citep{Siek:2015:BCT:2737924.2737968}
 and Lazy UD threesomes~\citep{Siek:2010:TWB:1706299.1706342}. We
 believe the framework is also applicable to other cast
@@ -513,11 +515,11 @@ To summarize, the primary contributions of this paper are:
   CEK abstract machine parameterized over the Cast ADT,
 \item a framework in Agda for proving the correctness of cast
   representations,
-\item hypercoercions, a new cast representation with a more compact
-  memory representation compared to coercions in normal form, and
 \item proofs of correctness in Agda for \LUD\ threesomes,
   \LUD\ coercions in normal form, \LUD\ hypercoercions, and
-  \LD\ hypercoercions.
+  \LD\ hypercoercions, 
+\item hypercoercions, a new cast representation with a more compact
+  memory representation compared to coercions in normal form.
 \end{itemize}
 
 
