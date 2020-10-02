@@ -435,7 +435,9 @@ different papers with separate reduction rules, which makes it
 difficult to isolate the key differences between them.  In this paper
 we present the first set of reduction rules for a cast calculus that
 is parameterized over the cast representation
-(Section~\ref{sec:framework}). The semantics takes the form of a CEK
+(Section~\ref{sec:framework}).
+\todo[inline]{JS: First? What about \url{https://arxiv.org/abs/2001.11560}?}
+The semantics takes the form of a CEK
 abstract machine and it formulates the interface between the machine
 and the different cast representations as an abstract data type,
 namely the \emph{Cast ADT}.
@@ -691,34 +693,37 @@ The syntax and static semantics are the same for the \LD\ and
 As usual, the important features are the cast expressions,
 $\ecast{e}{\ccast{S}{l}{T}}$, which are responsible for runtime type
 checking. Blame labels can be positive (blaming the expression inside the cast)
-or negative (blaming the context outside the cast), as in \cite{Wadler:2009qv,Siek:2015ab}.
+or negative (blaming the context outside the cast), as in \cite{wadler2009well}.
 The syntax and static semantics is the same as that of 
 \citep{siek2009exploring} except for a few minor exceptions:
 
 \begin{itemize}
-\item We add product type.
 \item We consider only one base type, Boolean, for simplicity.
+\item We add the product type.
 \item We separate types into those with a type constructor at the top,
   the \emph{pre-types}, versus the dynamic type \Tdyn.
 \end{itemize}
-As usual, for every cast $\ecast{e}{\ccast{S}{l}{T}}$, the source type $S$ and 
-the target $T$ must be consistent.
+As usual, in a cast $\ecast{e}{\ccast{S}{l}{T}}$, the source type $S$
+and the target $T$ must be consistent.
 
 \paragraph{Dynamic Semantics}
 
 The dynamic semantics of a cast calculus is typically defined with a
 reduction semantics. Here we use a CEK machine
-\citep{felleisen1986control} instead. One reason is that environments are 
-easier 
-to deal with than substitutions in formal proofs. Also, a CEK machine is more
-convenient to use for the space-efficient semantics in
-\chapref{sec:framework} (recall that a major point of space-efficiency 
-is about compressing continuations and that continuations are part of the CEK 
-machine states). So using a CEK machine for the cast 
-calculi in this section makes it easier to prove these machines are equivalent.
-Of course, one should also prove that the abstract machine
-presented here is equivalent to the standard reduction semantics for
-cast calculi, but we have not yet done so.
+\citep{felleisen1986control} instead. One reason is that environments
+are easier to deal with than substitutions in formal proofs. Also, a
+CEK machine is more convenient to use for the space-efficient
+semantics in \chapref{sec:framework} because continuations need to be
+compressed and continuations are an explicit part of the CEK machine
+states.  So also using a CEK machine for the cast calculi in this
+section makes it easier to prove these machines are equivalent.  Of
+course, one should also prove that the abstract machine presented here
+is equivalent to the standard reduction semantics for cast calculi,
+but we have not yet done so.
+
+\todo[inline]{JS: We might cite the proof of correctness for CEK in the
+  PLT Redex book and conjecture that it would be straightforward to
+  adapt.}
 
 \begin{figure}
 \[
@@ -820,10 +825,13 @@ cast calculi, but we have not yet done so.
 Fig.~\ref{fig:R-machine-dynamics} defines the transition relation of the CEK
 machine (\RMachine{B}) and Fig.~\ref{fig:R-machine-syntax} gives a grammar for machine 
 states $s$, including a definition of values $v$ and value typing.
+\todo[inline]{JS: explain the name choice of $\mathcal{R}$.}
 %
-This machine is parameterized over blame strategy ($B$), which ranges over
+This machine is parameterized over blame strategy $B$, which ranges over
 Lazy D (Fig.~\ref{fig:blame-strategy-LazyD}) and Lazy UD 
-(Fig.~\ref{fig:blame-strategy-LazyD}).
+(Fig.~\ref{fig:blame-strategy-LazyUD}).
+\todo[inline]{JS: I don't think $B$ is restricted to just those two.
+Can't it be any blame strategy that satisfies certain conditions?}
 %
 The transitions involving casts are highlighted in red and described in
 more detail below. The other transitions are standard for a CEK
