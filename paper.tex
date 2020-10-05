@@ -77,10 +77,10 @@
 \newcommand{\LUD}{\ensuremath{\text{Lazy\;UD}}}
 \newcommand{\LD}{\ensuremath{\text{Lazy\;D}}}
 \newcommand{\CastADT}{\ensuremath{\text{Cast ADT}}}
-\newcommand{\RMachine}[1]{\ensuremath{\mathcal{R}(#1)}}
-\newcommand{\LDMachine}{\RMachine{\BLD}}
-\newcommand{\LUDMachine}{\RMachine{\BLUD}}
-\newcommand{\RBMachine}[0]{\RMachine{B}}
+\newcommand{\CMachine}[1]{\ensuremath{\mathcal{C}(#1)}}
+\newcommand{\LDMachine}{\CMachine{\BLD}}
+\newcommand{\LUDMachine}{\CMachine{\BLUD}}
+\newcommand{\CBMachine}[0]{\CMachine{B}}
 \newcommand{\SMachine}[1]{\ensuremath{\mathcal{S}(#1)}}
 \newcommand{\effCEK}[1]{\ensuremath{\mathcal{S}(#1)}}
 
@@ -249,13 +249,13 @@
 \newcommand{\transitivelyreducetoUD}[2]{
 	\ensuremath{#1 \longmapsto_{\LUDMachine}^{*} #2}}
 \newcommand{\reduceto}[2]{\ensuremath{#1 \longmapsto #2}}
-\newcommand{\reducetoR}[3]{\ensuremath{#2 \longmapsto_{\RMachine{#1}} #3}}
+\newcommand{\reducetoR}[3]{\ensuremath{#2 \longmapsto_{\CMachine{#1}} #3}}
 \newcommand{\reducetoD}[2]{\reducetoR{\BLD}{#1}{#2}}
 \newcommand{\reducetoUD}[2]{\reducetoR{\BLUD}{#1}{#2}}
 \newcommand{\reducetoS}[3]{\ensuremath{#2 \longmapsto_{\SMachine{#1}} #3}}
 \newcommand{\evalto}[2]{\ensuremath{\mathit{eval}(#1)=#2}}
 \newcommand{\withmachineevalto}[3]{\ensuremath{\mathit{eval}_{#1}(#2)=#3}}
-\newcommand{\evaltoR}[3]{\ensuremath{\mathit{eval}_{\RMachine{#1}}(#2)=#3}}
+\newcommand{\evaltoR}[3]{\ensuremath{\mathit{eval}_{\CMachine{#1}}(#2)=#3}}
 \newcommand{\evaltoD}[2]{\evaltoR{\BLD}{#1}{#2}}
 \newcommand{\evaltoUD}[2]{\evaltoR{\BLUD}{#1}{#2}}
 \newcommand{\evaltoS}[3]{\ensuremath{\mathit{eval}_{\SMachine{#1}}(#2)=#3}}
@@ -436,11 +436,6 @@ difficult to isolate the key differences between them.  In this paper
 we present a set of reduction rules for a cast calculus that
 is parameterized over the cast representation
 (Section~\ref{sec:framework}).
-\todo[inline]{JS: First? What about \url{https://arxiv.org/abs/2001.11560}?}
-\todo[inline]{KC: My bad. I don't remember how this word gets in but I
-definitely should be more careful about these kind of words. BTW, should
-the arxiv paper go into Related Work?}
-\todo[inline]{JS: Yes.}
 The semantics takes the form of a CEK
 abstract machine and it formulates the interface between the machine
 and the different cast representations as an abstract data type,
@@ -464,13 +459,19 @@ following URL:
 \todo[inline]{KC: (about the p below) Actually I think twosome's
   composition is structurally recursive but threesomes' is not}
 \todo[inline]{JS: Then please go ahead and fix it.}
+\todo[inline]{KC: Fixed. 
+``Threesomes and supercoercions are good for
+mechanized metatheory because their compose operators 
+can be written in a structrually recursive form,''}
 
 The published space-efficient cast representations have various
 strengths and weaknesses.  The major insight of these systems is a
 compose operator for casts which compresses cast information to reduce
 space consumption.  Threesomes and supercoercions are good for
-mechanized metatheory because their compose operators are structurally
-recursive, making them easy to define in proof assistants such as
+mechanized metatheory because their compose operators 
+can be written in a structrually recursive form,
+% are structurally recursive,
+making them easy to define in proof assistants such as
 Agda. In contrast, the coercions in normal form have compose operators
 that are not structurally recursive, which makes it more difficult to
 define in Agda, requiring what amounts to an explicit proof of
@@ -530,6 +531,9 @@ To summarize, the primary contributions of this paper are:
 
 \section{Related Work}
 \label{chap:related-works}
+
+\todo[inline]{KC: KC, please add \url{https://arxiv.org/abs/2001.11560}
+to this section.}
 
 We review closely related work in three areas: coercions in normal
 form, threesomes, and parameterized cast calculi.
@@ -818,14 +822,15 @@ techniques~\citep{Felleisen:2009aa}.
 \end{array}
 \]
 
-\caption{Syntax of a CEK machine \RMachine{B} and auxiliary definitions.}
+\caption{Syntax of a CEK machine \CMachine{B} and auxiliary definitions.}
 \label{fig:R-machine-syntax}
 \end{figure}
 
 Fig.~\ref{fig:R-machine-syntax} defines machine 
 states $s$, including a definition of values $v$ and value typing.
 Fig.~\ref{fig:R-machine-dynamics} defines the transition relation of the CEK
-machine (\RMachine{B}). 
+machine (\CMachine{B}).
+We name the machine after \textbf{c}ast calculus.
 \todo[inline]{JS: explain the name choice of $\mathcal{R}$.}
 \todo[inline]{KC: I want to space-efficient machine to be S, so ... B might be a better name 
 because it reminds people of the $\lambda B$ calculus.
@@ -835,6 +840,7 @@ Or $D$ for definitional semantic?
 How do you think?}
 \todo[inline]{JS: B or C both sound like good choices for the reasons
 you give.}
+\todo[inline]{KC: Let's go with C to avoid confusion with Blame strategy.}
 %
 This machine is parameterized over blame strategy $B$, which ranges over
 Lazy D (Fig.~\ref{fig:blame-strategy-LazyD}) and Lazy UD 
@@ -975,7 +981,7 @@ the symbol \mbind{} as the monad bind operator, which is defined as follows:
 		\evalto{e}{\error{l}}}
 	\]
 	\caption{Dynamic semantics of the cast calculi as a CEK
-		machine \RMachine{B}. The transitions that involve casts are highlighted
+		machine \CMachine{B}. The transitions that involve casts are highlighted
 		in red.}
 	\label{fig:R-machine-dynamics}
 \end{figure}
@@ -1218,7 +1224,7 @@ correctness of cast representations. The framework includes an abstract data
 type named Cast ADT, which specifies the operators of cast representations, 
 a CEK machine $\SMachine{C}$ parameterized over a Cast ADT,
 which uses the cast operators implemented by $C$ to work with casts, 
-and theorems relating $\SMachine{C}$ to $\RMachine{B}$.
+and theorems relating $\SMachine{C}$ to $\CMachine{B}$.
 %
 Subsection~\ref{sec:cast-adt-and-space-efficient-cek} describes Cast ADT and the 
 machine \SMachine{C}. We conjecture that the machine \SMachine{C} is 
@@ -1230,7 +1236,7 @@ ADT, executing a program in $\SMachine{C}$ would give the same result as in
 $\LDMachine$. Similarly, if $C$ is a Lazy UD Cast ADT, executing a program in 
 $\SMachine{C}$ would give the same result as in $\LUDMachine$.
 %
-We prove the theorems relating \SMachine{C} and \RMachine{B} in
+We prove the theorems relating \SMachine{C} and \CMachine{B} in
 Subsection~\ref{sec:S-correct}.
 The framework is written in the Agda language~\citep{norell2008dependently}.
 
@@ -1351,17 +1357,17 @@ The framework is written in the Agda language~\citep{norell2008dependently}.
 
 \figref{fig:SEMachine-state} defines the syntax of the space-efficient CEK 
 machine \SMachine{C}.
-The key differences between \SMachine{C} and \RMachine{B} are in the definitions
+The key differences between \SMachine{C} and \CMachine{B} are in the definitions
 of values and continuations, that is, places where casts can accumulate.
 
 Let $u,v$ range over values.
 %
-Recall that in \RMachine{B} we have two value constructors for functions and 
+Recall that in \CMachine{B} we have two value constructors for functions and 
 another two for pairs. That setup allows zero-or-more layers of casts at the 
 top of higher-order values, which might consume unbounded space. 
 %
 \SMachine{C} instead has exactly one layer of cast.
-Thus non-casted values in \RMachine{B} correspond to \SMachine{C} values
+Thus non-casted values in \CMachine{B} correspond to \SMachine{C} values
 where casts are identities ($\mathit{id}(T)$). The 
 $\mathit{id}$ functions is provided by the Cast ADT.
 
@@ -1370,22 +1376,22 @@ This setup is essentially saying that cast frames and non-cast frames should
 appear alternatively in continuations, and that a continuation always start
 with a cast frame.
 % %
-% Pre-continuations are like the continuations in \RMachine{B}, but their 
+% Pre-continuations are like the continuations in \CMachine{B}, but their 
 % top-most frame must not be a cast frames.
 % %
 % A continuation is now a pre-continuation prefixed with a cast frame.
 % %
-% Recall that continuations in \RMachine{B} have zero or more casts at the top.
+% Recall that continuations in \CMachine{B} have zero or more casts at the top.
 % In \SMachine{C}, however, every continuation has exactly one cast at the 
 % top.
 % %
-\RMachine{B} continuations that have no casts at the top correspond
+\CMachine{B} continuations that have no casts at the top correspond
 to \SMachine{C} continuations whose casts are identities.
-\RMachine{B} continuations that have many casts at the top correspond
+\CMachine{B} continuations that have many casts at the top correspond
 to \SMachine{C} continuations in where those casts are composed by
 $\compose{c}{c}$, another functions provided by the Cast ADT.
 %
-Injectable types, environments, states, and cast results are the same as in \RBMachine.
+Injectable types, environments, states, and cast results are the same as in \CBMachine.
 
 Value typing (\valuetyping{v}{T}), continuation typing 
 (\casttyping{k}{S}{T} and \casttyping{K}{S}{T}), and environment typing 
@@ -1570,7 +1576,7 @@ cast on the first value and returns the result to the continuation.
 Taking out the second part of a pair is similar.
 
 Reflexive transitive closure of reduction $\reducetoS{C}{s}{s}$ and
-the evaluation partial function $\evaltoS{C}{e}{o}$ are the same as in \RMachine{B}.
+the evaluation partial function $\evaltoS{C}{e}{o}$ are the same as in \CMachine{B}.
 
 \begin{proposition}[\SMachine{C} is deterministic]
 	\label{prop:SEMachine-deterministic}
@@ -1817,9 +1823,9 @@ and that if $C$ is a Lazy UD Cast ADT then
 }
 \end{gather*}
 
-\caption{Bisimulation between \RBMachine\ and \SMachine{C}. It is the smallest 
+\caption{Bisimulation between \CBMachine\ and \SMachine{C}. It is the smallest 
 congruence relation containing the shown rules. Everything to the left (resp. 
-right) of $\approx$ is in \RBMachine\ (resp. in \SMachine{C}).}
+right) of $\approx$ is in \CBMachine\ (resp. in \SMachine{C}).}
 \label{fig:bisim-SC-D}
 \end{figure}
 
@@ -1949,22 +1955,22 @@ right) of $\approx$ is in \RBMachine\ (resp. in \SMachine{C}).}
 % }
 % \end{gather*}
 
-% \caption{Bisimulation between \RBMachine\ and \SMachine{C}. It is the smallest 
+% \caption{Bisimulation between \CBMachine\ and \SMachine{C}. It is the smallest 
 % congruence relation containing the shown rules. Everything to the left (resp. 
-% right) of $\approx$ is in \RBMachine\ (resp. in \SMachine{C}).}
+% right) of $\approx$ is in \CBMachine\ (resp. in \SMachine{C}).}
 % \label{fig:bisim-SC-D}
 % \end{figure}
 
 
-The central part of the proofs is a weak bisimulation between \RMachine{B} and \SMachine{C}.
+The central part of the proofs is a weak bisimulation between \CMachine{B} and \SMachine{C}.
 Fig.~\ref{fig:bisim-SC-D} defines the bisimulation relation.
 It is the smallest congruence relation containing the rules 
 in Fig.~\ref{fig:bisim-SC-D}.
 %
 The relation $\bisimc{\overline{\ccast{S}{l}{T}}}{c}{S}{T}$ relates a sequence 
-of cast in \RBMachine\ with one cast in \SMachine{C}. This relation is designed 
+of cast in \CBMachine\ with one cast in \SMachine{C}. This relation is designed 
 to cover all possibly ways to construct a cast representation. The empty 
-sequence is related to the identity cast. A \RBMachine\ cast is related 
+sequence is related to the identity cast. A \CBMachine\ cast is related 
 to its translation. Finally, cast sequencing preserves the bisimulation 
 relation.
 %
@@ -1994,7 +2000,7 @@ So if two values of type $I$ are related, injecting them to $\Tdyn$
 gives related values.
 %
 To relate function closures, the domain and codomain casts should be related. 
-Closures in \RMachine{B} are proxied with a sequence of function casts, which 
+Closures in \CMachine{B} are proxied with a sequence of function casts, which 
 can be viewed as two cast sequences in the obvious way.
 %
 The rule for products is similar.
@@ -2068,14 +2074,14 @@ the expressions in the machine are simply related by syntactic equality.
 %\end{lemma}
 
 We now come to the main lemmas, the weak bisimulation between
-\RBMachine\ and \SMachine{C}.
+\CBMachine\ and \SMachine{C}.
 
-\begin{lemma}[Weak Bisimulation between \RMachine{B} and \SMachine{C}] \label{lem:weak-bisimulation}
+\begin{lemma}[Weak Bisimulation between \CMachine{B} and \SMachine{C}] \label{lem:weak-bisimulation}
 Assume
 \begin{enumerate}
     \item the blame strategy $B$ and $C$ agrees on the set of injectable types and
     \item $\denote{c}(v)$ preserves the bisimulation relation (e.g. Lemma~\ref{lem:LazyD-apply-cast-preserve-bisim} and \ref{lem:LazyUD-apply-cast-preserve-bisim}) and
-    \item $s_1$ is a state in \RMachine{B} and
+    \item $s_1$ is a state in \CMachine{B} and
     \item $s_1'$ is a state in \SMachine{C} and
     \item $\bisims{s_1}{s_1'}{T}$
 \end{enumerate}	then either
@@ -2219,13 +2225,13 @@ where
 	\label{thm:SD-equiv}
 	Suppose $C$ is a Lazy D Cast ADT
 	\[
-	\machineequiv{\RBMachine}{\SMachine{C}}
+	\machineequiv{\CBMachine}{\SMachine{C}}
 	\]
 \end{theorem}
 % \begin{proof}
 % 	By the definitions of $\textit{eval}$, we need to show 
 % 	\[
-% 	\transitivelyreducetoM{\RMachine{B}}{\sexpr{e}{\emptyset}{\Knil}}{
+% 	\transitivelyreducetoM{\CMachine{B}}{\sexpr{e}{\emptyset}{\Knil}}{
 % 		s
 % 	}
 % 	\;\text{if and only if}\;
@@ -2243,7 +2249,7 @@ where
 	\label{thm:SUD-equiv}
 	Suppose $C$ is a Lazy UD Cast ADT
 	\[
-	\machineequiv{\RBMachine}{\SMachine{C}}
+	\machineequiv{\CBMachine}{\SMachine{C}}
 	\]
 \end{theorem}
 % \begin{proof}
