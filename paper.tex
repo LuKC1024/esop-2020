@@ -433,10 +433,13 @@ The current state of the art includes
 The semantics of these cast representations are defined in many
 different papers with separate reduction rules, which makes it
 difficult to isolate the key differences between them.  In this paper
-we present the first set of reduction rules for a cast calculus that
+we present a set of reduction rules for a cast calculus that
 is parameterized over the cast representation
 (Section~\ref{sec:framework}).
 \todo[inline]{JS: First? What about \url{https://arxiv.org/abs/2001.11560}?}
+\todo[inline]{KC: My bad. I don't remember how this word gets in but I
+definitely should be more careful about these kind of words. BTW, should
+the arxiv paper go into Related Work?}
 The semantics takes the form of a CEK
 abstract machine and it formulates the interface between the machine
 and the different cast representations as an abstract data type,
@@ -451,12 +454,13 @@ representation correct.  We believe this framework can reduce the
 burden of proving correctness theorems and help people focus on the
 cast representations.
 \todo[inline]{JS: Say the framework is in Agda.}
+\todo[inline]{KC: Has said, at the end of this paragraph}
 For illustration, we apply the framework to
 Lazy UD coercions in normal form~\citep{Siek:2015:BCT:2737924.2737968}
 and Lazy UD threesomes~\citep{Siek:2010:TWB:1706299.1706342}. We
 believe the framework is also applicable to other cast
-representations.  The framework and illustrations are available at the
-following URL:
+representations.  The framework and illustrations (written in Agda)
+are available at the following URL:
 \[\text{\urlFrameworkAndIllustration}\]
 
 \todo[inline]{KC: (about the p below) Actually I think twosome's
@@ -826,12 +830,23 @@ Fig.~\ref{fig:R-machine-dynamics} defines the transition relation of the CEK
 machine (\RMachine{B}) and Fig.~\ref{fig:R-machine-syntax} gives a grammar for machine 
 states $s$, including a definition of values $v$ and value typing.
 \todo[inline]{JS: explain the name choice of $\mathcal{R}$.}
+\todo[inline]{KC: I want to space-efficient machine to be S, so ... B might be a better name 
+because it reminds people of the $\lambda B$ calculus.
+Or $T$ for type-based cast?
+Or $C$ for cast-calculus?
+Or $D$ for definitional semantic?
+How do you think?}
 %
 This machine is parameterized over blame strategy $B$, which ranges over
 Lazy D (Fig.~\ref{fig:blame-strategy-LazyD}) and Lazy UD 
 (Fig.~\ref{fig:blame-strategy-LazyUD}).
 \todo[inline]{JS: I don't think $B$ is restricted to just those two.
 Can't it be any blame strategy that satisfies certain conditions?}
+\todo[inline]{KC: Technically a $B$ should define a predicate over pretypes, which specifies
+what is injectable, and a apply-cast function. Of course, the set of values that the apply-cast
+function works with depends on the set of injectable types.
+\url{https://github.com/Gradual-Typing/Equivalence-of-Cast-Calculi/blob/master/equivalence-of-cast-calculi/R/BlameStrategies.agda}
+Do you want me to put these contraints in the paper?}
 %
 The transitions involving casts are highlighted in red and described in
 more detail below. The other transitions are standard for a CEK
