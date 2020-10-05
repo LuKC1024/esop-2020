@@ -471,21 +471,12 @@ representations. The framework and demonstrations are available at the
 following URL:
 \[\text{\urlFrameworkAndIllustration}\]
 
-\todo[inline]{KC: (about the p below) Actually I think twosome's
-  composition is structurally recursive but threesomes' is not}
-\todo[inline]{JS: Then please go ahead and fix it.}
-\todo[inline]{KC: Fixed. 
-``Threesomes and supercoercions are good for
-mechanized metatheory because their compose operators 
-can be written in a structrually recursive form,''}
-
 The published space-efficient cast representations have various
 strengths and weaknesses.  The major insight of these systems is a
 compose operator for casts which compresses cast information to reduce
 space consumption.  Threesomes and supercoercions are good for
 mechanized metatheory because their compose operators 
 can be written in a structrually recursive form,
-% are structurally recursive,
 making them easy to define in proof assistants such as
 Agda. In contrast, the coercions in normal form have compose operators
 that are not structurally recursive, which makes it more difficult to
@@ -493,7 +484,7 @@ define in Agda, requiring what amounts to an explicit proof of
 termination.
 %
 On the other hand, coercions in normal form are easier to understand
-than threesomes (with their strange labeled bottom type), and
+than threesomes (which have a strange labeled bottom type), and
 supercoercions (10 different kinds).
 
 This paper presents a new cast representation named
