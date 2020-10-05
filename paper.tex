@@ -2075,7 +2075,7 @@ the expressions in the machine are simply related by syntactic equality.
 	Assume $C$ implements Lazy UD Cast ADT,
 	$v$ is a value in \LUDMachine,
 	$v'$ is a value in \SMachine{C},
-	and $\bisimv{v}{v'}{S}$
+	and $\bisimv{v}{v'}{S}$.
 	\[
 	\bisimr{
 		\applyCast{v}{\ccast{S}{l}{T}}
@@ -2269,7 +2269,7 @@ two theorems.}
 
 \begin{theorem}[Correctness of Lazy D \SMachine{C}]
 	\label{thm:SD-equiv}
-	Suppose $C$ is a Lazy D Cast ADT
+	Suppose $C$ is a Lazy D Cast ADT.
 	\[
 	\machineequiv{\CBMachine}{\SMachine{C}}
 	\]
@@ -2293,7 +2293,7 @@ two theorems.}
 
 \begin{theorem}[Correctness of Lazy UD \SMachine{C}]
 	\label{thm:SUD-equiv}
-	Suppose $C$ is a Lazy UD Cast ADT
+	Suppose $C$ is a Lazy UD Cast ADT.
 	\[
 	\machineequiv{\CBMachine}{\SMachine{C}}
 	\]
@@ -2747,17 +2747,20 @@ In the projection case of applying a head coercion, a new middle is
 constructed and applied to the injected value.
 %
 Middle applications raise an error if the middle is a failure,
-otherwise they compose their coercions with those in the value.
+otherwise they compose their sub-coercions with those in the value.
 
-\begin{proposition} Lazy D Hypercoercions implement the Lazy D Cast ADT
+\begin{proposition} Lazy D Hypercoercions implement the Lazy D Cast ADT.
 \end{proposition}
 \begin{theorem}[Lazy D Hypercoercions are Correct] Let $H$ be the Lazy D 
-hypercoercions,
+hypercoercions.
 \[\machineequiv{\LDMachine}{\SMachine{H}}\]
 \end{theorem}
 
 
 \subsection{\LUD\ Hypercoercions} \label{sec:LazyUD-Hypercoercions}
+
+\todo[inline]{JS: I'd recommend moving this subsection before that of
+  LazyD because a reader is more likely to be familiar with Lazy UD.}
 
 Hypercoercions for the \LUD\ blame tracking strategy have the same syntax
 as for \LD\ (\figref{fig:hypercoercion}), but the definitions of $\id{T}$ and
@@ -3001,29 +3004,30 @@ function for \LUD\ hypercoercions.
 Applying the identity cast for the dynamic type succeeds immediately. 
 Otherwise, we apply head, middle, and tail in sequence. 
 %
-In the two projection cases of head application, the result depends on whether 
-the source ground type ($G$) is the same as the target ($H$).
+In the two projection cases of applying a head coercion, the result
+depends on whether the source ground type ($G$) is the same as the
+target ($H$).
 %
-Middle applications raises an error if the middle is a failure and extend value 
-proxies otherwise.
+The application of a middle coercion raises an error if the middle is
+a failure and otherwise composes its sub-coercions with those in the
+value.
 
 \begin{proposition} Lazy UD Hypercoercions implement the Lazy UD Cast ADT
 \end{proposition}
 \begin{theorem}[Lazy UD Hypercoercions are Correct] Let $H$ be the Lazy UD 
-	hypercoercions,
+	hypercoercions.
 	\[\machineequiv{\LDMachine}{\SMachine{H}}\]
 \end{theorem}
 
-\subsection{Compact Representation of Hypercoercions} \label{sec:hypercoercions-compact}
+\subsection{A Compact Representation of Hypercoercions} \label{sec:hypercoercions-compact}
 
 Hypercoercions enable a bit-level representation that is particularly
 compact for identity coercions and coercions that project from base
-types or inject to base types.  (Here \Pbool\ is the only base
-type, but in a real language the base types would include integers,
-Booleans, etc.)  We conjecture that such coercions occur more
-frequently than the more complex coercions (e.g. between function
-types), especially because such coercions appear in the leaves of
-complex coercions.
+types or inject to base types.  (Here \Pbool\ is the only base type,
+but in a real language the base types would include integers,
+Booleans, etc.) Such coercions occur more frequently than the more
+complex coercions (e.g. between function types) because such coercions
+appear in the leaves of complex coercions.
 
 Furthermore, values of base types are often stored in CPU registers, so
 it would be nice for coercions on base types to also fit in registers,
@@ -3067,25 +3071,24 @@ coercions.
 
 \section{Conclusion} \label{sec:conclusion}
 
-We present steps toward the first framework for proving the
-correctness of cast representations.
+We present the first framework for mechanized proofs of correctness
+for space-efficient cast representations.
 %
 The framework includes abstract data types for cast representations
-(Cast ADT and its refinements Lazy D Cast ADT and \LUD\ \CastADT), 
-a parameterized abstract machine \SMachine{C}, 
-a theorem which states that \SMachine{C} is equivalent
-to \LDMachine\ when $C$ is a Lazy D Cast ADT, and
-a theorem which states that \SMachine{C} is equivalent
-to \LUDMachine\ when $C$ is a Lazy UD Cast ADT.
+(Cast ADT and its refinements Lazy D Cast ADT and \LUD\ \CastADT), a
+parameterized abstract machine \SMachine{C}, a theorem stating that
+\SMachine{C} is equivalent to \LDMachine\ when $C$ is a Lazy D Cast
+ADT, and a theorem which states that \SMachine{C} is equivalent to
+\LUDMachine\ when $C$ is a Lazy UD Cast ADT.
 %
 %The Lazy D Cast ADT refines the Cast ADT. 
 %
-We applied this framework to Lazy UD coercions in normal form,
-Lazy UD threesomes, and hypercoercions and conjecture that
-this framework is also applicable to other cast representations.
+We applied this framework to Lazy UD coercions in normal form, Lazy UD
+threesomes, and hypercoercions and expect that this framework is also
+applicable to many other cast representations.
 
-We also presented hypercoercions, a cast representation that has a 
-theorem-prover-friendly compose operator and a more compact memory
+We also presented hypercoercions, a cast representation with a
+mechanization-friendly compose operator and a more compact memory
 representation in comparison with coercions in normal forms.
 
 %
