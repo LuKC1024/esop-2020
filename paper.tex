@@ -227,8 +227,10 @@
 \newcommand{\id}[1]{\ensuremath{\mathrm{id}(#1)}}
 \newcommand{\idm}[1]{\ensuremath{\mathrm{id}_m(#1)}}
 \newcommand{\idc}[1]{\ensuremath{\mathrm{id}_c(#1)}}
-\newcommand{\mkCont}[1]{\ensuremath{\mathrm{mkK}(#1)}}
-\newcommand{\extCont}[2]{\ensuremath{\mathrm{extK}(#1,#2)}}
+\newcommand{\mkContName}[0]{\ensuremath{\mathrm{mkK}}}
+\newcommand{\mkCont}[1]{\ensuremath{\mkContName(#1)}}
+\newcommand{\extContName}[0]{\ensuremath{\mathrm{extK}}}
+\newcommand{\extCont}[2]{\ensuremath{\extContName(#1,#2)}}
 % \newcommand{\applyCont}[2]{\ensuremath{\langle\langle#1,#2\rangle\rangle}}
 \newcommand{\applyCont}[2]{\ensuremath{\mathrm{applyK}(#1,#2)}}
 
@@ -924,7 +926,7 @@ with monads.
 2. Do you imply that monadic let doesn't need to be explained?
 }
 
-\begin{figure}
+\begin{figure}[tp]
 	\fbox{\reducetoR{B}{s}{s}} Transition
 	\[
 	\begin{array}{rclr}
@@ -1033,7 +1035,7 @@ Projecting the second element of a casted pair is similar.
 The reflexive transitive closure of reduction \transitivelyreduceto{s}{s}
 and evaluation partial function ${\evalto{e}{o}}$ are standard~\citep{felleisen03:_pllc}.
 
-\begin{figure}
+\begin{figure}[tp]
 \[
 \begin{array}{lrcl}
 \stxrule{I,J}{Injectable types}{P}
@@ -1330,7 +1332,7 @@ Subsection~\ref{sec:S-correct}.
 \subsection{Cast Abstract Data Type and a Space-efficient CEK Machine}
 \label{sec:cast-adt-and-space-efficient-cek}
 
-\begin{figure}
+\begin{figure}[tp]
 	\[
 	\begin{array}{lrcl}
 	\stxrule{c,d}{Runtime casts}{\text{a data type defined by the 
@@ -1387,8 +1389,8 @@ Subsection~\ref{sec:S-correct}.
 
 \figref{fig:SEMachine-state} defines the syntax of the space-efficient
 CEK machine \SMachine{C}.  The key differences between \SMachine{C}
-and \CMachine{B} are the places where casts can accumulate, that is,
-in the definitions of values and continuations.
+and \CMachine{B} are in the places where casts can accumulate, that
+is, in the definitions of values and continuations.
 
 Let $u,v$ range over values.
 %
@@ -1454,25 +1456,21 @@ We use the syntax \casttyping{c}{S}{T} to mean $c$ is in the set
 $\textit{Cast}_{S,T}$.
 \end{definition}
 
-Before moving to the transition relation of \SMachine{C}, let's define two 
-helper functions that manipulate continuations.
+Before discussing the transition relation of \SMachine{C}, we define
+two helper functions for manipulating continuations.
 %
-The function $\mathit{mkCont}$ construct a continuation from a pre-continuation 
-by topping the pre-continuation with an identity cast. 
-%
-The function $\mathit{extCont}$ composes $c$ with the cast at the top of $K$ by 
-using the composition operator 
-$\fatsemi$.
-\[
-\begin{array}{rclr}
-\figequalto{\mkCont{k}}{\Kcons{\Fcast{\id{S}}}{k}}{\sidecond{\casttyping{k}{S}{T}}}
-\figequalto{\extCont{c}{\Kcons{\Fcast{d}}{k}}}{
-	\Kcons{\Fcast{(\compose{c}{d})}}{k}
-}{}
-\end{array}
-\]
+The function $\mkContName$ constructs a continuation from a
+pre-continuation by topping it with an identity cast.
+\begin{align*}
+  \mkCont{k} &= \Kcons{\Fcast{\id{S}}}{k} & \sidecond{\casttyping{k}{S}{T}}
+\end{align*}
+The function $\extContName$ composes $c$ with the cast at the top of
+$K$ by using the composition operator $\fatsemi$.
+\begin{align*}
+  \extCont{c}{\Kcons{\Fcast{d}}{k}} &= \Kcons{\Fcast{(\compose{c}{d})}}{k}
+\end{align*}
 
-\begin{figure}
+\begin{figure}[tp]
 	\fbox{\reducetoS{C}{s}{s}} Transition
 	\[
 	\begin{array}{rclr}
@@ -1581,19 +1579,24 @@ $\fatsemi$.
 	\label{fig:semachine-dynamics}
 \end{figure}
 
-\figref{fig:semachine-dynamics} defines the transition relation 
-$\reducetoS{C}{s}{s}$. They rely on functions provided 
-by $C$ to work with casts.
+\figref{fig:semachine-dynamics} defines the transition relation
+$\reducetoS{C}{s}{s}$. It relies on the functions provided by the Cast
+ADT $C$.
 %
-To construct a function value, the machine fills the casts with identities.
+We focus on the transition rules highlighted in red, which involve
+casts and the changes needed for space efficiency.
 %
-When evaluating a cast expression, the machine extends the continuation with 
-\translate{\ccast{S}{l}{T}}.
+The rule for evaluating a function produces a function value, using
+identities for the casts on the function value's domain and range.
 %
-To return a value to a continuation, the machine first applies the top cast to 
-the value. If the cast application fails, the machine halts with the blame 
-label from the failure. Otherwise, the machine handles the pre-continuation 
-with the function $\applyCont{v}{k}$.
+The rule for evaluating a cast expression extends the continuation
+with the cast \translate{\ccast{S}{l}{T}}.
+%
+The rule for returning a value to a continuation first applies the top
+cast of the continutation to the value. If the cast application fails,
+the machine halts with the blame label from the failure. Otherwise,
+the machine handles the pre-continuation with the function
+$\applyCont{v}{k}$.
 %
 To apply a function, the machine applies the domain cast $c$ to the 
 argument $v$ and evaluates the function body. The codomain cast $d$ is merged 
@@ -1711,7 +1714,7 @@ and that if $C$ is a Lazy UD Cast ADT then
 \machineequiv{\LUDMachine}{\SMachine{C}}
 \]
 
-\begin{figure}
+\begin{figure}[tp]
 
 \fbox{\bisimc{\overline{\ccast{S}{l}{T}}}{c}{S}{T}}
 \begin{gather*}
@@ -2290,7 +2293,7 @@ where
 
 \section{Hypercoercions, a New Cast Representation} \label{sec:hypercoercions}
 
-\begin{figure}
+\begin{figure}[tp]
 	Syntax of Hypercoercions
 	\[
 	\begin{array}{lrcl}
@@ -2414,7 +2417,7 @@ normal form and hence are more suitable for implementation.
 \subsection{\LD\ Hypercoercions}
 \label{sec:LazyD-Hypercoercions}
 
-\begin{figure} %% composition 1
+\begin{figure}[tp] %% composition 1
 \[
 \begin{array}{lrcl}
 \stxrule{g}{Gaps}{
@@ -2652,7 +2655,7 @@ calls, although their position is swapped in the function case. Readers who
 hate non-structural recursion might add a Boolean parameter to indicate the order
 of composition.
 
-\begin{figure}
+\begin{figure}[tp]
 	\fbox{$\translate{\ccast{S}{l}{T}} = c$} Translation of \LD\ hypercoercions
 	\[
 	\begin{array}{rclr}
@@ -2666,7 +2669,7 @@ of composition.
 The definition of translation \translate{\ccast{S}{l}{T}} is straightforward 
 (\figref{fig:LazyD-Hypercoercions-translation}).
 
-\begin{figure}
+\begin{figure}[tp]
 \fbox{$\denote{c}(v)=r$}
 \[
 \begin{array}{rclr}
@@ -2763,7 +2766,7 @@ label to blame. The forth and last line is straightforward recursion.
 %handles the case when the tail of $c_1$ is a failure, in which case
 %the result of composition is $c_1$. The definition of $id$ is straightforward.
 
-\begin{figure}
+\begin{figure}[tp]
 	\fbox{$c \fatsemi c = c$}
 	\[
 	\begin{array}{rclcl}
@@ -2838,7 +2841,7 @@ label to blame. The forth and last line is straightforward recursion.
 \label{fig:LazyUD-Hypercoercions-composition}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[tp]
 	\fbox{$\translate{\ccast{S}{l}{T}} = c$}
 	\[
 	\begin{array}{rcll}
@@ -2923,7 +2926,7 @@ $\mathit{castToDyn}$ and $\mathit{castFromDyn}$, is to ensure that each of them
 is structurally recursive, which makes them straightforward to define in
 Agda.
 
-\begin{figure}
+\begin{figure}[tp]
 	\fbox{$\denote{c}_c(v)=r$}
 	\[
 	\begin{array}{rclr}
