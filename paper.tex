@@ -450,7 +450,8 @@ namely the \emph{Cast ADT}.
 Of course, a space-efficient cast representation must be proved
 correct. That is, a language implementation that uses space-efficient
 casts should give the same output as the language semantics. Our
-generic CEK machine comes with generic theorems mechanized in Agda
+generic CEK machine comes with generic theorems mechanized in
+the Agda proof assistant~\citep{norell2008dependently}
 (Section~\ref{sec:framework}) that researchers can use to prove a cast
 representation correct.  We believe this framework can reduce the
 burden of proving correctness theorems and help people focus on the
@@ -844,16 +845,6 @@ states $s$, including a definition of values $v$ and value typing.
 Fig.~\ref{fig:R-machine-dynamics} defines the transition relation of the CEK
 machine (\CMachine{B}).
 We name the machine after \textbf{c}ast calculus.
-\todo[inline]{JS: explain the name choice of $\mathcal{R}$.}
-\todo[inline]{KC: I want to space-efficient machine to be S, so ... B might be a better name 
-because it reminds people of the $\lambda B$ calculus.
-Or $T$ for type-based cast?
-Or $C$ for cast-calculus?
-Or $D$ for definitional semantic?
-How do you think?}
-\todo[inline]{JS: B or C both sound like good choices for the reasons
-you give.}
-\todo[inline]{KC: Let's go with C to avoid confusion with Blame strategy.}
 %
 % This machine is parameterized over blame strategy $B$, which ranges over
 % Lazy D (Fig.~\ref{fig:blame-strategy-LazyD}) and Lazy UD 
@@ -1016,11 +1007,11 @@ with monads.
 
 The transition relation \reduceto{s}{s} invokes the cast application
 function, noted as $\applyCast{v}{\ccast{S}{l}{T}}$, which is also defined
-by specify blame strategies.
-% to capture the
-% differences between blame strategies
-% (Fig.~\ref{fig:blame-strategy-LazyD} and
-% Fig.~\ref{fig:blame-strategy-LazyUD}).
+by specify blame strategies (Fig.~\ref{fig:blame-strategy-LazyD} and
+Fig.~\ref{fig:blame-strategy-LazyUD}).
+\todo[inline]{JS: be consistent with the font used for applyCast. Sometimes
+  you use roman and sometimes you used italic. Also, be consistent
+  for all the metafunctions (eval, observe, etc.).}
 %
 When evaluating a cast expression, the machine moves the cast to the
 continuation and evaluates the inner expression.
@@ -1182,8 +1173,6 @@ In this section, we review the coercions
 of~\citet{henglein1994dynamic} and \citet{herman2010space} and the
 normal form of \citet{siek2012interpretations} to motivate the design
 of hypercoercions.
-% We omit sum types and product types in this
-% section because the prior work did not include them.
 
 \begin{figure}[tp]
 	\[
@@ -1258,26 +1247,28 @@ the three-part and symmetric structure is not obvious in the syntax definition.
 % All cast representation shall be proved correct, that is, besides reducing 
 % space consumption, using a cast representation should not affect the results of 
 % program execution.
-In this section we present a framework for proving the 
-correctness of cast representations. The framework includes an abstract data 
-type named Cast ADT, which specifies the operators of cast representations, 
-a CEK machine $\SMachine{C}$ parameterized over a Cast ADT,
-which uses the cast operators implemented by $C$ to work with casts, 
-and theorems relating $\SMachine{C}$ to $\CMachine{B}$.
+In this section we present a framework for proving the correctness of
+space-efficient cast representations.  The framework includes an
+abstract data type named Cast ADT, which specifies the operators
+required of a cast representation, a CEK machine $\SMachine{C}$
+parameterized over a Cast ADT $C$, and theorems relating
+$\SMachine{C}$ to $\CMachine{B}$.
 %
-Subsection~\ref{sec:cast-adt-and-space-efficient-cek} describes Cast ADT and the 
-machine \SMachine{C}. We conjecture that the machine \SMachine{C} is 
-space-efficient provided that the cast representation $C$ performs compression.
+Subsection~\ref{sec:cast-adt-and-space-efficient-cek} defines the Cast
+ADT and the machine \SMachine{C}. We conjecture that the machine
+\SMachine{C} is space-efficient provided that the cast representation
+$C$ performs compression.
 %
-Subsection~\ref{sec:good-cast-adt} defines two subset of Cast ADT, namely Lazy D 
-Cast ADT and Lazy UD Cast ADT. As their names suggest, if $C$ is a Lazy D Cast 
-ADT, executing a program in $\SMachine{C}$ would give the same result as in 
-$\LDMachine$. Similarly, if $C$ is a Lazy UD Cast ADT, executing a program in 
-$\SMachine{C}$ would give the same result as in $\LUDMachine$.
+Subsection~\ref{sec:good-cast-adt} defines two subsets of the Cast
+ADT, namely the Lazy D Cast ADT and the Lazy UD Cast ADT. As their
+names suggest, if $C$ is a Lazy D Cast ADT, executing a program in
+$\SMachine{C}$ would give the same result as in
+$\LDMachine$. Similarly, if $C$ is a Lazy UD Cast ADT, executing a
+program in $\SMachine{C}$ would give the same result as in
+$\LUDMachine$.
 %
 We prove the theorems relating \SMachine{C} and \CMachine{B} in
 Subsection~\ref{sec:S-correct}.
-The framework is written in the Agda language~\citep{norell2008dependently}.
 
 %In Section~\ref{chap:background} we have seen that the standard dynamic 
 %semantic of the cast calculi has a space-efficiency problem 
@@ -1394,26 +1385,27 @@ The framework is written in the Agda language~\citep{norell2008dependently}.
 	\label{fig:SEMachine-state}
 \end{figure}
 
-\figref{fig:SEMachine-state} defines the syntax of the space-efficient CEK 
-machine \SMachine{C}.
-The key differences between \SMachine{C} and \CMachine{B} are in the definitions
-of values and continuations, that is, places where casts can accumulate.
+\figref{fig:SEMachine-state} defines the syntax of the space-efficient
+CEK machine \SMachine{C}.  The key differences between \SMachine{C}
+and \CMachine{B} are the places where casts can accumulate, that is,
+in the definitions of values and continuations.
 
 Let $u,v$ range over values.
 %
-Recall that in \CMachine{B} we have two value constructors for functions and 
-another two for pairs. That setup allows zero-or-more layers of casts at the 
-top of higher-order values, which might consume unbounded space. 
+Recall that in \CMachine{B} we have two value constructors for
+functions and another two for pairs. That setup allows zero-or-more
+layers of casts at the top of higher-order values, which can consume
+unbounded space.
 %
 \SMachine{C} instead has exactly one layer of cast.
 Thus non-casted values in \CMachine{B} correspond to \SMachine{C} values
 where casts are identities ($\mathit{id}(T)$). The 
 $\mathit{id}$ functions is provided by the Cast ADT.
 
-Let $K$ ranges over continuations and $k$ ranges over pre-continuations.
-This setup is essentially saying that cast frames and non-cast frames should
-appear alternatively in continuations, and that a continuation always start
-with a cast frame.
+Let $K$ ranges over continuations and $k$ ranges over
+pre-continuations.  This setup requires cast frames and non-cast
+frames to alternate in continuations, and that a continuation always
+starts with a cast frame.
 % %
 % Pre-continuations are like the continuations in \CMachine{B}, but their 
 % top-most frame must not be a cast frames.
@@ -1424,18 +1416,19 @@ with a cast frame.
 % In \SMachine{C}, however, every continuation has exactly one cast at the 
 % top.
 % %
-\CMachine{B} continuations that have no casts at the top correspond
-to \SMachine{C} continuations whose casts are identities.
-\CMachine{B} continuations that have many casts at the top correspond
-to \SMachine{C} continuations in where those casts are composed by
-$\compose{c}{c}$, another functions provided by the Cast ADT.
+A \CMachine{B} continuation that does not have a cast at the top
+corresponds to a \SMachine{C} continuation whose casts are identities.
+A \CMachine{B} continuation that has many casts at the top corresponds
+to a \SMachine{C} continuation in which those casts are composed by
+$\compose{c}{c}$, which is an operation provided by the Cast ADT.
 %
-Injectable types, environments, states, and cast results are the same as in \CBMachine.
+Injectable types, environments, states, and cast results are the same
+as in \CBMachine.
 
-Value typing (\valuetyping{v}{T}), continuation typing 
-(\casttyping{k}{S}{T} and \casttyping{K}{S}{T}), and environment typing 
-(\envtyping{\Gamma}{E}) are defined in the obvious way. 
-They rely on cast typing \casttyping{c}{S}{T}, which shall be provided by the 
+Value typing (\valuetyping{v}{T}), continuation typing
+(\casttyping{k}{S}{T} and \casttyping{K}{S}{T}), and environment
+typing (\envtyping{\Gamma}{E}) are defined in the obvious way.  They
+rely on cast typing \casttyping{c}{S}{T}, which is provided by the
 Cast~ADT.
 
 \todo[inline]{KC: I changed some wording in the following definition:
