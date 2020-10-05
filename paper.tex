@@ -858,16 +858,6 @@ the components of a blame strategy as we go through the machine definition.
 In this work we focus on Lazy D (Fig.~\ref{fig:blame-strategy-LazyD}) and Lazy UD 
 (Fig.~\ref{fig:blame-strategy-LazyUD}). Adding more blame strategies, 
 such as the ones defined in \cite{siek2009exploring}, is possible.
-\todo[inline]{JS: I don't think $B$ is restricted to just those two.
-Can't it be any blame strategy that satisfies certain conditions?}
-\todo[inline]{KC: Technically a $B$ should define a predicate over pretypes, which specifies
-what is injectable, and a apply-cast function. Of course, the set of values that the apply-cast
-function works with depends on the set of injectable types.
-\url{https://github.com/Gradual-Typing/Equivalence-of-Cast-Calculi/blob/master/equivalence-of-cast-calculi/R/BlameStrategies.agda}
-Do you want me to put these contraints in the paper?}
-\todo[inline]{JS: Yes.}
-\todo[inline]{KC: The machine definition gives a nice context for blame strategy so I 
-define blame strategy later. You will find a todo near the blame strategy definition.}
 %
 The transitions involving casts are highlighted in red and described in
 more detail below. The other transitions are standard for a CEK
