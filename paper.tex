@@ -348,11 +348,11 @@ dynamic typing and static typing, notably gradual typing
 migratory typing \citep{tobin2006interlanguage}, and multi-language
 interoperability \citep{Gray:2005ij,Matthews:2007zr}.
 
-\todo[inline]{KC: Cite "Contracts for higher-order functions" for the proxy-based approach maybe?}
-\todo[inline]{JS: That paper doesn't exactly fit into what you're talking about in the above
-sentence. It might be appopriate to cite it elsewhere in the paper. Also,
-there are earlier papers about coercive subtyping (Computing with coercions by Breazu-Tannen et al)
-that use a proxy-based approach. The contracts paper may be the first to propose blame tracking.}
+%% \todo[inline]{KC: Cite "Contracts for higher-order functions" for the proxy-based approach maybe?}
+%% \todo[inline]{JS: That paper doesn't exactly fit into what you're talking about in the above
+%% sentence. It might be appopriate to cite it elsewhere in the paper. Also,
+%% there are earlier papers about coercive subtyping (Computing with coercions by Breazu-Tannen et al)
+%% that use a proxy-based approach. The contracts paper may be the first to propose blame tracking.}
 
 Gradual typing \citep{siek2006gradual,siek2015refined} includes both static typing 
 and dynamic typing in the same language and enables a smooth transition between them while
@@ -440,6 +440,7 @@ is parameterized over the cast representation
 \todo[inline]{KC: My bad. I don't remember how this word gets in but I
 definitely should be more careful about these kind of words. BTW, should
 the arxiv paper go into Related Work?}
+\todo[inline]{JS: Yes.}
 The semantics takes the form of a CEK
 abstract machine and it formulates the interface between the machine
 and the different cast representations as an abstract data type,
@@ -448,23 +449,21 @@ namely the \emph{Cast ADT}.
 Of course, a space-efficient cast representation must be proved
 correct. That is, a language implementation that uses space-efficient
 casts should give the same output as the language semantics. Our
-generic CEK machine comes with generic theorems
+generic CEK machine comes with generic theorems mechanized in Agda
 (Section~\ref{sec:framework}) that researchers can use to prove a cast
 representation correct.  We believe this framework can reduce the
 burden of proving correctness theorems and help people focus on the
-cast representations.
-\todo[inline]{JS: Say the framework is in Agda.}
-\todo[inline]{KC: Has said, at the end of this paragraph}
-For illustration, we apply the framework to
+cast representations. As a demonstration, we apply the framework to
 Lazy UD coercions in normal form~\citep{Siek:2015:BCT:2737924.2737968}
 and Lazy UD threesomes~\citep{Siek:2010:TWB:1706299.1706342}. We
 believe the framework is also applicable to other cast
-representations.  The framework and illustrations (written in Agda)
-are available at the following URL:
+representations. The framework and demonstrations are available at the
+following URL:
 \[\text{\urlFrameworkAndIllustration}\]
 
 \todo[inline]{KC: (about the p below) Actually I think twosome's
   composition is structurally recursive but threesomes' is not}
+\todo[inline]{JS: Then please go ahead and fix it.}
 
 The published space-efficient cast representations have various
 strengths and weaknesses.  The major insight of these systems is a
@@ -592,7 +591,7 @@ motivates and inspires the design of hypercoercions.
 
 \subsection{Cast Calculi} \label{sec:cast-calculi}
 
-\begin{figure}
+\begin{figure}[tp]
 Syntax
 \[
 \begin{array}{lrcl}
@@ -720,16 +719,13 @@ CEK machine is more convenient to use for the space-efficient
 semantics in \chapref{sec:framework} because continuations need to be
 compressed and continuations are an explicit part of the CEK machine
 states.  So also using a CEK machine for the cast calculi in this
-section makes it easier to prove these machines are equivalent.  Of
-course, one should also prove that the abstract machine presented here
-is equivalent to the standard reduction semantics for cast calculi,
-but we have not yet done so.
+section makes it easier to prove these machines are equivalent.  The
+equivalence of this CEK machine and reduction semantics for cast
+calculi could be proved by standard
+techniques~\citep{Felleisen:2009aa}.
 
-\todo[inline]{JS: We might cite the proof of correctness for CEK in the
-  PLT Redex book and conjecture that it would be straightforward to
-  adapt.}
 
-\begin{figure}
+\begin{figure}[tp]
 \[
 \begin{array}{lrcl}
 \stxrule{v,u}{Values}{
@@ -826,9 +822,10 @@ but we have not yet done so.
 \label{fig:R-machine-syntax}
 \end{figure}
 
-Fig.~\ref{fig:R-machine-dynamics} defines the transition relation of the CEK
-machine (\RMachine{B}) and Fig.~\ref{fig:R-machine-syntax} gives a grammar for machine 
+Fig.~\ref{fig:R-machine-syntax} defines machine 
 states $s$, including a definition of values $v$ and value typing.
+Fig.~\ref{fig:R-machine-dynamics} defines the transition relation of the CEK
+machine (\RMachine{B}). 
 \todo[inline]{JS: explain the name choice of $\mathcal{R}$.}
 \todo[inline]{KC: I want to space-efficient machine to be S, so ... B might be a better name 
 because it reminds people of the $\lambda B$ calculus.
@@ -836,6 +833,8 @@ Or $T$ for type-based cast?
 Or $C$ for cast-calculus?
 Or $D$ for definitional semantic?
 How do you think?}
+\todo[inline]{JS: B or C both sound like good choices for the reasons
+you give.}
 %
 This machine is parameterized over blame strategy $B$, which ranges over
 Lazy D (Fig.~\ref{fig:blame-strategy-LazyD}) and Lazy UD 
@@ -847,29 +846,28 @@ what is injectable, and a apply-cast function. Of course, the set of values that
 function works with depends on the set of injectable types.
 \url{https://github.com/Gradual-Typing/Equivalence-of-Cast-Calculi/blob/master/equivalence-of-cast-calculi/R/BlameStrategies.agda}
 Do you want me to put these contraints in the paper?}
+\todo[inline]{JS: Yes.}
 %
 The transitions involving casts are highlighted in red and described in
 more detail below. The other transitions are standard for a CEK
-machine for an extended simply typed lambda calculus.
+machine for an extended simply typed lambda calculus~\citep{Felleisen:2009aa}.
 %
-Recall that CEK machines involve two kinds of transitions: those
-that dive further into an expression (looking for a redex) and push an
+Recall that CEK machines involve two kinds of transitions: those that
+dive further into an expression (looking for a redex) and push an
 entry onto the continuation and those that return a value to the
-current continuation and possibly perform a computation.
-That is, the machine state is either in an evaluating
-$\sexpr{e}{E}{K}$ or returning $\scont{v}{K}$ configuration, 
-respectively. Additionally, there are two halting configurations: \shalt{v} 
-halts with a value, while \error{l} halts with a blame label. 
-Observables include all value constructors and blame labels, as in 
-\citep{siek2012interpretations}. 
-The function converting values to observables ($observe(v) = o$) is defined in 
-the obvious way.
+current continuation and possibly perform a computation.  That is, the
+machine state is either in an evaluating $\sexpr{e}{E}{K}$ or
+returning $\scont{v}{K}$ configuration, respectively. Additionally,
+there are two halting configurations: \shalt{v} halts with a value,
+while \error{l} halts with a blame label.  Observables include all the
+value constructors and blame labels, as in the work of
+\citet{siek2012interpretations}.  The function that converts values to
+observables ($observe(v) = o$) is defined in the obvious way.
 
-Let $v$ range over values. The 
-$\vdyn{I}{v}$ stands for values casted to the dynamic type, as in 
-\citep{wadler2009well}. The inner value must be of an 
-injectable type. The definition of injectable types depends on blame 
-strategies:
+Let $v$ range over values. The $\vdyn{I}{v}$ stands for values casted
+to the dynamic type, as in the work of \citet{wadler2009well}. The
+inner value must be of an injectable type. The definition of
+injectable types depends on blame strategies:
 %
 for the \LD\ strategy, every pre-type is injectable 
 (Fig.~\ref{fig:blame-strategy-LazyD});
@@ -888,15 +886,18 @@ have type $S$. This function is handy when we describe the dynamic semantics.
 % shallowly consistent pre-types. This approach unfortunately considers 
 % $\ecast{\etrue}{\ccast{\Pbool}{l}{\Pbool}}$ as a value.
 
-The syntax \error{l} occurs several times in the syntax definition, we shall 
-view those nonterminals that have \error{l} case as error monads. We use 
-the symbol \mbind as the monad bind operator, which is defined as follows:
+The syntax \error{l} occurs several times in the syntax definition. We shall 
+view those nonterminals that have an \error{l} case as error monads. We use 
+the symbol \mbind{} as the monad bind operator, which is defined as follows:
 \[
 \begin{array}{rcll}
 (\error{l}) \mbind f & = & \error{l} \\
           a \mbind f & = & f(a)      & \text{otherwise}
 \end{array}
 \]
+\todo[inline]{JS: why not use monadic let instead? That avoids
+  the need to also use meta-lambdas, which you would need to
+  explain, e.g., in the transition rule that uses applyCast.}
 
 \begin{figure}
 	\fbox{\reducetoR{B}{s}{s}} Transition
@@ -979,27 +980,28 @@ the symbol \mbind as the monad bind operator, which is defined as follows:
 	\label{fig:R-machine-dynamics}
 \end{figure}
 
-The transition relation \reduceto{s}{s} invokes the cast application function, 
-noted as $\applyCast{v}{\ccast{S}{l}{T}}$ to allow for the differences 
-between blame strategies (Fig.~\ref{fig:blame-strategy-LazyD} and 
+The transition relation \reduceto{s}{s} invokes the cast application
+function, noted as $\applyCast{v}{\ccast{S}{l}{T}}$ to capture the
+differences between blame strategies
+(Fig.~\ref{fig:blame-strategy-LazyD} and
 Fig.~\ref{fig:blame-strategy-LazyUD}).
 %
 When evaluating a cast expression, the machine moves the cast to the
 continuation and evaluates the inner expression.
 %
-To cast a value, the machine invokes the cast application function on the 
-value. The cast result is either a value or an error (\error{l}). If the cast 
-succeeds, the machine returns the value to the next continuation.  If the cast 
-fails, the machine halts with the blame label.
+To cast a value, the machine invokes applyCast on the value. The cast
+result is either a value or an error (\error{l}). If the cast
+succeeds, the machine returns the value to the next continuation.  If
+the cast fails, the machine halts with the blame label.
 %
 To apply a casted function, the machine first casts the argument $v$, then
 applies the inner function $u$ to the casted argument, and finally
 casts the return value.
 %
-To take out the first part of a casted pair, the machine takes out the 
-first part of the inner pair $u$ and cast it.
+To project the first element of a casted pair, the machine projects
+the first element of the inner pair $u$ and cast it.
 %
-Taking out the second part is similar.
+Projecting the second element of a casted pair is similar.
 
 The reflexive transitive closure of reduction \transitivelyreduceto{s}{s}
 and evaluation partial function ${\evalto{e}{o}}$ are standard~\citep{felleisen03:_pllc}.
@@ -1053,20 +1055,21 @@ this machine as \reducetoD{s}{s} and \transitivelyreducetoD{s}{s}
 and the evaluator as \evaltoD{e}{o}.
 \end{definition}
 
-We conjecture that \LDMachine\ agrees with the \LD\ cast calculus
-of \citep{siek2009exploring}.
+We conjecture that \LDMachine\ is equivalent to the \LD\ cast calculus
+of \citet{siek2009exploring}.
+
+The \LDMachine{} machine is deterministic.
 
 \begin{proposition}[\LDMachine\ is deterministic]
 	If \reducetoD{s}{s_1} and \reducetoD{s}{s_2} then $s_1 = s_2$.
 \end{proposition}
 
 Next, we define the CEK Machine for \LUD. The only differences with
-respect to \LD\ are in the injectable types and in 
-${\mathit{applyCast}(v,\ccast{S}{l}{T})}$, in which a cast whose source or
-target is the dynamic type \Tdyn\ is always split into two casts that
-go through a ground type, that is, a 
-type in which all sub-components are the dynamic type, such as 
-\Pfunc{\Tdyn}{\Tdyn}.
+respect to \LD\ are in the injectable types and in
+${\mathit{applyCast}(v,\ccast{S}{l}{T})}$, in which a cast whose
+source or target is the dynamic type \Tdyn\ is always split into two
+casts that go through a ground type, that is, a type whose
+sub-components are the dynamic type, such as \Pfunc{\Tdyn}{\Tdyn}.
 \begin{definition}[\LUD\ CEK Machine]
 	The \LUD\ CEK machine, written \LUDMachine\, is the CEK machine of
 	\figref{fig:R-machine-dynamics} using the \BLUD\ blame strategy defined in 
@@ -1075,7 +1078,7 @@ type in which all sub-components are the dynamic type, such as
 	and the evaluator as \evaltoUD{e}{o}.
 \end{definition}
 
-\begin{figure}
+\begin{figure}[tp]
 \[
 \begin{array}{lrcl}
 \stxrule{I,J}{Injectable types}{G}
@@ -1120,8 +1123,10 @@ type in which all sub-components are the dynamic type, such as
 	\label{fig:blame-strategy-LazyUD}
 \end{figure}
 
-We conjecture that \LUDMachine\ agrees with the \LUD\ cast
-calculus of \citep{siek2009exploring}.
+We conjecture that \LUDMachine\ is equivalent to the \LUD\ cast
+calculus of \citet{siek2009exploring}.
+
+The \LUDMachine{} machine is deterministic.
 
 \begin{proposition}[\LUDMachine\ is deterministic]
 	If $\reducetoUD{s}{s_1}$ and $\reducetoUD{s}{s_2}$ 
@@ -1131,16 +1136,13 @@ calculus of \citep{siek2009exploring}.
 \subsection{Coercions and Normal Forms} 
 \label{sec:coercions}
 
-In this section, we review the
-coercions~\citep{henglein1994dynamic,herman2010space} and the normal form of
-\citet{siek2012interpretations} to motivate the design of hypercoercions.  We
-omit sum types and product types in this section because
-\citet{siek2012interpretations} did not discuss them. We assume a basic
-familiarity with coercions, and suggest that readers unfamiliar with coercions
-to familiarize themselves with \citet{siek2012interpretations} and
-\citet{Siek:2015:BCT:2737924.2737968}.
+In this section, we review the coercions
+of~\citet{henglein1994dynamic} and \citet{herman2010space} and the
+normal form of \citet{siek2012interpretations} to motivate the design
+of hypercoercions.  We omit sum types and product types in this
+section because the prior work did not include them.
 
-\begin{figure}
+\begin{figure}[tp]
 	\[
 	\begin{array}{lrcl}
 	\stxrule{I,J}{Injectable types (\LD)}{P}
@@ -1172,7 +1174,7 @@ to familiarize themselves with \citet{siek2012interpretations} and
 	\end{array}
 	\]
 	\caption{Syntax of coercions and normal forms {\`a} la 
-		\citep{siek2012interpretations}.}
+		\citet{siek2012interpretations}.}
 	\label{fig:normal-coercion}
 \end{figure}
 
@@ -1196,7 +1198,9 @@ value.
 
 Coercions come with a reduction relation so it is natural to ask about
 their normal forms. \figref{fig:normal-coercion} defines the syntax of
-coercion in normal form, written $\hat{c}$. Conceptually, a coercion
+coercion in normal form, written $\hat{c}$.
+\todo[inline]{JS: In the figure, normal forms are written $s$ and $t$.}
+Conceptually, a coercion
 in normal form has three parts, all of which are optional.  It may
 start with a projection $I?^l$, followed by a function coercion, and
 then concluded with an injection $I!$ or a failure $\bot^l$. While
