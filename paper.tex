@@ -348,11 +348,17 @@ dynamic typing and static typing, notably gradual typing
 migratory typing \citep{tobin2006interlanguage}, and multi-language
 interoperability \citep{Gray:2005ij,Matthews:2007zr}.
 
-%% \todo[inline]{KC: Cite "Contracts for higher-order functions" for the proxy-based approach maybe?}
-%% \todo[inline]{JS: That paper doesn't exactly fit into what you're talking about in the above
-%% sentence. It might be appopriate to cite it elsewhere in the paper. Also,
-%% there are earlier papers about coercive subtyping (Computing with coercions by Breazu-Tannen et al)
-%% that use a proxy-based approach. The contracts paper may be the first to propose blame tracking.}
+\todo[inline]{KC: Cite "Contracts for higher-order functions" for the proxy-based approach maybe?}
+\todo[inline]{JS: That paper doesn't exactly fit into what you're talking about in the above
+sentence. It might be appopriate to cite it elsewhere in the paper. Also,
+there are earlier papers about coercive subtyping (Computing with coercions by Breazu-Tannen et al)
+that use a proxy-based approach. The contracts paper may be the first to propose blame tracking.}
+\todo[inline]{KC: I think readers should be able to trace back history by following the pointers in the 
+intro section. I don't know whether my thought is correct. I would rather not giving misleading
+pointers. I also don't know how far should a pointer chases back. Readers can be directed to recently
+works which will eventually lead them back to the earliest possible paper. But wouldn't it be
+great if the author of a new paper shows reader all the milestones? After all we already know 
+pointer dereferencing is expensive.}
 
 Gradual typing \citep{siek2006gradual,siek2015refined} includes both static typing 
 and dynamic typing in the same language and enables a smooth transition between them while
@@ -558,6 +564,13 @@ normal form and bisimulates the coercions-based semantics.
 \todo[inline]{JS: say something about the difference between the above
   and what is in this paper. That's the whole point of the related work
   section from the eyes of the reviewer.}
+\todo[inline]{KC: I might have some misconcept about the related work
+section. You might have felt this, haha. Now I think this section is
+targeting the following scenarios:
+- ``I think someone has solved this problem ...''
+- ``This work looks similar to paper X, what is the difference?''
+- ``Is this work inspired by paper X?''
+Is my understanding correct?}
 
 \subsubsection{Threesomes}
 
@@ -833,9 +846,14 @@ Fig.~\ref{fig:R-machine-dynamics} defines the transition relation of the CEK
 machine (\CMachine{B}).
 We name the machine after \textbf{c}ast calculus.
 %
-This machine is parameterized over blame strategy $B$, which ranges over
-Lazy D (Fig.~\ref{fig:blame-strategy-LazyD}) and Lazy UD 
-(Fig.~\ref{fig:blame-strategy-LazyUD}).
+% This machine is parameterized over blame strategy $B$, which ranges over
+% Lazy D (Fig.~\ref{fig:blame-strategy-LazyD}) and Lazy UD 
+% (Fig.~\ref{fig:blame-strategy-LazyUD}).
+This machine is parameterized over blame strategy $B$. We will describe
+the components of a blame strategy as we go through the machine definition.
+In this work we focus on Lazy D (Fig.~\ref{fig:blame-strategy-LazyD}) and Lazy UD 
+(Fig.~\ref{fig:blame-strategy-LazyUD}). Adding more blame strategies, 
+such as the ones defined in \cite{siek2009exploring}, is possible.
 \todo[inline]{JS: I don't think $B$ is restricted to just those two.
 Can't it be any blame strategy that satisfies certain conditions?}
 \todo[inline]{KC: Technically a $B$ should define a predicate over pretypes, which specifies
@@ -844,6 +862,8 @@ function works with depends on the set of injectable types.
 \url{https://github.com/Gradual-Typing/Equivalence-of-Cast-Calculi/blob/master/equivalence-of-cast-calculi/R/BlameStrategies.agda}
 Do you want me to put these contraints in the paper?}
 \todo[inline]{JS: Yes.}
+\todo[inline]{KC: The machine definition gives a nice context for blame strategy so I 
+define blame strategy later. You will find a todo near the blame strategy definition.}
 %
 The transitions involving casts are highlighted in red and described in
 more detail below. The other transitions are standard for a CEK
@@ -863,10 +883,13 @@ observables ($observe(v) = o$) is defined in the obvious way.
 
 Let $v$ range over values. The $\vdyn{I}{v}$ stands for values casted
 to the dynamic type, as in the work of \citet{wadler2009well}. The
-inner value must be of an injectable type. The definition of
-injectable types depends on blame strategies:
+inner value must be of an injectable type ($I$).
+% The definition of
+% injectable types depends on blame strategies:
+The set of injectable type, which is defined by specify blame strategies,
+must be a subset of pre-types.
 %
-for the \LD\ strategy, every pre-type is injectable 
+For the \LD\ strategy, every pre-type is injectable 
 (Fig.~\ref{fig:blame-strategy-LazyD});
 %
 for the \LUD\ strategy, only ground types are injectable 
@@ -895,6 +918,11 @@ the symbol \mbind{} as the monad bind operator, which is defined as follows:
 \todo[inline]{JS: why not use monadic let instead? That avoids
   the need to also use meta-lambdas, which you would need to
   explain, e.g., in the transition rule that uses applyCast.}
+\todo[inline]{KC: 1. I will try to switch to monadic let. As you pointed out
+when we wrote the WGT paper, let is more friendly to readers who are not familiar
+with monads.
+2. Do you imply that monadic let doesn't need to be explained?
+}
 
 \begin{figure}
 	\fbox{\reducetoR{B}{s}{s}} Transition
@@ -978,9 +1006,8 @@ the symbol \mbind{} as the monad bind operator, which is defined as follows:
 \end{figure}
 
 The transition relation \reduceto{s}{s} invokes the cast application
-function, noted as $\applyCast{v}{\ccast{S}{l}{T}}$ to capture the
-differences between blame strategies
-(Fig.~\ref{fig:blame-strategy-LazyD} and
+function, noted as $\applyCast{v}{\ccast{S}{l}{T}}$, which is also defined
+by specify blame strategies (Fig.~\ref{fig:blame-strategy-LazyD} and
 Fig.~\ref{fig:blame-strategy-LazyUD}).
 \todo[inline]{JS: be consistent with the font used for applyCast. Sometimes
   you use roman and sometimes you used italic. Also, be consistent
@@ -1046,6 +1073,12 @@ applyCast(v,\ccast{P}{l}{\Tdyn})
 \caption{The \LD\ blame strategy (\BLD)}
 \label{fig:blame-strategy-LazyD}
 \end{figure}
+
+\todo[inline]{KC: conditions of blame strategy}
+\begin{definition}[Blame Strategy, $B$]
+A blame strategy defines a subset of pre-types, written I, that is injectable,
+and a function, written applyCast, that applies cast to values.
+\end{definition}
 
 \begin{definition}[\LD\ CEK Machine, \LDMachine]
 The \LD\ CEK machine, written \LDMachine, is the CEK machine of
@@ -1139,9 +1172,7 @@ The \LUDMachine{} machine is deterministic.
 In this section, we review the coercions
 of~\citet{henglein1994dynamic} and \citet{herman2010space} and the
 normal form of \citet{siek2012interpretations} to motivate the design
-of hypercoercions.  We omit sum types and product types in this
-section because the prior work did not include them.
-\todo[inline]{But Fig 6 includes product types.}
+of hypercoercions.
 
 \begin{figure}[tp]
 	\[
@@ -1199,14 +1230,16 @@ value.
 
 Coercions come with a reduction relation so it is natural to ask about
 their normal forms. \figref{fig:normal-coercion} defines the syntax of
-coercion in normal form, written $\hat{c}$.
+coercion in normal form, written $s$ and $t$.
 \todo[inline]{JS: In the figure, normal forms are written $s$ and $t$.}
+\todo[inline]{KC: you are absolutely right.}
 Conceptually, a coercion
 in normal form has three parts, all of which are optional.  It may
 start with a projection $I?^l$, followed by a function coercion, and
 then concluded with an injection $I!$ or a failure $\bot^l$. While
-this is a simple idea, there are 10 clauses in the definition for
-$\hat{c}$!
+this is a simple idea, 
+% there are 10 clauses in the definition for $s$!
+the three-part and symmetric structure is not obvious in the syntax definition.
 
 \section{A Framework for Proving Correctness of Cast ADTs}
 \label{sec:framework}
