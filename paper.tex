@@ -147,7 +147,7 @@
 % machine _s_tates
 \newcommand{\sexpr}[3]{\ensuremath{\langle#1,#2,#3\rangle}}
 \newcommand{\scont}[2]{\ensuremath{\langle#1,#2\rangle}}
-\newcommand{\shalt}[1]{\ensuremath{\Downarrow #1}}
+\newcommand{\shalt}[1]{\ensuremath{\mathop{\Downarrow} #1}}
 
 % continuations
 \newcommand{\Knil}[0]{\Box}
@@ -232,7 +232,8 @@
 \newcommand{\extContName}[0]{\ensuremath{\mathrm{extK}}}
 \newcommand{\extCont}[2]{\ensuremath{\extContName(#1,#2)}}
 % \newcommand{\applyCont}[2]{\ensuremath{\langle\langle#1,#2\rangle\rangle}}
-\newcommand{\applyCont}[2]{\ensuremath{\mathrm{applyK}(#1,#2)}}
+\newcommand{\applyContName}[0]{\ensuremath{\mathrm{applyK}}}
+\newcommand{\applyCont}[2]{\ensuremath{\applyContName(#1,#2)}}
 
 % other relations
 \newcommand{\tailable}[2]{\ensuremath{\casttyping{!}{#1}{#2}}}
@@ -925,6 +926,7 @@ when we wrote the WGT paper, let is more friendly to readers who are not familia
 with monads.
 2. Do you imply that monadic let doesn't need to be explained?
 }
+\todo[inline]{JS: No, you should still define monadic let.}
 
 \begin{figure}[tp]
 	\fbox{\reducetoR{B}{s}{s}} Transition
@@ -1232,16 +1234,12 @@ value.
 
 Coercions come with a reduction relation so it is natural to ask about
 their normal forms. \figref{fig:normal-coercion} defines the syntax of
-coercion in normal form, written $s$ and $t$.
-\todo[inline]{JS: In the figure, normal forms are written $s$ and $t$.}
-\todo[inline]{KC: you are absolutely right.}
-Conceptually, a coercion
-in normal form has three parts, all of which are optional.  It may
-start with a projection $I?^l$, followed by a function coercion, and
-then concluded with an injection $I!$ or a failure $\bot^l$. While
-this is a simple idea, 
-% there are 10 clauses in the definition for $s$!
-the three-part and symmetric structure is not obvious in the syntax definition.
+coercion in normal form, written $s$ and $t$.  Conceptually, a
+coercion in normal form has three parts, all of which are optional.
+It may start with a projection $I?^l$, followed by a function
+coercion, and then concluded with an injection $I!$ or a failure
+$\bot^l$. While this is a simple idea, the three-part symmetric
+structure is not obvious in the syntax definition.
 
 \section{A Framework for Proving Correctness of Cast ADTs}
 \label{sec:framework}
@@ -1572,10 +1570,8 @@ $K$ by using the composition operator $\fatsemi$.
 	}{
 		\evalto{e}{\error{l}}}
 	\]
-	\caption{Dynamic semantics of the cast calculi as a 
-	space-efficient CEK	machine, \SMachine{C}. The transitions that involve 
-	casts are highlighted
-		in red.}
+	\caption{The space-efficient CEK machine, \SMachine{C}.
+          The transitions involving casts are highlighted in red.}
 	\label{fig:semachine-dynamics}
 \end{figure}
 
@@ -1597,21 +1593,27 @@ cast of the continutation to the value. If the cast application fails,
 the machine halts with the blame label from the failure. Otherwise,
 the machine handles the pre-continuation with the function
 $\applyCont{v}{k}$.
-%
-To apply a function, the machine applies the domain cast $c$ to the 
-argument $v$ and evaluates the function body. The codomain cast $d$ is merged 
-into the continuation with $\mathrm{extK}$.
-%
-When the machine constructs a pair, it fills the casts with identities, just 
-like how it does for function values. 
-%
-To take out the first part of a pair, the machine applies the first pending 
-cast on the first value and returns the result to the continuation.
-%
-Taking out the second part of a pair is similar.
 
-Reflexive transitive closure of reduction $\reducetoS{C}{s}{s}$ and
-the evaluation partial function $\evaltoS{C}{e}{o}$ are the same as in \CMachine{B}.
+Turning to the definion of $\applyContName{}$, we again focus on the
+cases that are specific to casts and space efficiency.  In the case
+for a function value, the machine applies the domain cast $c$ to the
+argument $v$ and then begins evaluation of the function body. To
+ensure space efficiency, the codomain cast $d$ is merged into the
+continuation with $\mathrm{extK}$.
+%
+In the case for constructing a pair, $\applyContName$ fills the casts
+in the pair value with identities, similar to its treatment of
+function values.
+%
+To project the first element of a pair, the machine applies the first
+pending cast on the first value and returns the result to the
+continuation.
+%
+Projecting the second element of a pair is similar.
+
+The reflexive transitive closure of reduction $\reducetoS{C}{s}{s}$
+and the evaluation partial function $\evaltoS{C}{e}{o}$ are defined in
+the standard way~\citep{felleisen03:_pllc}.
 
 \begin{proposition}[\SMachine{C} is deterministic]
 	\label{prop:SEMachine-deterministic}
@@ -1619,12 +1621,13 @@ the evaluation partial function $\evaltoS{C}{e}{o}$ are the same as in \CMachine
 	then $s_1 = s_2$.
 \end{proposition}
 
-\subsection{Specifying good instances of Cast ADT} \label{sec:good-cast-adt}
+\subsection{Specifying good instances of the Cast ADT} \label{sec:good-cast-adt}
 
-Recall that our goal is to prove that \SMachine{C} would be equivalent to
-\LDMachine\ or \LUDMachine\ when $C$ satisfies some properties.
-Cast ADT has fixed the behavior of identities and composition, so the only 
-remaining operator is translation.
+Recall that our goal is to prove that \SMachine{C} is equivalent to
+\LDMachine\ or \LUDMachine\ when $C$ satisfies some properties. The
+Cast ADT specifies the behavior of identity casts and composition, so
+the only remaining operator to specify is translation:
+$\translate{\ccast{S}{l}{T}}$.
 %
 Lazy D Cast ADT (Definition~\ref{def:LazyD-CastADT}) and Lazy UD Cast ADT 
 (Definition~\ref{def:LazyUD-CastADT}) specify the behavior 
@@ -1632,6 +1635,12 @@ of \translate{\ccast{S}{l}{T}}. Readers are encouraged to compare them with the
 corresponding $\mathrm{applyCast}$ functions 
 (Fig.~\ref{fig:blame-strategy-LazyD} and 
 Fig.~\ref{fig:blame-strategy-LazyUD}).
+\todo[inline]{JS: what does ``them'' refer to in the previous sentence?
+  Please replace with a specific noun. Also, why should the reader do
+  the comparison? What are they suppose to notice?}
+\todo[inline]{JS: say where the following equations come from.
+  They are the equations you needed for the proof of equivalence,
+  right?}
 
 \begin{definition}[Lazy D Cast ADT]
 	\label{def:LazyD-CastADT}
@@ -1729,14 +1738,14 @@ and that if $C$ is a Lazy UD Cast ADT then
 %}
 \infr{
 	\bisimc{
-		(\ccast{T_1}{l_1}{T_2}\ldots\ccast{T_{i-1}}{l_{i-1}}{T_i})
+		(\ccast{T_1}{l_1}{}\ldots\ccast{}{l_{i-1}}{T_i})
 	}{c_1}{T_1}{T_i}\\
 	\bisimc{
-		(\ccast{T_i}{l_i}{T_{i+1}}\ldots\ccast{T_{n-1}}{l_{n-1}}{T_n})
+		(\ccast{T_i}{l_i}{}\ldots\ccast{}{l_{n-1}}{T_n})
 	}{c_2}{T_i}{T_n}
 }{
 	\bisimc{
-		(\ccast{T_1}{l_1}{T_{2}}\ldots\ccast{T_{n-1}}{l_{n-1}}{T_n})
+		(\ccast{T_1}{l_1}{}\ldots\ccast{}{l_{n-1}}{T_n})
 	}{
 		(\compose{c_1}{c_2})
 	}{T_1}{T_n}
@@ -1847,7 +1856,7 @@ and that if $C$ is a Lazy UD Cast ADT then
 	\bisimv{v}{v'}{S} \\
 	\bisimK{K}{K'}{S}{T}
 }{
-	\bisims{\scont{v}{K}}{\scont{v}{K'}}{T}
+	\bisims{\scont{v}{K}}{\scont{v'}{K'}}{T}
 } \quad
 \infr{
 	\expressiontyping{\Gamma}{e}{S} \\
@@ -1858,9 +1867,10 @@ and that if $C$ is a Lazy UD Cast ADT then
 }
 \end{gather*}
 
-\caption{Bisimulation between \CBMachine\ and \SMachine{C}. It is the smallest 
-congruence relation containing the shown rules. Everything to the left (resp. 
-right) of $\approx$ is in \CBMachine\ (resp. in \SMachine{C}).}
+\caption{Bisimulation between \CBMachine\ and \SMachine{C}. It is the
+  smallest congruence relation containing the shown rules. Everything
+  to the left of $\approx$ is in \CBMachine{} and everything to the
+  right is in \SMachine{C}.}
 \label{fig:bisim-SC-D}
 \end{figure}
 
@@ -1998,32 +2008,40 @@ right) of $\approx$ is in \CBMachine\ (resp. in \SMachine{C}).}
 
 
 The central part of the proofs is a weak bisimulation between \CMachine{B} and \SMachine{C}.
-Fig.~\ref{fig:bisim-SC-D} defines the bisimulation relation.
-It is the smallest congruence relation containing the rules 
+Fig.~\ref{fig:bisim-SC-D} defines the bisimulation relation
+between a state $s$ of \CMachine{B} and a state $s'$
+of \SMachine{C}, written $\bisims{s}{s'}{T}$.
+This relation is the smallest congruence relation containing the rules 
 in Fig.~\ref{fig:bisim-SC-D}.
-%
-The relation $\bisimc{\overline{\ccast{S}{l}{T}}}{c}{S}{T}$ relates a sequence 
-of cast in \CBMachine\ with one cast in \SMachine{C}. This relation is designed 
-to cover all possibly ways to construct a cast representation. The empty 
-sequence is related to the identity cast. A \CBMachine\ cast is related 
-to its translation. Finally, cast sequencing preserves the bisimulation 
-relation.
-%
-We remark that this bisimulation relation is unusual in that it uses
-some ADT operations in its definition, such as $\id{T}$, 
-$\translate{\ccast{S}{l}{T}}$, and $\compose{c}{c}$, which is necessary because 
-\SMachine{C} and the bisimulation is parameterized over the Cast ADT.
 
-The bisimulation relation is mutually defined on continuations and pre-continuations,
-written 
-$\bisimK{K}{K}{S}{T}$ and $\bisimK{K}{k}{S}{T}$, where $S$ and $T$ are their 
-source and target types respectively, values, written $\bisimv{v}{v}{T}$, 
-where $T$ is their type, and environments, written $\bisimE{\Gamma}{E}{E}$, 
-where $\Gamma$ is their type environment. The bisimulation relation for values 
-is designed to make Lemma~\ref{lem:LazyD-apply-cast-preserve-bisim} and 
-Lemma~\ref{lem:LazyUD-apply-cast-preserve-bisim} (described below) true, that 
-is, if $\bisimv{v}{v'}{S}$
-then
+The auxiliary relation $\bisimc{\overline{\ccast{S}{l}{T}}}{c}{S}{T}$
+relates a sequence of cast in \CBMachine\ with one cast in
+\SMachine{C}. This relation is designed to cover all possibly ways to
+construct a cast representation. The empty sequence is related to the
+identity cast. A single \CBMachine\ cast is related to its
+translation. Appending two sequences of casts is related to the
+composition of the corresponding space-efficient casts.
+%
+We remark that this relation is unusual in that it uses some ADT
+operations in its definition, such as $\id{T}$,
+$\translate{\ccast{S}{l}{T}}$, and $\compose{c}{c}$, which is
+necessary because \SMachine{C} and the bisimulation is parameterized
+over the Cast ADT.
+
+The bisimulation relation is mutually defined on
+\begin{itemize}
+\item continuations and pre-continuations, written $\bisimK{K}{K}{S}{T}$ and
+  $\bisimK{K}{k}{S}{T}$, where $S$ and $T$ are their source and target
+  types respectively,
+\item values, written $\bisimv{v}{v}{T}$, where $T$ is
+  their type, and
+\item environments, written $\bisimE{\Gamma}{E}{E}$, where
+  $\Gamma$ is their type environment.
+\end{itemize}
+The bisimulation relation for values is designed to make
+Lemma~\ref{lem:LazyD-apply-cast-preserve-bisim} and
+Lemma~\ref{lem:LazyUD-apply-cast-preserve-bisim} (described below)
+true, that is, if $\bisimv{v}{v'}{S}$ then
 \[
 \bisimr{
 	\applyCast{v}{\ccast{S}{l}{T}}
@@ -2058,9 +2076,9 @@ the expressions in the machine are simply related by syntactic equality.
 	\]
 \end{lemma}
 \begin{proof}
-	Case splitting whether $S$ is shallowly consistent with $T$.
-	If yes, case splitting how they are shallowly consistent.
-	Then apply properties of Lazy D Cast when applicable.
+  Proceed by cases on whether $S$ is shallowly consistent with $T$.
+  If yes, proceed by cases regarding how they are shallowly consistent
+  and then apply equations of Lazy D Cast.
 \end{proof}
 
 \begin{lemma}[Lazy UD $\denote{c}(v)$ Preserves Bisimulation]
@@ -2078,9 +2096,9 @@ the expressions in the machine are simply related by syntactic equality.
 	\]
 \end{lemma}
 \begin{proof}
-	Case splitting whether $S$ is shallowly consistent with $T$.
-	If yes, case splitting how they are shallowly consistent.
-	Then apply properties of Lazy UD Cast when applicable.
+  Proceed by cases on whether $S$ is shallowly consistent with $T$.
+  If yes, further split on how they are shallowly consistent and then
+  apply equations of Lazy UD Cast.
 \end{proof}
 %
 %
@@ -2108,7 +2126,7 @@ the expressions in the machine are simply related by syntactic equality.
 %	\]
 %\end{lemma}
 
-We now come to the main lemmas, the weak bisimulation between
+We come to the main lemma, the weak bisimulation between
 \CBMachine\ and \SMachine{C}.
 
 \begin{lemma}[Weak Bisimulation between \CMachine{B} and \SMachine{C}] \label{lem:weak-bisimulation}
@@ -2126,13 +2144,14 @@ Assume
   and $\reduceto{s_1'}{^{+}s_2'}$
   and $\bisims{s_2}{s_2'}{T}$
 \end{enumerate}
-where
+where the final predicate on states is defined as follows
 \begin{gather*}
 \infr{}{(\error{l})\text{ final}} \quad
 \infr{}{(\shalt{v})\text{ final}}
 \end{gather*}
 \end{lemma}
 \todo[inline]{KC: wouldn't it be great if I can describe the main ideas of the proof?}
+\todo[inline]{JS: Yes, that would be great.}
 
 % \begin{lemma}[Lazy D Weak Bisimulation between \LDMachine\ and \SMachine{C}]
 % 	\label{lem:weak-bisim-SC-D}
@@ -2256,6 +2275,9 @@ where
 % 	Similar to Lemma~\ref{lem:weak-bisim-SC-D}.
 % \end{proof}
 
+\todo[inline]{There should be some text regarding the following
+two theorems.}
+
 \begin{theorem}[Correctness of Lazy D \SMachine{C}]
 	\label{thm:SD-equiv}
 	Suppose $C$ is a Lazy D Cast ADT
@@ -2292,6 +2314,21 @@ where
 % \end{proof}
 
 \section{Hypercoercions, a New Cast Representation} \label{sec:hypercoercions}
+
+In this section we present a new cast representation called hypercoercions. It 
+comes with two flavors: Lazy D hypercoercions and Lazy UD one.  The design of 
+hypercoercions is motivated by the observation that a normal coercion has at most three
+parts. Hypercoercions make this structure explicit: a hypercoercion $c$ is
+either \hcci, the identity cast for \Tdyn, or it contains
+three parts: a head, middle, and tail, as defined in
+\figref{fig:hypercoercion}.
+\begin{itemize}
+	\item a head is either a projection or the no-op;
+	\item a middle $m$ involves coercions that preserve a type
+	constructor, i.e., coercions between Boolean, function, and pair, and 
+	failure coercions;
+	\item a tail is either an injection or the no-op.
+\end{itemize}
 
 \begin{figure}[tp]
 	Syntax of Hypercoercions
@@ -2391,21 +2428,6 @@ where
 	\caption{Definition of hypercoercions}
 	\label{fig:hypercoercion}
 \end{figure}
-
-In this section we present a new cast representation called hypercoercions. It 
-comes with two flavors: Lazy D hypercoercions and Lazy UD one.  The design of 
-hypercoercions is motivated by the observation that a normal coercion has at most three
-parts. Hypercoercions make this structure explicit: a hypercoercion $c$ is
-either \hcci, the identity cast for \Tdyn, or it contains
-three parts: a head, middle, and tail, as defined in
-\figref{fig:hypercoercion}.
-\begin{itemize}
-	\item a head is either a projection or the no-op;
-	\item a middle $m$ involves coercions that preserve a type
-	constructor, i.e., coercions between Boolean, function, and pair, and 
-	failure coercions;
-	\item a tail is either an injection or the no-op.
-\end{itemize}
 
 Subsection~\ref{sec:LazyD-Hypercoercions} implements the \CastADT\ with the \LD\ 
 hypercoercions and proves that \LD\ hypercoercions is a Lazy D Cast ADT. 
