@@ -833,8 +833,9 @@ Or $T$ for type-based cast?
 Or $C$ for cast-calculus?
 Or $D$ for definitional semantic?
 How do you think?}
-\todo[inline]{JS: B or C both sound like good choices for the reasons
-you give.}
+\todo[inline]{JS: B is a good choices for the reason
+  you give. C is a bad choice because we later use C for the
+  Cast ADT parameter.}
 %
 This machine is parameterized over blame strategy $B$, which ranges over
 Lazy D (Fig.~\ref{fig:blame-strategy-LazyD}) and Lazy UD 
@@ -985,6 +986,9 @@ function, noted as $\applyCast{v}{\ccast{S}{l}{T}}$ to capture the
 differences between blame strategies
 (Fig.~\ref{fig:blame-strategy-LazyD} and
 Fig.~\ref{fig:blame-strategy-LazyUD}).
+\todo[inline]{JS: be consistent with the font used for applyCast. Sometimes
+  you use roman and sometimes you used italic. Also, be consistent
+  for all the metafunctions (eval, observe, etc.).}
 %
 When evaluating a cast expression, the machine moves the cast to the
 continuation and evaluates the inner expression.
@@ -1141,6 +1145,7 @@ of~\citet{henglein1994dynamic} and \citet{herman2010space} and the
 normal form of \citet{siek2012interpretations} to motivate the design
 of hypercoercions.  We omit sum types and product types in this
 section because the prior work did not include them.
+\todo[inline]{But Fig 6 includes product types.}
 
 \begin{figure}[tp]
 	\[
@@ -1213,12 +1218,12 @@ $\hat{c}$!
 % All cast representation shall be proved correct, that is, besides reducing 
 % space consumption, using a cast representation should not affect the results of 
 % program execution.
-In this section we present a framework for proving the 
-correctness of cast representations. The framework includes an abstract data 
-type named Cast ADT, which specifies the operators of cast representations, 
-a CEK machine $\SMachine{C}$ parameterized over a Cast ADT,
-which uses the cast operators implemented by $C$ to work with casts, 
-and theorems relating $\SMachine{C}$ to $\RMachine{B}$.
+In this section we present a framework for proving the correctness of
+space-efficient cast representations. The framework includes an
+abstract data type named Cast ADT, which specifies the operators of
+cast representations, a CEK machine $\SMachine{C}$ parameterized over
+a Cast ADT, which uses the cast operators implemented by $C$ to work
+with casts, and theorems relating $\SMachine{C}$ to $\RMachine{B}$.
 %
 Subsection~\ref{sec:cast-adt-and-space-efficient-cek} describes Cast ADT and the 
 machine \SMachine{C}. We conjecture that the machine \SMachine{C} is 
