@@ -333,7 +333,7 @@ representations to several known cast representations and believe this framework
 is also applicable to other cast representations.
 \todo[inline]{JS: cite which other cast representations}
 We also present a new cast representation, hypercoercions, that is more friendly
-to mechanized meta-theory and hypothetically consume less memory than coercions
+to mechanized meta-theory and consumes less memory than coercions
 in normal forms.
 
 % The abstract should briefly summarize the contents of the paper in
@@ -1422,18 +1422,16 @@ typing (\envtyping{\Gamma}{E}) are defined in the obvious way.  They
 rely on cast typing \casttyping{c}{S}{T}, which is provided by the
 Cast~ADT.
 
-\todo[inline]{KC: I changed some wording in the following definition:
-"a family"; translate a cast ...}
 \begin{definition}[Cast Abstract Data Type (Cast ADT)]
 	\label{def:cast-rep}
 	A cast abstract data type is a family, namely $Cast$, indexed by two types, 
 	with four operators and two properties of operators:
 \begin{itemize}
-	\item $\id{T}=c$: create an identity cast
-	\item $\compose{c}{c}=c$: compose casts
-	\item $\translate{\ccast{S}{l}{T}}=c$: translate a cast in source 
+	\item $\id{T}$: create an identity cast
+	\item $\compose{c}{c}$: compose two casts
+	\item $\translate{\ccast{S}{l}{T}}$: translate a cast in the source 
 		program to a $\textit{Cast}_{S,T}$
-	\item $\denote{c}(v)=r$: apply a cast to a value
+	\item $\denote{c}(v)$: apply a cast to a value
 	\item If $ \valuetyping{v}{T} $ then $\denote{\id{T}}(v)=v$
 	\item If $ \valuetyping{v}{T_1} $ and
 		$ \casttyping{c}{T_1}{T_2} $ and
@@ -2420,12 +2418,13 @@ three parts: a head, middle, and tail, as defined in
 	\label{fig:hypercoercion}
 \end{figure}
 
-Subsection~\ref{sec:LazyD-Hypercoercions} implements the \CastADT\ with the \LD\ 
-hypercoercions and proves that \LD\ hypercoercions is a Lazy D Cast ADT. 
-Subsection~\ref{sec:LazyUD-Hypercoercions} does the \LUD\ counterparts.
-Finally, we argue in Subsection~\ref{sec:hypercoercions-compact} that 
-hypercoercions would consume less space than coercions in 
-normal form and hence are more suitable for implementation.
+Subsection~\ref{sec:LazyD-Hypercoercions} implements the \CastADT{}
+with the \LD{} hypercoercions and proves that \LD{} hypercoercions is
+a Lazy D Cast ADT.  Subsection~\ref{sec:LazyUD-Hypercoercions} does
+the same for \LUD{}.  Finally, we argue in
+Subsection~\ref{sec:hypercoercions-compact} that hypercoercions
+consume less space than coercions in normal form and hence are more
+suitable for implementation.
 
 \subsection{\LD\ Hypercoercions}
 \label{sec:LazyD-Hypercoercions}
@@ -2557,6 +2556,12 @@ normal form and hence are more suitable for implementation.
 \end{array}
 \]	
 
+	\caption{Composition of \LD\ Hypercoercions}
+	\label{fig:LazyD-Hypercoercions-composition}
+\end{figure}
+
+
+\begin{figure}[tp]
 \fbox{$\goodgap{g}$}
 \begin{gather*}
 \infr{}{\goodgap{\gnone}} \quad
@@ -2602,41 +2607,44 @@ normal form and hence are more suitable for implementation.
 }{}
 \end{array}
 \]
-
-	\caption{Composition of \LD\ Hypercoercions}
-	\label{fig:LazyD-Hypercoercions-composition}
+\caption{Auxilliary predicates and functions for hypercoercion composition.}
+\label{fig:aux-hypercoercion-composition}
 \end{figure}
 
-
-\figref{fig:LazyD-Hypercoercions-composition} defines the functions 
-\compose{c}{c} that compose \LD\ hypercoercions. We use these functions to 
-implement the \CastADT.
+\figref{fig:LazyD-Hypercoercions-composition} defines the composition
+operator \compose{c}{c} for \LD\ hypercoercions and
+\figref{fig:aux-hypercoercion-composition} defines some auxilliary
+predicates and functions.
 
 \todo[inline]{KC: (About the following paragraph) Should we mention KC and Deyaa as citation?
-(something like in private communication with KC and Deyaa)}
+  (something like in private communication with KC and Deyaa)}
+\todo[inline]{JS: Yes}
 
-The \compose{c}{c} operator is the key to compressing coercions and maintaining 
-space-efficiency. The composition operator for Coercions in Normal Form 
-requires the target type of the first coercion to match the source type of the 
-second. This requirement, however, imposes a considerable difficulty in 
-termination proof of the composition of \LD\ Coercions in Normal Form, reported 
-by Kuang-Chen Lu and Deyaaeldeen Almahallawi. So it is useful to relax this 
-restriction for the \LD\ tracking strategy.
+The \compose{c}{c} operator is the key to compressing coercions and
+maintaining space-efficiency. The composition operator for Coercions
+in Normal Form requires the target type of the first coercion to match
+the source type of the second. This requirement, however, imposes
+considerable difficulty in the termination proof of the composition
+for \LD\ Coercions in Normal Form, reported by Kuang-Chen Lu and
+Deyaaeldeen Almahallawi. So it is useful to relax this restriction for
+the \LD\ tracking strategy.
 %
-We shall need optional source cast, written $g$, that range over
-$\gnone$ or $\gsome{S}{l}{T}$, to maintain the gap between the hypercoercions 
-to be composed. The source cast is mandatory when the target
-type of the first hypercoercion does not match the source type of the second. 
-Then we write the composition of hypercoercions as \composegap{c_1}{g}{c_2}.
+We shall need an optional source cast, written $g$, that ranges over
+$\gnone$ or $\gsome{S}{l}{T}$, to maintain the gap between the two
+hypercoercions to be composed. The source cast is mandatory when the
+target type of the first hypercoercion does not match the source type
+of the second.  Then we write the composition of hypercoercions as
+\composegap{c_1}{g}{c_2}.
 %  
 When both $c_1$ and $c_2$ are \hcci, their composition is also \hcci. 
 %
-When the first hypercoercion is the \hcci, the output must start with a 
-projection, in which case we invoke the helper function \textit{mkProj}. In 
-\textit{mkProj}, if the head of $c_2$ is a projection, the result is $c_2$.  
-Otherwise, we need a label to build the projection. Since the head of $c_2$ is 
-the no-op, its source type must be a pretype. Thus we know $g$ must be a 
-source cast and we use it to construct the projection.
+When the first hypercoercion is the \hcci, the output must start with
+a projection, in which case we invoke the helper function
+\textit{mkProj}. In \textit{mkProj}, if the head of $c_2$ is a
+projection, the result is $c_2$.  Otherwise, we need a label to build
+the projection. Since the head of $c_2$ is a no-op, its source type
+must be a pre-type. Thus we know $g$ must be a source cast and we use
+it to construct the projection.
 %
 Going back to $\composegap{c}{g}{c}$, when the second hypercoercion is the 
 \hcci, the output must end with an injection, in which case we invoke the 
@@ -2654,7 +2662,7 @@ When the first middle is a failure (\hcmfail{l}), the result is the second
 middle. In all the remaining cases, the first middle is not a failure.
 %
 When the gap is a cast between shallowly inconsistent types (i.e. having 
-different top-most constructors). the output is a failure.
+different top-most constructors) the output is a failure.
 %
 When the gap is good but the second middle is a failure, the output is the same 
 failure. A gap $g$ is good if and only if there is not $P$ and $l$ 
@@ -2662,11 +2670,12 @@ and $Q$ such that $g = \gsome{P}{l}{Q}$ and \notshallowlyconsistent{P}{Q}.
 %
 The remaining cases are straightforward recursion.
 
-Agda is able to understand that \composegap{c}{g}{c} is terminating. The reason 
-might be that in \composegap{c}{g}{c} both casts become smaller in recursive 
-calls, although their position is swapped in the function case. Readers who
-hate non-structural recursion might add a Boolean parameter to indicate the order
-of composition.
+Agda is able to understand that \composegap{c}{g}{c} is
+terminating. The reason might be that in \composegap{c}{g}{c} both
+casts become smaller in recursive calls, although their position is
+swapped in the function case. Readers who dislike non-structural
+recursion could add a Boolean parameter to indicate the direction of
+composition.
 
 \begin{figure}[tp]
 	\fbox{$\translate{\ccast{S}{l}{T}} = c$} Translation of \LD\ hypercoercions
@@ -2675,12 +2684,12 @@ of composition.
 	\figequalto{\translate{\ccast{S}{l}{T}}}{\composegap{id(S)}{(\gsome{S}{l}{T})}{id(T)}}{}
 	\end{array}
 	\]
-	\caption{Translatin of \LD\ Hypercoercions}
+	\caption{Translation of \LD\ Hypercoercions}
 	\label{fig:LazyD-Hypercoercions-translation}
 \end{figure}
 
-The definition of translation \translate{\ccast{S}{l}{T}} is straightforward 
-(\figref{fig:LazyD-Hypercoercions-translation}).
+The definition of the translation function \translate{\ccast{S}{l}{T}}
+is straightforward (\figref{fig:LazyD-Hypercoercions-translation}).
 
 \begin{figure}[tp]
 \fbox{$\denote{c}(v)=r$}
@@ -2734,11 +2743,11 @@ function for \LD\ hypercoercions.
 Applying the identity cast for the dynamic type succeeds immediately. 
 Otherwise, we apply head, middle, and tail in sequence. 
 %
-In projection case of head application, a new middle is constructed and applied 
-to the injected value.
+In the projection case of applying a head coercion, a new middle is
+constructed and applied to the injected value.
 %
-Middle applications raises an error if the middle is a failure and extend value 
-proxies otherwise.
+Middle applications raise an error if the middle is a failure,
+otherwise they compose their coercions with those in the value.
 
 \begin{proposition} Lazy D Hypercoercions implement the Lazy D Cast ADT
 \end{proposition}
