@@ -538,7 +538,7 @@ To summarize, the primary contributions of this paper are:
 \section{Related Work}
 \label{chap:related-works}
 
-\todo[inline]{KC: KC, please add \url{https://arxiv.org/abs/2001.11560}
+\todo[inline]{KC: [IMPORTANT] KC, please add \url{https://arxiv.org/abs/2001.11560}
 to this section.}
 
 We review closely related work in three areas: coercions in normal
@@ -560,6 +560,7 @@ which bisimulates a reduction semantics using coercions (not
 necessarily in normal form). The last semantics uses coercions in
 normal form and bisimulates the coercions-based semantics.
 
+\todo[inline]{KC: [IMPORTANT]}
 \todo[inline]{JS: say something about the difference between the above
   and what is in this paper. That's the whole point of the related
   work section from the eyes of the reviewer.}  \todo[inline]{KC: I
@@ -592,6 +593,7 @@ correctness of the coercions-in-normal-form-based semantics defined in
 
 \todo[inline]{JS: again, say something about the difference between
   the above and what is in this paper.}
+\todo[inline]{KC: [IMPORTANT] will do.}
 
 \subsubsection{Parameterized cast calculi}
 
@@ -1007,6 +1009,7 @@ Fig.~\ref{fig:blame-strategy-LazyUD}).
 \todo[inline]{JS: be consistent with the font used for applyCast. Sometimes
   you use roman and sometimes you used italic. Also, be consistent
   for all the metafunctions (eval, observe, etc.).}
+\todo[inline]{KC: [IMPORTANT] will do.}
 %
 When evaluating a cast expression, the machine moves the cast to the
 continuation and evaluates the inner expression.
@@ -1620,8 +1623,8 @@ $\translate{\ccast{S}{l}{T}}$.
 %
 Lazy D Cast ADT (Definition~\ref{def:LazyD-CastADT}) and Lazy UD Cast ADT 
 (Definition~\ref{def:LazyUD-CastADT}) specify the behavior 
-of \translate{\ccast{S}{l}{T}}. Readers are encouraged to compare them with the 
-corresponding $\mathrm{applyCast}$ functions 
+of \translate{\ccast{S}{l}{T}}. Readers are encouraged to compare these two
+definitions with the corresponding $\mathrm{applyCast}$ functions 
 (Fig.~\ref{fig:blame-strategy-LazyD} and 
 Fig.~\ref{fig:blame-strategy-LazyUD}).
 \todo[inline]{JS: what does ``them'' refer to in the previous sentence?
@@ -1630,6 +1633,7 @@ Fig.~\ref{fig:blame-strategy-LazyUD}).
 \todo[inline]{JS: say where the following equations come from.
   They are the equations you needed for the proof of equivalence,
   right?}
+\todo[inline]{KC: [IMPORTANT] will do.}
 
 \begin{definition}[Lazy D Cast ADT]
 	\label{def:LazyD-CastADT}
@@ -2264,7 +2268,7 @@ where the final predicate on states is defined as follows
 % 	Similar to Lemma~\ref{lem:weak-bisim-SC-D}.
 % \end{proof}
 
-\todo[inline]{There should be some text regarding the following
+\todo[inline]{JS: There should be some text regarding the following
 two theorems.}
 
 \begin{theorem}[Correctness of Lazy D \SMachine{C}]
@@ -2619,6 +2623,8 @@ predicates and functions.
 \todo[inline]{KC: (About the following paragraph) Should we mention KC and Deyaa as citation?
   (something like in private communication with KC and Deyaa)}
 \todo[inline]{JS: Yes}
+\todo[inline]{KC: Could you show me how to do this? I don't know exactly
+how to write this kind of citations.}
 
 The \compose{c}{c} operator is the key to compressing coercions and
 maintaining space-efficiency. The composition operator for Coercions
@@ -2777,7 +2783,8 @@ The first three lines of the middle composition $m \fatsemi t \fatsemi h
 \fatsemi m$ function match its arguments in sequential order to determine which 
 label to blame. The forth and last line is straightforward recursion.
 
-\todo[inline]{KC: I need a better name for \compatibletailhead{t}{h}}
+\todo[inline]{KC: I need a better name for \compatibletailhead{t}{h},
+any suggestion from Jeremy?}
 
 %The third line handles the case when both the tail of $c_1$
 %and the head of $c_2$ are no-ops, in which case the middles types
