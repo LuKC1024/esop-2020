@@ -538,11 +538,20 @@ To summarize, the primary contributions of this paper are:
 \section{Related Work}
 \label{chap:related-works}
 
-\todo[inline]{KC: [IMPORTANT] KC, please add \url{https://arxiv.org/abs/2001.11560}
-to this section.}
+\citet{siek2020mechanized} defines two dynamic semantics for 
+cast calculi parameterized over cast representations, similar to
+our \CMachine{B}. The two corresponding interfaces, namely
+$\mathrm{CastStruct}$ and $\mathrm{EfficientCastStruct}$, give
+users more control over the structure of values. \CMachine{B} machine
+insists that the cast on the top of a value must be a function cast
+or a product cast. In contrast, users of their interfaces define
+a predicate on casts called $\mathrm{Inert}$ and any inert cast can
+be a part of a value. Their system doesn't include theorems relating
+space-inefficient cast calculi and space-efficient ones, which
+is one of the major goals of our framework.
 
-We review closely related work in three areas: coercions in normal
-form, threesomes, and parameterized cast calculi.
+% We review closely related work in three areas: coercions in normal
+% form, threesomes, and parameterized cast calculi.
 
 \subsubsection{Coercions in normal form}
 
@@ -563,13 +572,15 @@ normal form and bisimulates the coercions-based semantics.
 \todo[inline]{KC: [IMPORTANT]}
 \todo[inline]{JS: say something about the difference between the above
   and what is in this paper. That's the whole point of the related
-  work section from the eyes of the reviewer.}  \todo[inline]{KC: I
-  might have some misconcept about the related work section. You might
-  have felt this, haha. Now I think this section is targeting the
-  following scenarios: - ``I think someone has solved this problem
-  ...''  - ``This work looks similar to paper X, what is the
-  difference?''  - ``Is this work inspired by paper X?''  Is my
-  understanding correct?}  \todo[inline]{JS: yes, and make sure to
+  work section from the eyes of the reviewer.}
+\todo[inline]{KC: I might have some misconcept about the related work section.
+You might have felt this, haha. Now I think this section is targeting the
+following scenarios: 
+- ``I think someone has solved this problem ...''
+- ``This work looks similar to paper X, what is the difference?''
+- ``Is this work inspired by paper X?''
+Is my understanding correct?}
+\todo[inline]{JS: yes, and make sure to
   give very explicit answers to these questions. It should feel to you
   like you're hitting the reader over the head with the most obvious
   things (to you). The above paragraph is currently insufficient
