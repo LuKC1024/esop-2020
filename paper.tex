@@ -86,7 +86,7 @@
 
 % error monad
 \newcommand{\just}[1]{\ensuremath{#1}}
-\newcommand{\error}[1]{\ensuremath{\Uparrow#1}}
+\newcommand{\error}[1]{\ensuremath{\mathop{\Uparrow}#1}}
 
 % types
 \newcommand{\Tdyn}[0]{\ensuremath{\star}}
@@ -947,11 +947,16 @@ That is, they raise an error with the error message $l$.
 The monadic \texttt{let} is defined as follows:
 \[
 \begin{array}{rcll}
-    (\mlet{x}{(\error{l})}{e}) & = & \error{l} \\
-    (\mlet{x}{a}{e}) & = & [a/x]e & \text{otherwise} \\ 
+  (\mlet{x}{r}{e}) & = &
+  \begin{cases}
+    \error{l} & \text{if } r = \error{l} \\
+    [r/x]e & \text{otherwise}
+  \end{cases}
+    %% (\mlet{x}{(\error{l})}{e}) & = & \error{l} \\
+    %% (\mlet{x}{a}{e}) & = & [a/x]e & \text{otherwise} \\ 
 \end{array}
 \]
-In Agda code we use the monad bind operator instead.
+In the Agda code we use the monad bind operator instead.
 % We use 
 % the symbol \mbind{} as the monad bind operator, which is defined as follows:
 % \[
@@ -960,15 +965,6 @@ In Agda code we use the monad bind operator instead.
 %           a \mbind f & = & f(a)      & \text{otherwise}
 % \end{array}
 % \]
-\todo[inline]{JS: why not use monadic let instead? That avoids
-  the need to also use meta-lambdas, which you would need to
-  explain, e.g., in the transition rule that uses applyCast.}
-\todo[inline]{KC: 1. I will try to switch to monadic let. As you pointed out
-when we wrote the WGT paper, let is more friendly to readers who are not familiar
-with monads.
-2. Do you imply that monadic let doesn't need to be explained?
-}
-\todo[inline]{JS: No, you should still define monadic let.}
 \todo[inline]{KC: KC, you need to replace all uses of monad bind to let.}
 
 \begin{figure}[tp]
@@ -1056,10 +1052,6 @@ The transition relation \reduceto{s}{s} invokes the cast application
 function, noted as $\applyCast{v}{\ccast{S}{l}{T}}$, which is also defined
 by specify blame strategies (Fig.~\ref{fig:blame-strategy-LazyD} and
 Fig.~\ref{fig:blame-strategy-LazyUD}).
-\todo[inline]{JS: be consistent with the font used for applyCast. Sometimes
-  you use roman and sometimes you used italic. Also, be consistent
-  for all the metafunctions (eval, observe, etc.).}
-\todo[inline]{KC: Fixed}
 %
 When evaluating a cast expression, the machine moves the cast to the
 continuation and evaluates the inner expression.
@@ -1686,14 +1678,6 @@ to the first three cases of the Lazy D \applyCastName\ function
 (Fig.~\ref{fig:blame-strategy-LazyD}).
 The 4-6 cases of Lazy D Cast ADT correspond the proxy case in \applyCastName.
 
-\todo[inline]{JS: what does ``them'' refer to in the previous sentence?
-  Please replace with a specific noun. Also, why should the reader do
-  the comparison? What are they suppose to notice?}
-\todo[inline]{JS: say where the following equations come from.
-  They are the equations you needed for the proof of equivalence,
-  right?}
-\todo[inline]{KC: [Fixed.}
-
 \begin{definition}[Lazy D Cast ADT]
 	\label{def:LazyD-CastADT}
 	A Cast ADT is a Lazy D Cast ADT if:
@@ -1719,7 +1703,7 @@ The 4-6 cases of Lazy D Cast ADT correspond the proxy case in \applyCastName.
 			\Pprod{
 				(\compose{c}{\translate{\ccast{S_1}{l}{S_2}}})}{
 				(\compose{d}{\translate{\ccast{T_1}{l}{T_2}}})}}$
-		\item $\denote{\translate{\ccast{P}{l}{Q}}}(v) = \error{l}$\\
+		\item $\denote{\translate{\ccast{P}{l}{Q}}}(v) = \error{l}$ \qquad
 			if $\notshallowlyconsistent{P}{Q}$
 	\end{enumerate}
 \end{definition}
@@ -1740,7 +1724,7 @@ Lazy UD \applyCastName.
 		\denote{\ccast{G}{l}{\Tdyn}}$\\
 		if $G \sim P$ and $G \neq P$	
 	\item $\denote{\translate{\ccast{\Tdyn}{l}{G}}}(\vdyn{G}{u}) = u$
-	\item $\denote{\translate{\ccast{\Tdyn}{l}{H}}}(\vdyn{G}{u}) = \error{l}$\\
+	\item $\denote{\translate{\ccast{\Tdyn}{l}{H}}}(\vdyn{G}{u}) = \error{l}$ \qquad
 		if $G \neq H$
 	\item $\denote{\translate{\ccast{\Tdyn}{l}{Q}}}(v) = 
 		\denote{\translate{\ccast{\Tdyn}{l}{H}}}(v) \mbind
@@ -1763,7 +1747,7 @@ Lazy UD \applyCastName.
 			\Pprod{
 				(\compose{c}{\translate{\ccast{S_1}{l}{S_2}}})}{
 				(\compose{d}{\translate{\ccast{T_1}{l}{T_2}}})}}$
-		\item $\denote{\translate{\ccast{P}{l}{Q}}}(v) = \error{l}$\\
+		\item $\denote{\translate{\ccast{P}{l}{Q}}}(v) = \error{l}$\qquad
 			if $\notshallowlyconsistent{P}{Q}$
 	\end{enumerate}
 \end{definition}
@@ -2688,20 +2672,13 @@ operator \compose{c}{c} for \LD\ hypercoercions and
 \figref{fig:aux-hypercoercion-composition} defines some auxilliary
 predicates and functions.
 
-\todo[inline]{KC: (About the following paragraph) Should we mention KC and Deyaa as citation?
-  (something like in private communication with KC and Deyaa)}
-\todo[inline]{JS: Yes}
-\todo[inline]{KC: Could you show me how to do this? I don't know exactly
-how to write this kind of citations.}
-
 The \compose{c}{c} operator is the key to compressing coercions and
 maintaining space-efficiency. The composition operator for Coercions
 in Normal Form requires the target type of the first coercion to match
 the source type of the second. This requirement, however, imposes
 considerable difficulty in the termination proof of the composition
-for \LD\ Coercions in Normal Form, reported by Kuang-Chen Lu and
-Deyaaeldeen Almahallawi. So it is useful to relax this restriction for
-the \LD\ tracking strategy.
+for \LD\ Coercions in Normal Form~\citep{almahallawi19}. So it is
+useful to relax this restriction for the \LD\ tracking strategy.
 %
 We shall need an optional source cast, written $g$, that ranges over
 $\gnone$ or $\gsome{S}{l}{T}$, to maintain the gap between the two
@@ -2853,7 +2830,8 @@ The first three lines of the middle composition $m \fatsemi t \fatsemi h
 label to blame. The forth and last line is straightforward recursion.
 
 \todo[inline]{KC: I need a better name for \compatibletailhead{t}{h},
-any suggestion from Jeremy?}
+  any suggestion from Jeremy?}
+\todo[inline]{JS: how about $\sim$}
 
 %The third line handles the case when both the tail of $c_1$
 %and the head of $c_2$ are no-ops, in which case the middles types
