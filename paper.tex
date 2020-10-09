@@ -234,6 +234,7 @@
 % \newcommand{\applyCont}[2]{\ensuremath{\langle\langle#1,#2\rangle\rangle}}
 \newcommand{\applyContName}[0]{\ensuremath{\mathrm{applyK}}}
 \newcommand{\applyCont}[2]{\ensuremath{\applyContName(#1,#2)}}
+\newcommand{\applyCastName}[0]{\ensuremath{\mathrm{applyCast}}}
 
 % other relations
 \newcommand{\tailable}[2]{\ensuremath{\casttyping{!}{#1}{#2}}}
@@ -256,14 +257,14 @@
 \newcommand{\reducetoD}[2]{\reducetoR{\BLD}{#1}{#2}}
 \newcommand{\reducetoUD}[2]{\reducetoR{\BLUD}{#1}{#2}}
 \newcommand{\reducetoS}[3]{\ensuremath{#2 \longmapsto_{\SMachine{#1}} #3}}
-\newcommand{\evalto}[2]{\ensuremath{\mathit{eval}(#1)=#2}}
-\newcommand{\withmachineevalto}[3]{\ensuremath{\mathit{eval}_{#1}(#2)=#3}}
-\newcommand{\evaltoR}[3]{\ensuremath{\mathit{eval}_{\CMachine{#1}}(#2)=#3}}
+\newcommand{\evalto}[2]{\ensuremath{\mathrm{eval}(#1)=#2}}
+\newcommand{\withmachineevalto}[3]{\ensuremath{\mathrm{eval}_{#1}(#2)=#3}}
+\newcommand{\evaltoR}[3]{\ensuremath{\mathrm{eval}_{\CMachine{#1}}(#2)=#3}}
 \newcommand{\evaltoD}[2]{\evaltoR{\BLD}{#1}{#2}}
 \newcommand{\evaltoUD}[2]{\evaltoR{\BLUD}{#1}{#2}}
-\newcommand{\evaltoS}[3]{\ensuremath{\mathit{eval}_{\SMachine{#1}}(#2)=#3}}
-\newcommand{\compatibletailhead}[2]{\ensuremath{#1\;\mathit{R}\;#2}}
-\newcommand{\goodgap}[1]{\ensuremath{\mathit{good}(#1)}}
+\newcommand{\evaltoS}[3]{\ensuremath{\mathrm{eval}_{\SMachine{#1}}(#2)=#3}}
+\newcommand{\compatibletailhead}[2]{\ensuremath{#1\;R\;#2}}
+\newcommand{\goodgap}[1]{\ensuremath{\mathrm{good}(#1)}}
 \newcommand{\compileto}[4]{\expressiontyping{#1}{#2\rightsquigarrow#3}{#4}}
 \newcommand{\machineequiv}[2]{
 	\ensuremath{
@@ -332,6 +333,7 @@ We have successfully applied our new approach of proving the correctness of cast
 representations to several known cast representations and believe this framework
 is also applicable to other cast representations.
 \todo[inline]{JS: cite which other cast representations}
+\todo[inline]{KC: will do.}
 We also present a new cast representation, hypercoercions, that is more friendly
 to mechanized meta-theory and consumes less memory than coercions
 in normal forms.
@@ -357,16 +359,22 @@ interoperability \citep{Gray:2005ij,Matthews:2007zr}.
 sentence. It might be appopriate to cite it elsewhere in the paper. Also,
 there are earlier papers about coercive subtyping (Computing with coercions by Breazu-Tannen et al)
 that use a proxy-based approach. The contracts paper may be the first to propose blame tracking.}
-\todo[inline]{KC: I think readers should be able to trace back history by following the pointers in the 
-intro section. I don't know whether my thought is correct. I would rather not giving misleading
-pointers. I also don't know how far should a pointer chases back. Readers can be directed to recently
-works which will eventually lead them back to the earliest possible paper. But wouldn't it be
-great if the author of a new paper shows reader all the milestones? After all we already know 
-pointer dereferencing is expensive.}
-\todo[inline]{JS: Yes, citing the original paper for each idea is great.
-  I'm just saying 1) cite the correct paper for each idea and 2)
-  talk about the various ideas in an organized way with respect
-  to your sentence and paragraph structure.}
+\todo[inline]{KC: How about citing the origin of the proxy-based approach when we talk
+about the CPSed even-odd example?
+I am confused about which paper to cite. \cite{herman2010space} seems to be citing
+\cite{findler2002contracts} for the proxy-based approach of casting function.
+Here is the relevant sentences from \cite{herman2010space}:
+``In general, it is not possible to check if an untyped function satisfies a
+particular static type. A natural solution is to wrap the function in a proxy that, whenever
+it is applied, casts its argument and result values appropriately, ensuring that the function
+is only observed with its expected type. This proxy-based approach was formalized by Findler
+and Felleisen [15] ...''
+I am \textit{not} trying to say I don't believe in your statements about the origins of
+the proxy-based approach and blame tracking in functions.
+I want to know whether \citet{herman2010space} is citing the right paper.
+Maybe both papers came up independently with a similar idea but \cite{findler2002contracts}
+is more related to our work.
+}
 
 Gradual typing \citep{siek2006gradual,siek2015refined} includes both static typing 
 and dynamic typing in the same language and enables a smooth transition between them while
@@ -379,18 +387,6 @@ At runtime, casts record and check type information to enforce type soundness.
 Researchers often define the semantics of gradually typed languages by
 translation to an intermediate language with explicit casts, such as the blame
 calculus \citep{wadler2009well} and other cast calculi \citep{siek2009exploring}.
-% To allow the smooth transition, every gradually typed language
-% has a special type typically written as \Tdyn\ or \lstinline|Dyn| or \lstinline|Any|,
-% which enables imprecise type annotations.
-% Programmers can use an expression of type \texttt{T} in any context that \texttt{T} 
-% is consistent to.
-% Two types are consistent if they have no conflicting type information.
-% For instance, \lstinline|(->  Bool Int)| is consistent with \lstinline|(->  $\star$ Int)| but
-% not consistent with \lstinline|(->  Int Int)|.
-% When the type of an expression is consistent but not equal to the type of its 
-% context, there would be a runtime computation (i.e. a cast) that store or check 
-% type information to enforce type soundness.
-
 
 Unfortunately, straightforward implementations of casts impose significant 
 runtime overheads that can change the asymptotic space complexity of a program 
@@ -521,6 +517,13 @@ strategies because we suspect that they are more efficient than eager
 strategies and because \citet{new2019gradual} show that the eager
 strategies are incompatible with $\eta$-equivalence of functions.
 
+
+\todo[inline]{KC: This paragraph suggests that
+\cite{siek2009exploring} gives the definitional semantics.
+\cite{siek2009exploring}'s is coercion-based.
+It makes more sense to me to use a type-based semantics as the definition.
+Actually in my mind \cite{siek2012interpretations} is definitional.}
+
 To summarize, the primary contributions of this paper are:
 \begin{itemize}
 \item Cast ADT, an abstract data type for cast representations, and a
@@ -538,11 +541,17 @@ To summarize, the primary contributions of this paper are:
 \section{Related Work}
 \label{chap:related-works}
 
+\subsection{Dynamics parameterized over cast representations}
 \citet{siek2020mechanized} defines two dynamic semantics for 
-cast calculi parameterized over cast representations, similar to
-our \CMachine{B}. The two corresponding interfaces, namely
-$\mathrm{CastStruct}$ and $\mathrm{EfficientCastStruct}$, give
-users more control over the structure of values. \CMachine{B} machine
+cast calculi parameterized over cast representations. The first
+semantics, namely CC, is \textit{not} space-efficient and
+parameterized over $\mathrm{CastStruct}$. The author instantiates
+CC to obtain the blame calculus ($\lambda B$). 
+The resulting semantics is analogous to our \LUDMachine.
+The other semantics, namely SC, is designed to be space-efficient
+and parameterized over $\mathrm{EfficientCastStruct}$. SC is analogous
+to our \SMachine{C}. These two parameterized semantics give
+users more control over the structure of values. Our \CMachine{B} machine
 insists that the cast on the top of a value must be a function cast
 or a product cast. In contrast, users of their interfaces define
 a predicate on casts called $\mathrm{Inert}$ and any inert cast can
@@ -550,26 +559,22 @@ be a part of a value. Their system doesn't include theorems relating
 space-inefficient cast calculi and space-efficient ones, which
 is one of the major goals of our framework.
 
-% We review closely related work in three areas: coercions in normal
-% form, threesomes, and parameterized cast calculi.
+\citet{garcia2014deriving} presents a dynamic semantics for the Eager
+D blame strategy, using coercions. They claim that ``the artefacts for
+coercions can be replaced by other artefacts implementing different
+dynamic semantics''.
 
-\subsubsection{Coercions in normal form}
+\todo[inline]{JS: The above is too short of a description of that related
+work.}
+\todo[inline]{KC: I am actually very confused by \citet{garcia2014deriving}.
+They stated that ``Theorems 8.1 and 8.3 can be generalised for other choices
+of dynamic semantics by applying the correspondence described
+through the paper starting with a different set of coercion artefacts.''.
+However they didn't give a generalization and it is unclear to me over what
+their system is parameterized (cast representations? apply-coercion and seq?.}
 
-\citet{henglein1994dynamic} introduces coercions to study compilation
-from dynamic languages to statically typed
-ones. \citet{herman2010space} proposes using coercions in normal forms
-to represent casts in gradual typing and proves space efficiency.
-However, they did not prove that the coercion-based semantics is
-equivalent to the standard (and type-based)
-one. \citet{Siek:2015:BCT:2737924.2737968} improve the Lazy UD style
-of coercions in normal forms and prove that Lazy UD coercions in
-normal form are correct, using two bisimulation between three
-reduction semantics. The first semantics is similar to \LUDMachine,
-which bisimulates a reduction semantics using coercions (not
-necessarily in normal form). The last semantics uses coercions in
-normal form and bisimulates the coercions-based semantics.
+\subsection{Correctness of cast representations}
 
-\todo[inline]{KC: [IMPORTANT]}
 \todo[inline]{JS: say something about the difference between the above
   and what is in this paper. That's the whole point of the related
   work section from the eyes of the reviewer.}
@@ -587,35 +592,35 @@ Is my understanding correct?}
   because it doesn't emphasize what scientific constributions are new
   to our paper compared to those prior papers on coercions in normal
   form.}
-
-\subsubsection{Threesomes}
+\todo[inline]{KC: I rewrote this section. Please check again.}
 
 \citet{Siek:2010:TWB:1706299.1706342} introduce Lazy UD threesomes and
-prove them correct, using a bisimulation between two reduction
-semantics: one is analogous to the \LUDMachine; the other uses Lazy UD
-threesomes and is analogous to the machine in
-Section~\ref{sec:framework}.  \citet{Garcia:2013:CTB:2500365.2500603}
+prove the correctness of Lazy UD threesomes. To use threesomes for
+optimization, they define a translation from their cast calculus
+(the blame calculus) to a runtime language (threesome calculus).
+Then they define a bisimulation relation connecting the blame calculus
+and the threesome calculus and prove a bisimulation between them.
+In contrast, our \CMachine{B} is an interpreter of the cast calculus and 
+compiles casts to cast representations on the fly.
+
+\citet{Garcia:2013:CTB:2500365.2500603}
 introduces several other flavors of threesomes, including a Lazy D
 one. Their threesomes are derived from the corresponding styles of
-coercions in normal form, using correctness-preserving
-transformation. So the correctness of their threesomes relies on the
-correctness of the coercions-in-normal-form-based semantics defined in
-\citet{herman2010space}, which has not been proved correct.
+coercions in \citet{herman2010space}, using correctness-preserving
+transformation.
 
-\todo[inline]{JS: again, say something about the difference between
-  the above and what is in this paper.}
-\todo[inline]{KC: [IMPORTANT] will do.}
-
-\subsubsection{Parameterized cast calculi}
-
-\citet{garcia2014deriving} presents a dynamic semantics for the Eager
-D blame strategy, using coercions. They claim that ``the artefacts for
-coercions can be replaced by other artefacts implementing different
-dynamic semantics''.
-
-\todo[inline]{JS: The above is too short of a description of that related
-work.}
-
+\cite{Siek:2015:BCT:2737924.2737968} proves the correctness
+of \LUD\ coercions in normal form. Their approach is similar to
+that of \citet{Siek:2010:TWB:1706299.1706342}. They defines
+three calculi (i.e. $\lambda B$ (the blame calculus), $\lambda C$, and
+$\lambda S$). $\lambda C$ uses coercions but doesn't normalize coercions
+so is not space-efficient. $\lambda S$ uses coercions in normal form
+and is space-efficient. To establish the correctness of $\lambda S$,
+they prove a bisimulation relating $\lambda B$ to $\lambda C$
+and a bisimulation relating $\lambda C$ to $\lambda S$.
+Inspired by the approaches of \cite{Siek:2010:TWB:1706299.1706342}
+and \cite{Siek:2015:BCT:2737924.2737968}, 
+we also use the bisimulation technique.
 
 \section{Background} \label{sec:background}
 
@@ -931,6 +936,7 @@ with monads.
 2. Do you imply that monadic let doesn't need to be explained?
 }
 \todo[inline]{JS: No, you should still define monadic let.}
+\todo[inline]{KC: will do.}
 
 \begin{figure}[tp]
 	\fbox{\reducetoR{B}{s}{s}} Transition
@@ -1020,7 +1026,7 @@ Fig.~\ref{fig:blame-strategy-LazyUD}).
 \todo[inline]{JS: be consistent with the font used for applyCast. Sometimes
   you use roman and sometimes you used italic. Also, be consistent
   for all the metafunctions (eval, observe, etc.).}
-\todo[inline]{KC: [IMPORTANT] will do.}
+\todo[inline]{KC: Fixed.}
 %
 When evaluating a cast expression, the machine moves the cast to the
 continuation and evaluates the inner expression.
@@ -1049,31 +1055,31 @@ and evaluation partial function ${\evalto{e}{o}}$ are standard~\citep{felleisen0
 \end{array}
 \]
 	
-\fbox{$\mathit{applyCast}_{\BLD}(v,\ccast{S}{l}{T}) = r$}
+\fbox{$\applyCastName_{\BLD}(v,\ccast{S}{l}{T}) = r$}
 \[
 \begin{array}{rclr}
 \figequalto{
-	applyCast(v,\ccast{\Tdyn}{l}{\Tdyn})
+\applyCast{v}{\ccast{\Tdyn}{l}{\Tdyn}}
 }{
 	\just{v}
 }{}
 \figequalto{
-applyCast(v,\ccast{P}{l}{\Tdyn})
+\applyCast{v}{\ccast{P}{l}{\Tdyn}}
 }{
 	\just{\vdyn{P}{v}}
 }{}
 \figequalto{
-	applyCast(\vdyn{P}{u},\ccast{\Tdyn}{l}{Q})
+\applyCast{\vdyn{P}{u}}{\ccast{\Tdyn}{l}{Q}}
 }{
-	applyCast(u,\ccast{P}{l}{Q})
+\applyCast{u}{\ccast{P}{l}{Q}}
 }{}
 \figequalto{
-	applyCast(v,\ccast{P}{l}{Q})
+\applyCast{v}{\ccast{P}{l}{Q}}
 }{
 	\just{\proxy{v}{\ccast{P}{l}{Q}}}
 }{\sidecond{\shallowlyconsistent{P}{Q}}}
 \figequalto{
-	applyCast(v,\ccast{P}{l}{Q})
+\applyCast{v}{\ccast{P}{l}{Q}}
 }{
 	\error{l}
 }{\sidecond{\notshallowlyconsistent{P}{Q}}}
@@ -1083,10 +1089,10 @@ applyCast(v,\ccast{P}{l}{\Tdyn})
 \label{fig:blame-strategy-LazyD}
 \end{figure}
 
-\todo[inline]{KC: conditions of blame strategy}
+\todo[inline]{KC: conditions of blame strategy. Jeremy, please }
 \begin{definition}[Blame Strategy, $B$]
 A blame strategy defines a subset of pre-types, written I, that is injectable,
-and a function, written applyCast, that applies cast to values.
+and a function, written \applyCastName, that applies cast to values.
 \end{definition}
 
 \begin{definition}[\LD\ CEK Machine, \LDMachine]
@@ -1107,8 +1113,8 @@ The \LDMachine{} machine is deterministic.
 \end{proposition}
 
 Next, we define the CEK Machine for \LUD. The only differences with
-respect to \LD\ are in the injectable types and in
-${\mathit{applyCast}(v,\ccast{S}{l}{T})}$, in which a cast whose
+respect to \LD\ are in the injectable types and in \applyCast{v}{\ccast{S}{l}{T}},
+in which a cast whose
 source or target is the dynamic type \Tdyn\ is always split into two
 casts that go through a ground type, that is, a type whose
 sub-components are the dynamic type, such as \Pfunc{\Tdyn}{\Tdyn}.
@@ -1127,27 +1133,27 @@ sub-components are the dynamic type, such as \Pfunc{\Tdyn}{\Tdyn}.
 \end{array}
 \]
 
-	\fbox{$\mathit{applyCast}_{\mathtt{\BLUD}}(v,\ccast{S}{l}{T}) = r$}
+	\fbox{$\applyCastName_{\mathtt{\BLUD}}(v,\ccast{S}{l}{T}) = r$}
 	\[
 	\begin{array}{rclr}
-	\mathit{applyCast}(v, \ccast{\Tdyn}{l}{\Tdyn}) &=& \just{v} \\
-	\mathit{applyCast}(v, \ccast{G}{l}{\Tdyn}) &=&
+	\applyCastName(v, \ccast{\Tdyn}{l}{\Tdyn}) &=& \just{v} \\
+	\applyCastName(v, \ccast{G}{l}{\Tdyn}) &=&
 	\just{\vdyn{G}{v}} \\
-	\mathit{applyCast}(v, \ccast{P}{l}{\Tdyn}) &=&
+	\applyCastName(v, \ccast{P}{l}{\Tdyn}) &=&
 	\just{\vdyn{G}{\proxy{v}{\ccast{P}{l}{G}}}}
 	\\ && \text{if } G \sim P, G \neq P \\  
 % 	& \text{if } G \sim P, G \neq P \\  
-	\mathit{applyCast}(\vdyn{G}{u}, \ccast{\Tdyn}{l}{H}) &=&          
+	\applyCastName(\vdyn{G}{u}, \ccast{\Tdyn}{l}{H}) &=&          
 	\project{u}{G}{l}{H}\\
-	\mathit{applyCast}(\vdyn{G}{u}, \ccast{\Tdyn}{l}{Q}) &=&
+	\applyCastName(\vdyn{G}{u}, \ccast{\Tdyn}{l}{Q}) &=&
 	\project{u}{G}{l}{H} \mbind \lambda v. \proxy{v}{\ccast{H}{l}{Q}}
 	\\
 	&& \text{if } H \sim Q, H \neq Q \\
 % 	& \text{if } H \sim Q, H \neq Q \\
-	\mathit{applyCast}(v, \ccast{P}{l}{Q}) &=&
+	\applyCastName(v, \ccast{P}{l}{Q}) &=&
 	\just{\proxy{v}{\ccast{P}{l}{Q}}}
 	\\&& \text{if } P \smile Q \\
-	\mathit{applyCast}(v, \ccast{P}{l}{Q}) &=&
+	\applyCastName(v, \ccast{P}{l}{Q}) &=&
 	\error{l}
 	\\&& \text{if } P \not\smile Q
 	\end{array}
@@ -1404,8 +1410,8 @@ unbounded space.
 %
 \SMachine{C} instead has exactly one layer of cast.
 Thus non-casted values in \CMachine{B} correspond to \SMachine{C} values
-where casts are identities ($\mathit{id}(T)$). The 
-$\mathit{id}$ functions is provided by the Cast ADT.
+where casts are identities ($\mathrm{id}(T)$). The 
+$\mathrm{id}$ functions is provided by the Cast ADT.
 
 Let $K$ ranges over continuations and $k$ ranges over
 pre-continuations.  This setup requires cast frames and non-cast
@@ -1634,17 +1640,27 @@ $\translate{\ccast{S}{l}{T}}$.
 %
 Lazy D Cast ADT (Definition~\ref{def:LazyD-CastADT}) and Lazy UD Cast ADT 
 (Definition~\ref{def:LazyUD-CastADT}) specify the behavior 
-of \translate{\ccast{S}{l}{T}}. Readers are encouraged to compare these two
-definitions with the corresponding $\mathrm{applyCast}$ functions 
-(Fig.~\ref{fig:blame-strategy-LazyD} and 
-Fig.~\ref{fig:blame-strategy-LazyUD}).
+of \translate{\ccast{S}{l}{T}}. These two definitions are designed to
+make sure cast application preserves the bisimulation relation that we
+are to defined in the next subsection.
+
+% Readers are encouraged to compare these two
+% definitions with the corresponding $\applyCastName$ functions 
+% (Fig.~\ref{fig:blame-strategy-LazyD} and 
+% Fig.~\ref{fig:blame-strategy-LazyUD}).
+
+The first three cases and the last case of Lazy D Cast ADT correspond
+to the first three cases of the Lazy D \applyCastName\ function
+(Fig.~\ref{fig:blame-strategy-LazyD}).
+The 4-6 cases of Lazy D Cast ADT correspond the proxy case in \applyCastName.
+
 \todo[inline]{JS: what does ``them'' refer to in the previous sentence?
   Please replace with a specific noun. Also, why should the reader do
   the comparison? What are they suppose to notice?}
 \todo[inline]{JS: say where the following equations come from.
   They are the equations you needed for the proof of equivalence,
   right?}
-\todo[inline]{KC: [IMPORTANT] will do.}
+\todo[inline]{KC: [Fixed.}
 
 \begin{definition}[Lazy D Cast ADT]
 	\label{def:LazyD-CastADT}
@@ -1675,6 +1691,11 @@ Fig.~\ref{fig:blame-strategy-LazyUD}).
 			if $\notshallowlyconsistent{P}{Q}$
 	\end{enumerate}
 \end{definition}
+
+Similarly, cases 4 and 5 of Lazy UD Cast ADT correspond to the fourth
+case of Lazy UD \applyCastName (Fig.~\ref{fig:blame-strategy-LazyUD}).
+Cases 7-9 correspond to the sixth case of
+Lazy UD \applyCastName.
 
 \begin{definition}[Lazy UD Cast ADT]
 	\label{def:LazyUD-CastADT}
@@ -2108,13 +2129,13 @@ the expressions in the machine are simply related by syntactic equality.
 %
 %Before moving to the bisimulation proof, let's introduce two lemmas that 
 %manipulate continuations.
-%\begin{lemma}[$\mathit{mkCont}$ Preserves Bisimulation]
+%\begin{lemma}[$\mathrm{mkCont}$ Preserves Bisimulation]
 %	If \bisimK{K}{k}{S}{T} then
 %	\[
 %	\bisimK{K}{\mkCont{k}}{S}{T}.
 %	\]
 %\end{lemma}
-%\begin{lemma}[$\mathit{extCont}$ Preserves Bisimulation]
+%\begin{lemma}[$\mathrm{extCont}$ Preserves Bisimulation]
 %	If $\bisimc{
 %		(\ccast{S_1}{l_1}{S_2}\ldots\ccast{S_{n-1}}{l_{n-1}}{S_n})
 %	}{c}{S_1}{S_n}$
@@ -2156,6 +2177,9 @@ where the final predicate on states is defined as follows
 \end{lemma}
 \todo[inline]{KC: wouldn't it be great if I can describe the main ideas of the proof?}
 \todo[inline]{JS: Yes, that would be great.}
+\todo[inline]{KC: that is possibly only if we steal some pages from elsewhere.
+The paper limit is 25 (excluding bib) and we have used 30 now.
+https://etaps.org/2021/call-for-papers}
 
 % \begin{lemma}[Lazy D Weak Bisimulation between \LDMachine\ and \SMachine{C}]
 % 	\label{lem:weak-bisim-SC-D}
@@ -2281,6 +2305,7 @@ where the final predicate on states is defined as follows
 
 \todo[inline]{JS: There should be some text regarding the following
 two theorems.}
+\todo[inline]{KC: will do}
 
 \begin{theorem}[Correctness of Lazy D \SMachine{C}]
 	\label{thm:SD-equiv}
@@ -2359,7 +2384,7 @@ three parts: a head, middle, and tail, as defined in
 	\end{array}
 	\]
 	
-	\fbox{$\mathit{id}( T ) = c$}
+	\fbox{$\mathrm{id}( T ) = c$}
 	\[
 	\begin{array}{rclr}
 	\figequalto{id(\star)}{
@@ -2371,7 +2396,7 @@ three parts: a head, middle, and tail, as defined in
 	\end{array}
 	\]
 	
-	\fbox{$\mathit{id}_m( P ) = m$}
+	\fbox{$\mathrm{id}_m( P ) = m$}
 	\[
 	\begin{array}{rclr}
 	\figequalto{id(\Pbool)}{\hcmbool}{}
@@ -2483,13 +2508,13 @@ suitable for implementation.
 \begin{array}{rclr}
 \figequalto{\mkhead{g}{\hchp{P}{l}}}{\hchp{P}{l}}{}
 \figequalto{\mkhead{\gsome{\Tdyn}{l}{P}}{\hche}}{\hchp{P}{l}}{}
-%\mathit{mkProj(}
+%\mathrm{mkProj(}
 %& g
 %& ,
 %& \hchp{P}{l}
 %& )=
 %& \hchp{P}{l} \\
-%\mathit{mkProj(}
+%\mathrm{mkProj(}
 %& \gsome{\Tdyn}{l}{P}
 %& ,
 %& \hche
@@ -2778,6 +2803,7 @@ hypercoercions.
 
 \todo[inline]{JS: I'd recommend moving this subsection before that of
   LazyD because a reader is more likely to be familiar with Lazy UD.}
+\todo[inline]{KC: will do}
 
 Hypercoercions for the \LUD\ blame tracking strategy have the same syntax
 as for \LD\ (\figref{fig:hypercoercion}), but the definitions of $\id{T}$ and
@@ -2965,7 +2991,7 @@ The translation function \translate{\ccast{S}{l}{T}} is defined in
 \figref{fig:LazyUD-Hypercoercions-translation}.  Prior
 presentations of this function do not use auxiliary functions, as we
 do here. The reason that we introduce the auxiliary functions
-$\mathit{castToDyn}$ and $\mathit{castFromDyn}$, is to ensure that each of them 
+$\mathrm{castToDyn}$ and $\mathrm{castFromDyn}$, is to ensure that each of them 
 is structurally recursive, which makes them straightforward to define in
 Agda.
 
