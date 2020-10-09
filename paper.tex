@@ -336,9 +336,6 @@ representations to several known cast representations
 (\cite{Siek:2010:TWB:1706299.1706342,siek2012interpretations,Siek:2015:BCT:2737924.2737968})
 and believe this framework
 is also applicable to other cast representations (\cite{Garcia:2013:CTB:2500365.2500603,siek2012interpretations}).
-\todo[inline]{JS: cite which other cast representations}
-\todo[inline]{KC: I am citing \cite{siek2012interpretations} for Lazy D coercions
-in normal form, is this the right paper to cite?}
 We also present a new cast representation, hypercoercions, that is more friendly
 to mechanized meta-theory and consumes less memory than coercions
 in normal forms.
@@ -380,6 +377,27 @@ I want to know whether \citet{herman2010space} is citing the right paper.
 Maybe both papers came up independently with a similar idea but \cite{findler2002contracts}
 is more related to our work.
 }
+
+\todo[inline]{JS: In the above you've lumped proxy-based and blame
+  tracking together, which is incorrect. AFAIK,
+  \cite{findler2002contracts} is the origin of blame tracking. AFAIK,
+  \citet{Breazu-Tannen:1990vc} is the origin of proxy-based
+  casts. (Who knows, there could be an even earlier paper for
+  proxy-based casts, but that's the earliest one I know.)
+  \citet{herman2010space} cited the wrong paper for function proxies,
+  perhaps because they didn't know about the decade earlier
+  \citet{Breazu-Tannen:1990vc}. Also, \cite{findler2002contracts}
+  should have cited \citet{Breazu-Tannen:1990vc} but did not. Perhaps
+  because they did not consider that papers about ``casts'' to be
+  closely related to their paper about ``contracts''.  Or perhaps they
+  too did not know about \citet{Breazu-Tannen:1990vc}.  Authors make
+  mistakes all the time regarding related work, and this is just yet
+  another example of that. For that matter, I should have cited
+  \citet{Breazu-Tannen:1990vc} in \citet{siek2006gradual} but did not,
+  probably because I had learned about it from the TAPL textbook
+  (section 15.6) and therefore thought it was so standard that it
+  didn't need a citation.  But it would have been better for me to
+  cite it.}
 
 Gradual typing \citep{siek2006gradual,siek2015refined} includes both static typing 
 and dynamic typing in the same language and enables a smooth transition between them while
