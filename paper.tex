@@ -471,6 +471,8 @@ believe the framework is also applicable to other cast
 representations. The framework and demonstrations are available at the
 following URL:
 \[\text{\urlFrameworkAndIllustration}\]
+\todo[inline]{KC: is this the right place to mention that in Agda
+code we use de Bruijn indexes?}
 
 The published space-efficient cast representations have various
 strengths and weaknesses.  The major insight of these systems is a
@@ -930,14 +932,14 @@ have type $S$. This function is handy when we describe the dynamic semantics.
 The syntax \error{l} occurs several times in the syntax definition. We shall 
 view those nonterminals that have an \error{l} case as error monads.
 That is, they raise an error with the error message $l$.
-We use monadic \texttt{let} in paper presentation but the monad bind operator
-in Agda code. The monadic \texttt{let} is defined as follows:
+The monadic \texttt{let} is defined as follows:
 \[
 \begin{array}{rcll}
     (\mlet{x}{(\error{l})}{e}) & = & \error{l} \\
-    (\mlet{x}{a}{e}) & = & e[a/x] & \text{otherwise} \\ 
+    (\mlet{x}{a}{e}) & = & [a/x]e & \text{otherwise} \\ 
 \end{array}
 \]
+In Agda code we use the monad bind operator instead.
 % We use 
 % the symbol \mbind{} as the monad bind operator, which is defined as follows:
 % \[
@@ -955,7 +957,7 @@ with monads.
 2. Do you imply that monadic let doesn't need to be explained?
 }
 \todo[inline]{JS: No, you should still define monadic let.}
-\todo[inline]{KC: will do.}
+\todo[inline]{KC: KC, you need to replace all uses of monad bind to let.}
 
 \begin{figure}[tp]
 	\fbox{\reducetoR{B}{s}{s}} Transition
@@ -1045,7 +1047,7 @@ Fig.~\ref{fig:blame-strategy-LazyUD}).
 \todo[inline]{JS: be consistent with the font used for applyCast. Sometimes
   you use roman and sometimes you used italic. Also, be consistent
   for all the metafunctions (eval, observe, etc.).}
-\todo[inline]{KC: Fixed.}
+\todo[inline]{KC: Fixed}
 %
 When evaluating a cast expression, the machine moves the cast to the
 continuation and evaluates the inner expression.
@@ -1108,7 +1110,6 @@ and evaluation partial function ${\evalto{e}{o}}$ are standard~\citep{felleisen0
 \label{fig:blame-strategy-LazyD}
 \end{figure}
 
-\todo[inline]{KC: conditions of blame strategy. Jeremy, please }
 \begin{definition}[Blame Strategy, $B$]
 A blame strategy defines a subset of pre-types, written I, that is injectable,
 and a function, written \applyCastName, that applies cast to values.
