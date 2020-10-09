@@ -490,6 +490,8 @@ following URL:
 \[\text{\urlFrameworkAndIllustration}\]
 \todo[inline]{KC: is this the right place to mention that in Agda
 code we use de Bruijn indexes?}
+\todo[inline]{JS: no, that's too deep into the details for the introduction
+   of a paper that is not about variable representations.}
 
 The published space-efficient cast representations have various
 strengths and weaknesses.  The major insight of these systems is a
@@ -547,6 +549,8 @@ strategies are incompatible with $\eta$-equivalence of functions.
 \cite{siek2009exploring}'s is coercion-based.
 It makes more sense to me to use a type-based semantics as the definition.
 Actually in my mind \cite{siek2012interpretations} is definitional.}
+\todo[inline]{JS: While I see what you're saying, its important
+  to give precendence to the definition that is earlier in time.}
 
 To summarize, the primary contributions of this paper are:
 \begin{itemize}
@@ -565,44 +569,29 @@ To summarize, the primary contributions of this paper are:
 \section{Related Work}
 \label{chap:related-works}
 
-\todo[inline]{JS: say something about the difference between the above
-  and what is in this paper. That's the whole point of the related
-  work section from the eyes of the reviewer.}
-\todo[inline]{KC: I might have some misconcept about the related work section.
-You might have felt this, haha. Now I think this section is targeting the
-following scenarios: 
-- ``I think someone has solved this problem ...''
-- ``This work looks similar to paper X, what is the difference?''
-- ``Is this work inspired by paper X?''
-Is my understanding correct?}
-\todo[inline]{JS: yes, and make sure to
-  give very explicit answers to these questions. It should feel to you
-  like you're hitting the reader over the head with the most obvious
-  things (to you). The above paragraph is currently insufficient
-  because it doesn't emphasize what scientific constributions are new
-  to our paper compared to those prior papers on coercions in normal
-  form.}
-\todo[inline]{KC: I rewrote this section. Please check again.}
+\todo[inline]{JS: add a sentence that summarizes this section,
+  mentioning the topics of the two subsections.}
 
 \subsection{Dynamics semantics parameterized over cast representations}
-\citet{siek2020mechanized} defines two dynamic semantics for 
-cast calculi parameterized over cast representations. The first
-semantics, namely CC, is \textit{not} space-efficient and
-parameterized over $\mathrm{CastStruct}$. The author instantiates
-CC to obtain the blame calculus ($\lambda B$) in 
-\cite{Siek:2010:TWB:1706299.1706342}. 
-The resulting semantics is analogous to our \LUDMachine.
-The other semantics, namely SC, is designed to be space-efficient
-and parameterized over $\mathrm{EfficientCastStruct}$. SC is analogous
-to our \SMachine{C}. CC and SC give their users more control
-over the structure of values. Our \CMachine{B} machine
-insists that the cast on the top of a value must be a cast between
-compound types (specifically, functions and pairs).
-In contrast, users of their interfaces define
-a predicate on casts called $\mathrm{Inert}$ and any inert cast can
-be a part of a value. Their system doesn't include theorems relating
-space-inefficient cast calculi and space-efficient ones, which
-is one of the major goals of our framework.
+
+\citet{siek2020mechanized} defines two reduction semantics for cast
+calculi parameterized over cast representations. The first semantics,
+namely CC, is not space-efficient and is parameterized over
+$\mathrm{CastStruct}$.  The reduction semantics for CC is analogous to
+our \LUDMachine.  The second semantics, namely SC, is designed to be
+space-efficient and parameterized over
+$\mathrm{EfficientCastStruct}$. SC is analogous to our \SMachine{C}.
+\citet{siek2020mechanized} does not prove the correctness of SC with
+respect to CC, whereas the main goal of the present paper is proving
+the correctness of \SMachine{C} with respect to \LUDMachine.
+
+%% The following details are less important. -Jeremy
+%% CC and SC give their users more control over the structure of
+%% values. Our \CMachine{B} machine insists that the cast on the top of a
+%% value must be a cast between compound types (specifically, functions
+%% and pairs).  In contrast, users of their interfaces define a predicate
+%% on casts called $\mathrm{Inert}$ and any inert cast can be a part of a
+%% value.
 
 \citet{garcia2014deriving} presents a dynamic semantics for the Eager
 D blame strategy, using coercions. They claim that ``the artefacts for
@@ -617,6 +606,9 @@ of dynamic semantics by applying the correspondence described
 through the paper starting with a different set of coercion artefacts.''.
 However they didn't give a generalization and it is unclear to me over what
 their system is parameterized (cast representations? apply-coercion and seq?.}
+\todo[inline]{JS: your comment above says what you should say
+  (except the part about your confusion). Say it in a matter-of-fact
+way, and not a derogitory way.}
 
 \subsection{Correctness of cast representations}
 
@@ -632,7 +624,7 @@ compiles casts to cast representations on the fly.
 \citet{Garcia:2013:CTB:2500365.2500603}
 introduces several other flavors of threesomes, including a Lazy D
 one. Their threesomes are derived from the corresponding styles of
-coercions in \citet{herman2010space}, using correctness-preserving
+coercions in \citet{herman2010space}, using a correctness-preserving
 transformation.
 
 \cite{Siek:2015:BCT:2737924.2737968} proves the correctness
@@ -649,6 +641,9 @@ and a bisimulation relating $\lambda C$ to $\lambda S$.
 Inspired by the approaches of \cite{Siek:2010:TWB:1706299.1706342}
 and \cite{Siek:2015:BCT:2737924.2737968}, 
 we also use the bisimulation technique.
+\todo[inline]{JS: there is a least one interesting difference regarding
+  the bisimulation: your lemma 3 has an ``upto reduction'' flavor to it
+  which makes your $\approx$ relation simpler. }
 
 \section{Background} \label{sec:background}
 
