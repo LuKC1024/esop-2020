@@ -330,10 +330,13 @@ With our generic abstract machine, these proofs can be done by proving propertie
 of a specific Cast ADT, which is simpler than going through a bisimulation proof 
 between a space-efficient dynamic semantics and the definitional dynamic semantics.
 We have successfully applied our new approach of proving the correctness of cast 
-representations to several known cast representations and believe this framework
-is also applicable to other cast representations.
+representations to several known cast representations
+(\cite{Siek:2010:TWB:1706299.1706342,siek2012interpretations,Siek:2015:BCT:2737924.2737968})
+and believe this framework
+is also applicable to other cast representations (\cite{Garcia:2013:CTB:2500365.2500603,siek2012interpretations}).
 \todo[inline]{JS: cite which other cast representations}
-\todo[inline]{KC: will do.}
+\todo[inline]{KC: I am citing \cite{siek2012interpretations} for Lazy D coercions
+in normal form, is this the right paper to cite?}
 We also present a new cast representation, hypercoercions, that is more friendly
 to mechanized meta-theory and consumes less memory than coercions
 in normal forms.
@@ -541,19 +544,40 @@ To summarize, the primary contributions of this paper are:
 \section{Related Work}
 \label{chap:related-works}
 
-\subsection{Dynamics parameterized over cast representations}
+\todo[inline]{JS: say something about the difference between the above
+  and what is in this paper. That's the whole point of the related
+  work section from the eyes of the reviewer.}
+\todo[inline]{KC: I might have some misconcept about the related work section.
+You might have felt this, haha. Now I think this section is targeting the
+following scenarios: 
+- ``I think someone has solved this problem ...''
+- ``This work looks similar to paper X, what is the difference?''
+- ``Is this work inspired by paper X?''
+Is my understanding correct?}
+\todo[inline]{JS: yes, and make sure to
+  give very explicit answers to these questions. It should feel to you
+  like you're hitting the reader over the head with the most obvious
+  things (to you). The above paragraph is currently insufficient
+  because it doesn't emphasize what scientific constributions are new
+  to our paper compared to those prior papers on coercions in normal
+  form.}
+\todo[inline]{KC: I rewrote this section. Please check again.}
+
+\subsection{Dynamics semantics parameterized over cast representations}
 \citet{siek2020mechanized} defines two dynamic semantics for 
 cast calculi parameterized over cast representations. The first
 semantics, namely CC, is \textit{not} space-efficient and
 parameterized over $\mathrm{CastStruct}$. The author instantiates
-CC to obtain the blame calculus ($\lambda B$). 
+CC to obtain the blame calculus ($\lambda B$) in 
+\cite{Siek:2010:TWB:1706299.1706342}. 
 The resulting semantics is analogous to our \LUDMachine.
 The other semantics, namely SC, is designed to be space-efficient
 and parameterized over $\mathrm{EfficientCastStruct}$. SC is analogous
-to our \SMachine{C}. These two parameterized semantics give
-users more control over the structure of values. Our \CMachine{B} machine
-insists that the cast on the top of a value must be a function cast
-or a product cast. In contrast, users of their interfaces define
+to our \SMachine{C}. CC and SC give their users more control
+over the structure of values. Our \CMachine{B} machine
+insists that the cast on the top of a value must be a cast between
+compound types (specifically, functions and pairs).
+In contrast, users of their interfaces define
 a predicate on casts called $\mathrm{Inert}$ and any inert cast can
 be a part of a value. Their system doesn't include theorems relating
 space-inefficient cast calculi and space-efficient ones, which
@@ -575,31 +599,12 @@ their system is parameterized (cast representations? apply-coercion and seq?.}
 
 \subsection{Correctness of cast representations}
 
-\todo[inline]{JS: say something about the difference between the above
-  and what is in this paper. That's the whole point of the related
-  work section from the eyes of the reviewer.}
-\todo[inline]{KC: I might have some misconcept about the related work section.
-You might have felt this, haha. Now I think this section is targeting the
-following scenarios: 
-- ``I think someone has solved this problem ...''
-- ``This work looks similar to paper X, what is the difference?''
-- ``Is this work inspired by paper X?''
-Is my understanding correct?}
-\todo[inline]{JS: yes, and make sure to
-  give very explicit answers to these questions. It should feel to you
-  like you're hitting the reader over the head with the most obvious
-  things (to you). The above paragraph is currently insufficient
-  because it doesn't emphasize what scientific constributions are new
-  to our paper compared to those prior papers on coercions in normal
-  form.}
-\todo[inline]{KC: I rewrote this section. Please check again.}
-
 \citet{Siek:2010:TWB:1706299.1706342} introduce Lazy UD threesomes and
-prove the correctness of Lazy UD threesomes. To use threesomes for
+prove the correctness of this cast representation. To use threesomes for
 optimization, they define a translation from their cast calculus
 (the blame calculus) to a runtime language (threesome calculus).
-Then they define a bisimulation relation connecting the blame calculus
-and the threesome calculus and prove a bisimulation between them.
+Then they prove a bisimulation between the blame calculus
+and the threesome calculus.
 In contrast, our \CMachine{B} is an interpreter of the cast calculus and 
 compiles casts to cast representations on the fly.
 
@@ -612,10 +617,12 @@ transformation.
 \cite{Siek:2015:BCT:2737924.2737968} proves the correctness
 of \LUD\ coercions in normal form. Their approach is similar to
 that of \citet{Siek:2010:TWB:1706299.1706342}. They defines
-three calculi (i.e. $\lambda B$ (the blame calculus), $\lambda C$, and
-$\lambda S$). $\lambda C$ uses coercions but doesn't normalize coercions
+three calculi (i.e. $\lambda B$ and $\lambda C$ and $\lambda S$). 
+$\lambda B$ is the blame calculus. 
+$\lambda C$ uses coercions but doesn't normalize coercions
 so is not space-efficient. $\lambda S$ uses coercions in normal form
-and is space-efficient. To establish the correctness of $\lambda S$,
+and is space-efficient. To establish the correctness of
+their cast representation,
 they prove a bisimulation relating $\lambda B$ to $\lambda C$
 and a bisimulation relating $\lambda C$ to $\lambda S$.
 Inspired by the approaches of \cite{Siek:2010:TWB:1706299.1706342}
