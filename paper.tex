@@ -204,6 +204,8 @@
 
 % operators
 \newcommand{\mbind}[0]{\ensuremath{\;\gg=\;}}
+\newcommand{\mlet}[3]{\ensuremath{
+\mathtt{let}\ #1\leftarrow#2\ \mathtt{in}\;#3}}
 \newcommand{\mcomp}[0]{\ensuremath{\;>=>\;}}
 
 % functions
@@ -926,14 +928,24 @@ have type $S$. This function is handy when we describe the dynamic semantics.
 % $\ecast{\etrue}{\ccast{\Pbool}{l}{\Pbool}}$ as a value.
 
 The syntax \error{l} occurs several times in the syntax definition. We shall 
-view those nonterminals that have an \error{l} case as error monads. We use 
-the symbol \mbind{} as the monad bind operator, which is defined as follows:
+view those nonterminals that have an \error{l} case as error monads.
+That is, they raise an error with the error message $l$.
+We use monadic \texttt{let} in paper presentation but the monad bind operator
+in Agda code. The monadic \texttt{let} is defined as follows:
 \[
 \begin{array}{rcll}
-(\error{l}) \mbind f & = & \error{l} \\
-          a \mbind f & = & f(a)      & \text{otherwise}
+    (\mlet{x}{(\error{l})}{e}) & = & \error{l} \\
+    (\mlet{x}{a}{e}) & = & e[a/x] & \text{otherwise} \\ 
 \end{array}
 \]
+% We use 
+% the symbol \mbind{} as the monad bind operator, which is defined as follows:
+% \[
+% \begin{array}{rcll}
+% (\error{l}) \mbind f & = & \error{l} \\
+%           a \mbind f & = & f(a)      & \text{otherwise}
+% \end{array}
+% \]
 \todo[inline]{JS: why not use monadic let instead? That avoids
   the need to also use meta-lambdas, which you would need to
   explain, e.g., in the transition rule that uses applyCast.}
