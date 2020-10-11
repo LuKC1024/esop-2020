@@ -265,7 +265,7 @@
 \newcommand{\evaltoD}[2]{\evaltoR{\BLD}{#1}{#2}}
 \newcommand{\evaltoUD}[2]{\evaltoR{\BLUD}{#1}{#2}}
 \newcommand{\evaltoS}[3]{\ensuremath{\mathrm{eval}_{\SMachine{#1}}(#2)=#3}}
-\newcommand{\compatibletailhead}[2]{\ensuremath{#1\;R\;#2}}
+\newcommand{\compatibletailhead}[2]{\ensuremath{#1\sim#2}}
 \newcommand{\goodgap}[1]{\ensuremath{\mathrm{good}(#1)}}
 \newcommand{\compileto}[4]{\expressiontyping{#1}{#2\rightsquigarrow#3}{#4}}
 \newcommand{\machineequiv}[2]{
@@ -360,47 +360,46 @@ dynamic typing and static typing, notably gradual typing
 migratory typing \citep{tobin2006interlanguage}, and multi-language
 interoperability \citep{Gray:2005ij,Matthews:2007zr}.
 
-% \todo[inline]{KC: Cite "Contracts for higher-order functions" for the proxy-based approach maybe?}
-% \todo[inline]{JS: That paper doesn't exactly fit into what you're talking about in the above
-% sentence. It might be appopriate to cite it elsewhere in the paper. Also,
-% there are earlier papers about coercive subtyping (Computing with coercions by Breazu-Tannen et al)
-% that use a proxy-based approach. The contracts paper may be the first to propose blame tracking.}
-% \todo[inline]{KC: How about citing the origin of the proxy-based approach when we talk
-% about the CPSed even-odd example?
-% I am confused about which paper to cite. \cite{herman2010space} seems to be citing
-% \cite{findler2002contracts} for the proxy-based approach of casting function.
-% Here is the relevant sentences from \cite{herman2010space}:
-% ``In general, it is not possible to check if an untyped function satisfies a
-% particular static type. A natural solution is to wrap the function in a proxy that, whenever
-% it is applied, casts its argument and result values appropriately, ensuring that the function
-% is only observed with its expected type. This proxy-based approach was formalized by Findler
-% and Felleisen [15] ...''
-% I am \textit{not} trying to say I don't believe in your statements about the origins of
-% the proxy-based approach and blame tracking in functions.
-% I want to know whether \citet{herman2010space} is citing the right paper.
-% Maybe both papers came up independently with a similar idea but \cite{findler2002contracts}
-% is more related to our work.
-% }
-
-% \todo[inline]{JS: In the above you've lumped proxy-based and blame
-%   tracking together, which is incorrect. AFAIK,
-%   \cite{findler2002contracts} is the origin of blame tracking. AFAIK,
-%   \citet{Breazu-Tannen:1990vc} is the origin of proxy-based casts.
-%   You can read both papers for yourself and be the judge.  BTW, TAPL
-%   (section 15.6) cites Breazu-Tannen.  So \citet{herman2010space}
-%   cited the wrong paper for function proxies, perhaps because they
-%   didn't know about \citet{Breazu-Tannen:1990vc}. Also,
-%   \cite{findler2002contracts} should have cited
-%   \citet{Breazu-Tannen:1990vc} but did not. Perhaps because they did
-%   not consider that papers about ``casts'' to be closely related to
-%   their paper about ``contracts''.  Or perhaps they too did not know
-%   about \citet{Breazu-Tannen:1990vc}.  Authors make mistakes all the
-%   time regarding related work, and this is just yet another example of
-%   that. For that matter, I should have cited
-%   \citet{Breazu-Tannen:1990vc} in \citet{siek2006gradual} but did not,
-%   probably because I had learned about it from TAPL and therefore
-%   thought it was so standard that it didn't need a citation.  But it
-%   would have been better for me to cite it.}
+\todo[inline]{KC: Cite "Contracts for higher-order functions" for the proxy-based approach maybe?}
+\todo[inline]{JS: That paper doesn't exactly fit into what you're talking about in the above
+sentence. It might be appopriate to cite it elsewhere in the paper. Also,
+there are earlier papers about coercive subtyping (Computing with coercions by Breazu-Tannen et al)
+that use a proxy-based approach. The contracts paper may be the first to propose blame tracking.}
+\todo[inline]{KC: How about citing the origin of the proxy-based approach when we talk
+about the CPSed even-odd example?
+I am confused about which paper to cite. \cite{herman2010space} seems to be citing
+\cite{findler2002contracts} for the proxy-based approach of casting function.
+Here is the relevant sentences from \cite{herman2010space}:
+``In general, it is not possible to check if an untyped function satisfies a
+particular static type. A natural solution is to wrap the function in a proxy that, whenever
+it is applied, casts its argument and result values appropriately, ensuring that the function
+is only observed with its expected type. This proxy-based approach was formalized by Findler
+and Felleisen [15] ...''
+I am \textit{not} trying to say I don't believe in your statements about the origins of
+the proxy-based approach and blame tracking in functions.
+I want to know whether \citet{herman2010space} is citing the right paper.
+Maybe both papers came up independently with a similar idea but \cite{findler2002contracts}
+is more related to our work.
+}
+\todo[inline]{JS: In the above you've lumped proxy-based and blame
+  tracking together, which is incorrect. AFAIK,
+  \cite{findler2002contracts} is the origin of blame tracking. AFAIK,
+  \citet{Breazu-Tannen:1990vc} is the origin of proxy-based casts.
+  You can read both papers for yourself and be the judge.  BTW, TAPL
+  (section 15.6) cites Breazu-Tannen.  So \citet{herman2010space}
+  cited the wrong paper for function proxies, perhaps because they
+  didn't know about \citet{Breazu-Tannen:1990vc}. Also,
+  \cite{findler2002contracts} should have cited
+  \citet{Breazu-Tannen:1990vc} but did not. Perhaps because they did
+  not consider that papers about ``casts'' to be closely related to
+  their paper about ``contracts''.  Or perhaps they too did not know
+  about \citet{Breazu-Tannen:1990vc}.  Authors make mistakes all the
+  time regarding related work, and this is just yet another example of
+  that. For that matter, I should have cited
+  \citet{Breazu-Tannen:1990vc} in \citet{siek2006gradual} but did not,
+  probably because I had learned about it from TAPL and therefore
+  thought it was so standard that it didn't need a citation.  But it
+  would have been better for me to cite it.}
 
 Gradual typing \citep{siek2006gradual,siek2015refined} includes both static typing 
 and dynamic typing in the same language and enables a smooth transition between them while
@@ -437,20 +436,29 @@ cast after the recursive calls but \textit{before} returning from the
 current function. So the calls are not in fact tail calls and the
 space complexity is linear instead of constant.
 
+\todo[inline]{KC: in the next paragraph I cite \cite{breazu1991inheritance}}
 Continuations are not the only place where casts can accumulate.
 Consider a variant of the above program written in
 continuation-passing style.  Here, both functions returns
 \lstinline|Bool| so there is no implicit cast in tail position.
-However, the argument \lstinline|k| is wrapped in a cast in each
+% However, the argument \lstinline|k| is wrapped in a cast in each
+% recursive call because the type of \lstinline|k| is less precise in
+% \lstinline|even?| than it is in \lstinline|odd?|.
+However, the argument \lstinline|k| is casted in each
 recursive call because the type of \lstinline|k| is less precise in
-\lstinline|even?| than it is in \lstinline|odd?|.
+\lstinline|even?| than it is in \lstinline|odd?|. 
+Every time a function is casted we record a pieces of
+cast information for the input and another piece for
+the output, following the approach in \cite{breazu1991inheritance}
+and \cite{Breazu-Tannen:1990vc},
+so the space complexity is again linear.
 \begin{lstlisting}
 (define (even? [n : Int] [k : (-> $\star$ Bool)]) : Bool
   (if (= n 0) (k #t) (odd? (- n 1) k)))
 (define (odd? [n : Int] [k : (-> Bool Bool)]) : Bool
   (if (= n 0) (k #f) (even? (- n 1) k)))
 \end{lstlisting}
-These example programs are adapted from those of Herman et al.~\citep{herman2010space}.
+These example programs are adapted from those of \cite{herman2010space}.
 We direct readers to their work for more examples and a detailed explanation.
 
 One solution to this space-efficiency problem is to represent cast
@@ -492,10 +500,6 @@ believe the framework is also applicable to other cast
 representations. The framework and demonstrations are available at the
 following URL:
 \[\text{\urlFrameworkAndIllustration}\]
-\todo[inline]{KC: is this the right place to mention that in Agda
-code we use de Bruijn indexes?}
-\todo[inline]{JS: no, that's too deep into the details for the introduction
-   of a paper that is not about variable representations.}
 
 The published space-efficient cast representations have various
 strengths and weaknesses.  The major insight of these systems is a
@@ -566,8 +570,48 @@ To summarize, the primary contributions of this paper are:
 
 \todo[inline]{JS: add a sentence that summarizes this section,
   mentioning the topics of the two subsections.}
+\todo[inline]{KC: fixed. I want to move this section to the end
+of the paper, how do you think?}
+  
+In this section we review publications that contribute dynamic semantics
+applicable to a variety of cast representations
+(Subsection~\ref{subsec:parameterized-dynamics}),
+proofs of correctness of cast representations
+(Subsection~\ref{subsec:related-work-other-proofs}),
+and relationship between hypercoercions and other cast representations
+(Subsection~\ref{subsec:related-work-other-cast-reprs}).
 
 \subsection{Dynamics semantics parameterized over cast representations}
+\label{subsec:parameterized-dynamics}
+
+\todo[inline]{KC: how can I forget the interpretation paper!}
+\cite{siek2012interpretations} presents a definitional interpreter
+and a variant of the ECD abstract machine \citep{siek2012ECD}.
+Both systems are parameterized over 4 flavors of coercions in normal
+forms: Lazy UD, Lazy D, Eager UD, Eager D.
+
+\citet{garcia2014deriving} proves the definitional interpreter
+in \cite{siek2012interpretations}
+is equivalent to the ECD machine in the same paper,
+which was left as a conjecture. 
+They claim that their system ``can be generalised for other choices
+of dynamic semantics by applying the correspondence described 
+through the paper starting with a different set of coercion artefacts.''.
+It is unclear to us whether their system is just applicable
+to other flavor of coercions or also to other cast representations.
+
+\todo[inline]{JS: The above is too short of a description of that related
+work.}
+\todo[inline]{KC: I am actually very confused by \citet{garcia2014deriving}.
+They stated that ``Theorems 8.1 and 8.3 can be generalised for other choices
+of dynamic semantics by applying the correspondence described
+through the paper starting with a different set of coercion artefacts.''.
+However they didn't give a generalization and it is unclear to me over what
+their system is parameterized (cast representations? apply-coercion and seq?.}
+\todo[inline]{JS: your comment above says what you should say
+  (except the part about your confusion). Say it in a matter-of-fact
+way, and not a derogitory way.}
+\todo[inline]{KC: updated.}
 
 \citet{siek2020mechanized} defines two reduction semantics for cast
 calculi parameterized over cast representations. The first semantics,
@@ -588,24 +632,8 @@ the correctness of \SMachine{C} with respect to \LUDMachine.
 %% on casts called $\mathrm{Inert}$ and any inert cast can be a part of a
 %% value.
 
-\citet{garcia2014deriving} presents a dynamic semantics for the Eager
-D blame strategy, using coercions. They claim that ``the artefacts for
-coercions can be replaced by other artefacts implementing different
-dynamic semantics''.
-
-\todo[inline]{JS: The above is too short of a description of that related
-work.}
-\todo[inline]{KC: I am actually very confused by \citet{garcia2014deriving}.
-They stated that ``Theorems 8.1 and 8.3 can be generalised for other choices
-of dynamic semantics by applying the correspondence described
-through the paper starting with a different set of coercion artefacts.''.
-However they didn't give a generalization and it is unclear to me over what
-their system is parameterized (cast representations? apply-coercion and seq?.}
-\todo[inline]{JS: your comment above says what you should say
-  (except the part about your confusion). Say it in a matter-of-fact
-way, and not a derogitory way.}
-
 \subsection{Correctness of cast representations}
+\label{subsec:related-work-other-proofs}
 
 \citet{Siek:2010:TWB:1706299.1706342} introduce Lazy UD threesomes and
 prove the correctness of this cast representation. To use threesomes for
@@ -633,12 +661,33 @@ and is space-efficient. To establish the correctness of
 their cast representation,
 they prove a bisimulation relating $\lambda B$ to $\lambda C$
 and a bisimulation relating $\lambda C$ to $\lambda S$.
+
 Inspired by the approaches of \cite{Siek:2010:TWB:1706299.1706342}
 and \cite{Siek:2015:BCT:2737924.2737968}, 
-we also use the bisimulation technique.
+we also use the bisimulation technique. But our bisimulation have an
+important difference. Our bisimulation relation, unlike theirs, does
+not cover all possible states in the reduction. Instead, we ask both 
+sides of the bisimulation to reduce several steps before recovering
+the bisimulation relation (compare our Lemma~\ref{lem:weak-bisimulation}
+with Lemma~8 in \cite{Siek:2010:TWB:1706299.1706342}
+and Proposition~16 in \cite{Siek:2015:BCT:2737924.2737968}).
+This decision simplifies the bisimulation relation (Fig.~\ref{fig:bisim-SC-D})
+(compared to Figure~6 in \cite{Siek:2010:TWB:1706299.1706342} and
+Figure~6 in \cite{Siek:2015:BCT:2737924.2737968}).
+In particular, the function application case is a congruence
+(hence not shown in the figure) in our bisimulation relation
+but requires special rules in theirs.
+
 \todo[inline]{JS: there is a least one interesting difference regarding
   the bisimulation: your lemma 3 has an ``upto reduction'' flavor to it
   which makes your $\approx$ relation simpler. }
+\todo[inline]{KC: updated.}
+
+\subsection{Other Cast Representations}
+\label{subsec:related-work-other-cast-reprs}
+
+Hypercoercions is inspired by coercions in normal form and supercoercions
+and ends up having a symmetrical definition similar to threesomes.
 
 \section{Background} \label{sec:background}
 
@@ -748,6 +797,9 @@ Syntax
 \end{figure}
 
 \paragraph{Syntax and Static Semantics}
+
+\todo[inline]{KC: is this the right place to mention that in Agda
+code we use de Bruijn indexes?}
 
 The syntax and static semantics are the same for the \LD\ and
 \LUD\ cast calculi. They are reviewed in \figref{fig:statics}.
@@ -1905,7 +1957,7 @@ and that if $C$ is a Lazy UD Cast ADT then
 
 \caption{Bisimulation between \CBMachine\ and \SMachine{C}. It is the
   smallest congruence relation containing the shown rules. Everything
-  to the left of $\approx$ is in \CBMachine{} and everything to the
+  to the left of $\approx$ is in \CMachine{B} and everything to the
   right is in \SMachine{C}.}
 \label{fig:bisim-SC-D}
 \end{figure}
@@ -2192,131 +2244,15 @@ where the final predicate on states is defined as follows
 The paper limit is 25 (excluding bib) and we have used 30 now.
 https://etaps.org/2021/call-for-papers}
 
-% \begin{lemma}[Lazy D Weak Bisimulation between \LDMachine\ and \SMachine{C}]
-% 	\label{lem:weak-bisim-SC-D}
-% 	Assume $C$ implements Lazy D Cast ADT
-% 	and $s_1$ is a state in \LDMachine\
-% 	and $s_1'$ is a state in \SMachine{C}
-% 	and $\bisims{s_1}{s_1'}{T}$
-% 	then either
-% \begin{enumerate}
-% \item $s_1  = \error{l}$
-%   and $s_1' = \error{l}$
-%   for some $l$, or
-% \item $s_1 = \shalt{v}$
-%   and $s_1' = \shalt{v'}$
-%   and $\bisimv{v}{v'}{T}$
-%   for some $v$ and $v'$, or
-% \item $\reduceto{s_1}{^{+}s_2}$
-%   and $\reduceto{s_1'}{^{+}s_2'}$
-%   and $\bisims{s_2}{s_2'}{T}$
-% \end{enumerate}
-% \end{lemma}
-% %\begin{proof}
-% %We proceed by case analysis on $\bisims{s_1}{s_1'}{T}$. 
-% %\begin{description}
-% %\item[Case $\inference{
-% %}{
-% %	\bisims{\error{l}}{\error{l}}{T}
-% %}$]
-% %This is case (1).
-% %\item[Case $\inference{
-% %	\bisimv{v}{v'}{T}
-% %}{
-% %	\bisims{\shalt{v}}{\shalt{v'}}{T}
-% %}$]
-% %This is case (2).
-% %\item[Case $\inference{
-% %	\expressiontyping{\Gamma}{e}{T} \\
-% %	\bisimE{\Gamma}{E}{E'} \\
-% %	K \approx K' : T
-% %}{
-% %	\bisims{\sexpr{e}{E}{K}}{\sexpr{e}{E'}{K'}}{T}
-% %}$]
-% %This is case (3). By case analysis on $e$.
-% %\item[Case $\inference{
-% %	\bisimv{v}{v'}{S} \\
-% %	\bisimK{K}{K'}{S}{T}
-% %}{
-% %	\bisims{\scont{v}{K}}{\scont{v'}{K'}}{T}
-% %}$]
-% %This is case (3). By inversion on $\bisimK{K}{K'}{S}{T}$, we have
-% %\[
-% %\begin{array}{rcl}
-% %K  & = &
-% %\Kcons{
-% %	\Fcast{\ccast{S_1}{l_1}{S_2}}
-% %}{\ldots\Kcons{\Fcast{\ccast{S_{n-1}}{l_{n-1}}{S}}}{K_1}} \\
-% %K' & = &
-% %\Kcons{\Fcast{c'}}{k_1'}
-% %\end{array}
-% %\]
-% %After zero or more transition steps, $\scont{v}{K}$ will either transition to 
-% %$\scont{u}{K_1}$ for some $u$ or transition to $\error{l}$ for some $l$ if one 
-% %of the cast fail. On the \SMachine{C} side, $\scont{v'}{K'}$ will either 
-% %transition to $\applyCont{u'}{k_1'}$ for some $u'$ or transition to 
-% %$\error{l'}$ for some $l'$ if the cast fail. Because the sequence of casts in 
-% %$K$ bisimulates the cast in $K'$, we can show with  
-% %Lemma~\ref{lem:LazyD-apply-cast-preserve-bisim} that either
-% %\begin{itemize}
-% %	\item all casts succeed and	$\bisimv{u}{u'}{S}$, or
-% %	\item both machines transition to error state and $l = l'$
-% %\end{itemize}
-% %When all casts succeeded, we also have $\bisimK{K_1}{k_1'}{S}{T}$ and need to 
-% %show that $\reduceto{\scont{u}{K_1}}{s_2}$ and $\applyCont{u'}{k_1'} = s_2'$ 
-% %and $\bisims{s_2}{s_2'}{T}$ for some $s_2$ and $s_2'$.
-% %%
-% %We proceed by case analysis on $K$. The most interesting cases 
-% %are function application and pair projection. Due to space limitation, 
-% %we only illustrate the general idea with function applications
-% %
-% %\begin{description}
-% %\item[Subcase $\infr{
-% %	\bisimv{v_1}{v_1'}{\Pfunc{S}{T_1}} \qquad
-% %	\bisimK{K_2}{K_2'}{T_1}{T}
-% %}{
-% %	\bisimK{
-% %		\Kcons{\FappOX{v_1}}{K_2}
-% %	}{
-% %		\Kcons{\FappOX{v_1'}}{K_2'}
-% %	}{S}{T}
-% %}$] By inversion on $\bisimv{v_1}{v_1'}{\Pfunc{S}{T_1}}$ we know the proxies 
-% %in $v_1$ bisimulate the proxies in $v_1'$. After a reasoning similar to the 
-% %above one that we used to reason about casts in continuations, we know that 
-% %either both machines will transition to error states if the input proxies fail 
-% %in casting the argument, or both machines will transition to a state 
-% %evaluation 
-% %the function body.
-% %\todo{need to elaborate this part, or just delete it.}
-% %\end{description}
-% %\end{description}
-% %\end{proof}
-
-% \begin{lemma}[Lazy UD Weak Bisimulation between \LUDMachine\ and \SMachine{C}]
-% 	\label{lem:weak-bisim-SC-UD}
-% 	Assume $C$ implements Lazy UD Cast ADT
-% 	and $\bisims{s_1}{s_1'}{T}$
-% 	then either
-% 	\begin{enumerate}
-% 		\item $s_1  = \error{l}$
-% 		and $s_1' = \error{l}$
-% 		for some $l$, or
-% 		\item $s_1 = \shalt{v}$
-% 		and $s_1' = \shalt{v'}$
-% 		and $\bisimv{v}{v'}{T}$
-% 		for some $v$ and $v'$, or
-% 		\item $\reduceto{s_1}{^{+}s_2}$
-% 		and $\reduceto{s_1'}{^{+}s_2'}$
-% 		and $\bisims{s_2}{s_2'}{T}$
-% 	\end{enumerate}
-% \end{lemma}
-% \begin{proof}
-% 	Similar to Lemma~\ref{lem:weak-bisim-SC-D}.
-% \end{proof}
-
 \todo[inline]{JS: There should be some text regarding the following
 two theorems.}
-\todo[inline]{KC: will do}
+\todo[inline]{KC: Fixed.}
+
+Lemma~\ref{lem:weak-bisimulation} implies that if a \CMachine{B} state $s_1$ transitions to a 
+final state $s_2$ and \bisims{s_1}{s'_1}{T}, the state $s_1'$
+will transition to a final state $s_2'$ that holds the same observable as $s_1'$. 
+Instantiating Lemma~\ref{lem:weak-bisimulation} with Lazy D and Lazy UD blame strategy leads
+to the next two theorems.
 
 \begin{theorem}[Correctness of Lazy D \SMachine{C}]
 	\label{thm:SD-equiv}
@@ -2325,22 +2261,6 @@ two theorems.}
 	\machineequiv{\CBMachine}{\SMachine{C}}
 	\]
 \end{theorem}
-% \begin{proof}
-% 	By the definitions of $\textit{eval}$, we need to show 
-% 	\[
-% 	\transitivelyreducetoM{\CMachine{B}}{\sexpr{e}{\emptyset}{\Knil}}{
-% 		s
-% 	}
-% 	\;\text{if and only if}\;
-% 	\transitivelyreducetoM{\SMachine{C}}{\sexpr{e}{\emptyset}{\mkCont{\Knil}}}{
-% 		s'
-% 	}
-% 	\]
-% 	where $s$ and $s'$ are bisimuated final states, i.e. of the form 
-% 	$\shalt{v}$ or $\error{l}$. The initial states are related by the 
-% 	bisimulation relation, so we can prove this theorem with 
-% 	Lemma~\ref{lem:weak-bisim-SC-D}.
-% \end{proof}
 
 \begin{theorem}[Correctness of Lazy UD \SMachine{C}]
 	\label{thm:SUD-equiv}
@@ -2349,9 +2269,6 @@ two theorems.}
 	\machineequiv{\CBMachine}{\SMachine{C}}
 	\]
 \end{theorem}
-% \begin{proof}
-% 	Similar to Theorem~\ref{thm:SD-equiv}.
-% \end{proof}
 
 \section{Hypercoercions, a New Cast Representation} \label{sec:hypercoercions}
 
@@ -2469,13 +2386,281 @@ three parts: a head, middle, and tail, as defined in
 	\label{fig:hypercoercion}
 \end{figure}
 
-Subsection~\ref{sec:LazyD-Hypercoercions} implements the \CastADT{}
-with the \LD{} hypercoercions and proves that \LD{} hypercoercions is
-a Lazy D Cast ADT.  Subsection~\ref{sec:LazyUD-Hypercoercions} does
-the same for \LUD{}.  Finally, we argue in
+Subsection~\ref{sec:LazyUD-Hypercoercions} implements the \CastADT{}
+with the \LUD{} hypercoercions and proves that \LUD{} hypercoercions is
+a Lazy UD Cast ADT.  Subsection~\ref{sec:LazyUD-Hypercoercions} does
+the same for \LD{}.  Finally, we argue in
 Subsection~\ref{sec:hypercoercions-compact} that hypercoercions
 consume less space than coercions in normal form and hence are more
 suitable for implementation.
+
+\subsection{\LUD\ Hypercoercions} \label{sec:LazyUD-Hypercoercions}
+
+\todo[inline]{JS: I'd recommend moving this subsection before that of
+  LazyD because a reader is more likely to be familiar with Lazy UD.}
+\todo[inline]{KC: Updated.}
+
+% Hypercoercions for the \LUD\ blame tracking strategy have the same syntax
+% as for \LD\ (\figref{fig:hypercoercion}), but the definitions of $\id{T}$ and
+% $\translate{\ccast{S}{l}{T}}$ and $\compose{c}{c}$, differ from \LD. Here 
+% composition $\compose{c_1}{c_2}$ makes the usual assumption that the
+% target type of $c_1$ matches the source type of $c_2$. 
+% %
+The definition of composition for \LUD\ is particularly straightforward.
+The first two lines say that \hcci\ acts as the identity on both the left
+and right.
+The third line handles the case when both hypercoercions have three parts. 
+%
+The first three lines of the middle composition $m \fatsemi t \fatsemi h 
+\fatsemi m$ function match its arguments in sequential order to determine which 
+label to blame. The forth and last line is straightforward recursion.
+
+\todo[inline]{KC: I need a better name for \compatibletailhead{t}{h},
+  any suggestion from Jeremy?}
+\todo[inline]{JS: how about $\sim$}
+\todo[inline]{KC: sounds good}
+
+%The third line handles the case when both the tail of $c_1$
+%and the head of $c_2$ are no-ops, in which case the middles types
+%$m_1$ and $m_2$ are composed via an auxiliary composition
+%operator. This compose operator for middle coercions assumes that its
+%inputs are shallowly consistent.  The fourth line handles the
+%important case when the tail of $c_1$ is an injection and the head of
+%$c_2$ is a projection. If the two middle coercions are shallowly
+%consistent, then they can be composed. If not, the tail of the result
+%is a failure coercion with the projection's label.  The last line
+%handles the case when the tail of $c_1$ is a failure, in which case
+%the result of composition is $c_1$. The definition of $id$ is straightforward.
+
+\begin{figure}[tp]
+	\fbox{$c \fatsemi c = c$}
+	\[
+	\begin{array}{rclcl}
+		\hcci          
+		& \fatsemi & d
+		& = & d \\
+		\hccc{h}{m}{t}
+		& \fatsemi & \hcci
+		& = & \hccc{h}{m}{t} \\
+		\hccc{h_1}{m_1}{t_1}
+		& \fatsemi & \hccc{h_2}{m_2}{t_2}
+		& = & \hccc{h_1}{(m_1 \fatsemi t_1 \fatsemi h_2 \fatsemi m_2)}{t_2}
+	\end{array}
+	\]
+
+	\fbox{$m \fatsemi t \fatsemi h \fatsemi m = m$}
+	\[
+	\begin{array}{rccccclclr}
+	\hcmfail{l} 
+	& \fatsemi & t
+	& \fatsemi & h
+	& \fatsemi & m_2
+	& = & \hcmfail{l} \\
+	m_1
+	& \fatsemi & \hcti{G}
+	& \fatsemi & \hchp{H}{l}
+	& \fatsemi & m_2
+	& = & \hcmfail{l}
+	& \sidecond{G \neq H \text{ and } \forall l. m_1 \neq \hcmfail{l}} \\
+	m_1
+	& \fatsemi & t
+	& \fatsemi & h
+	& \fatsemi & \hcmfail{l}
+	& = & \hcmfail{l}
+	& \sidecond{\compatibletailhead{t}{h}
+		\text{ and } \forall l. m_1 \neq \hcmfail{l}} \\
+	m_1
+	& \fatsemi & t
+	& \fatsemi & h
+	& \fatsemi & m_2
+	& = & m_1 \fatsemi m_2
+	& \quad \sidecond{
+		\forall l. m_2 \neq \hcmfail{l}
+		\text{ and } \compatibletailhead{t}{h}
+		\text{ and } \forall l. m_1 \neq \hcmfail{l}} \\
+	\end{array}
+	\]
+	
+	\fbox{$m \fatsemi m = m$}
+	\[
+	\begin{array}{rclcl}
+	\hcmbool
+	& \fatsemi & \hcmbool
+	& = & \hcmbool \\
+	\hcmfunc{c_1}{d_1}
+	& \fatsemi & \hcmfunc{c_2}{d_2}
+	& = & \hcmfunc{c_2 \fatsemi c_1}{d_1 \fatsemi d_2} \\
+	\hcmprod{c_1}{d_1}
+	& \fatsemi & \hcmprod{c_2}{d_2}
+	& = & \hcmprod{c_2 \fatsemi c_1}{d_1 \fatsemi d_2} \\
+	\end{array}
+	\]
+	
+	\fbox{\compatibletailhead{t}{h}}
+	\begin{gather*}
+	\infr{}{\compatibletailhead{\hcte}{\hche}}
+	\quad
+	\infr{}{\compatibletailhead{\hcti{G}}{\hchp{G}{l}}}
+	\end{gather*}
+	
+\caption{\LUD\ Hypercoercions (1): composition}
+\label{fig:LazyUD-Hypercoercions-composition}
+\end{figure}
+
+\begin{figure}[tp]
+	\fbox{$\translate{\ccast{S}{l}{T}} = c$}
+	\[
+	\begin{array}{rcll}
+	\figequalto{\translate{\ccast{\Tdyn}{l}{\Tdyn}}}{\hcci}{}
+	\figequalto{\translate{\ccast{\Tdyn}{l}{Q}}}{\castFromDyn{l}{Q}}{}
+	\figequalto{\translate{\ccast{P}{l}{\Tdyn}}}{\castToDyn{P}{l}}{}
+	\figequalto{\translate{\ccast{P}{l}{Q}}}{
+		\hccc{\hche}{\hcmfail{l}}{\hcte}
+	}{\sidecond{\notshallowlyconsistent{P}{Q}}}
+	\figequalto{\translate{\ccast{\Pbool}{l}{\Pbool}}}{
+		\hccc{\hche}{\hcmbool}{\hcte}
+	}{}
+	\figequalto{\translate{\ccast{\Pfunc{S_1}{T_1}}{l}{\Pfunc{S_2}{T_2}}}}{
+		\hccc{\hche}{
+			\hcmfunc{
+				\translate{\ccast{S_2}{l}{S_1}}}{
+				\translate{\ccast{T_1}{l}{T_2}}}
+		}{\hcte}
+	}{}
+	\figequalto{\translate{\ccast{\Pprod{S_1}{T_1}}{l}{\Pprod{S_2}{T_2}}}}{
+		\hccc{\hche}{
+			\hcmprod{
+				\translate{\ccast{S_1}{l}{S_2}}}{
+				\translate{\ccast{T_1}{l}{T_2}}}
+		}{\hcte}
+	}{}
+	\end{array}
+	\]
+	
+	\fbox{$\castFromDyn{Q}{l}$}
+	\[
+	\begin{array}{rcll}
+\figequalto{\castFromDyn{\Tdyn}{l}}{\hcci}{}
+\figequalto{\castFromDyn{\Pbool}{l}}{
+	\hccc{\hchp{\Gbool}{l}}{
+		\hcmbool
+	}{\hcte}
+}{}
+\figequalto{\castFromDyn{\Pfunc{S}{T}}{l}}{
+	\hccc{\hchp{\Gfunc}{l}}{
+		\hcmfunc{\castToDyn{S}{l}}{\castFromDyn{T}{l}}
+	}{\hcte}
+}{}
+\figequalto{\castFromDyn{\Pprod{S}{T}}{l}}{
+	\hccc{\hchp{\Gprod}{l}}{
+		\hcmprod{\castFromDyn{S}{l}}{\castFromDyn{T}{l}}
+	}{\hcte}
+}{}
+	\end{array}
+	\]
+	
+	\fbox{$\castToDyn{Q}{l}$}
+	\[
+	\begin{array}{rcll}
+\figequalto{\castToDyn{\Tdyn}{l}}{\hcci}{}
+\figequalto{\castToDyn{\Pbool}{l}}{
+	\hccc{\hche}{
+		\hcmbool
+	}{\hcti{\Gbool}}
+}{}
+\figequalto{\castToDyn{\Pfunc{S}{T}}{l}}{
+	\hccc{\hche}{
+		\hcmfunc{\castFromDyn{S}{l}}{\castToDyn{T}{l}}
+	}{\hcti{\Gfunc}}
+}{}
+\figequalto{\castToDyn{\Pprod{S}{T}}{l}}{
+	\hccc{\hche}{
+		\hcmprod{\castToDyn{S}{l}}{\castToDyn{T}{l}}
+	}{\hcti{\Gprod}}
+}{}
+	\end{array}
+	\]
+\caption{\LUD\ Hypercoercions (2): translation}
+\label{fig:LazyUD-Hypercoercions-translation}
+\end{figure}
+
+\todo[inline]{KC: should we cite the place where ``Prior presentations'' locate?}
+The translation function \translate{\ccast{S}{l}{T}} is defined in 
+\figref{fig:LazyUD-Hypercoercions-translation}.  Prior
+presentations of this function do not use auxiliary functions, as we
+do here. The reason that we introduce the auxiliary functions
+$\mathrm{castToDyn}$ and $\mathrm{castFromDyn}$, is to ensure that each of them 
+is structurally recursive, which makes them straightforward to define in
+Agda.
+
+\begin{figure}[tp]
+	\fbox{$\denote{c}_c(v)=r$}
+	\[
+	\begin{array}{rclr}
+	\figequalto{\denote{\hcci}(v)}{v}{}
+	\figequalto{\denote{\hccc{h}{m}{t}}(v)}{
+		(\denote{h}(v) \mbind \denote{m})
+		\mbind \denote{t}
+	}{}
+	\end{array}
+	\]
+	
+	\fbox{$\denote{h}_h(v)=r$}
+	\[
+	\begin{array}{rclr}
+	\figequalto{\denote{\hche}(v)}{v}{}
+	\figequalto{\denote{\hchp{G}{l}}(\vdyn{G}{u})}{u}{}
+	\figequalto{\denote{\hchp{H}{l}}(\vdyn{G}{u})}{\error{l}}{
+		\sidecond{G \neq H}
+	}
+	\end{array}
+	\]
+	
+	\fbox{$\denote{m}_m(v)=r$}
+	\[
+	\begin{array}{rclr}
+	\figequalto{\denote{\hcmfail{l}}(v)}{\error{l}}{}
+	\figequalto{\denote{\hcmbool}(v)}{v}{}
+	\figequalto{\denote{\hcmfunc{d_1}{d_2}}(\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{c_1}{c_2}})}{
+		\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{(\compose{d_1}{c_1})}{(\compose{c_2}{d_2})}}
+	}{}
+	\figequalto{\denote{\hcmprod{d_1}{d_2}}(\ecast{\vcons{v_1}{v_2}}{\Pprod{c_1}{c_2}})}{
+		\ecast{\vcons{v_1}{v_2}}{\Pprod{(\compose{c_1}{d_1})}{(\compose{c_2}{d_2})}}
+	}{}
+	\end{array}
+	\]
+	
+	\fbox{$\denote{t}_t(v)=r$}
+	\[
+	\begin{array}{rclr}
+	\figequalto{\denote{\hcte}(v)}{v}{}
+	\figequalto{\denote{\hcti{G}}(v)}{\vdyn{G}{v}}{}
+	\end{array}
+	\]
+	\caption{Application of \LUD\ Hypercoercions}
+	\label{fig:LazyUD-Hypercoercions-application}
+\end{figure}
+
+Fig.~\ref{fig:LazyUD-Hypercoercions-application} defines the cast application 
+function for \LUD\ hypercoercions.
+Applying the identity cast for the dynamic type succeeds immediately. 
+Otherwise, we apply head, middle, and tail in sequence. 
+%
+In the two projection cases of applying a head coercion, the result
+depends on whether the source ground type ($G$) is the same as the
+target ($H$).
+%
+The application of a middle coercion raises an error if the middle is
+a failure and otherwise composes its sub-coercions with those in the
+value.
+
+\begin{proposition} Lazy UD Hypercoercions implement the Lazy UD Cast ADT
+\end{proposition}
+\begin{theorem}[Lazy UD Hypercoercions are Correct] Let $H$ be the Lazy UD 
+	hypercoercions.
+	\[\machineequiv{\LDMachine}{\SMachine{H}}\]
+\end{theorem}
+
 
 \subsection{\LD\ Hypercoercions}
 \label{sec:LazyD-Hypercoercions}
@@ -2662,6 +2847,12 @@ suitable for implementation.
 \label{fig:aux-hypercoercion-composition}
 \end{figure}
 
+Hypercoercions for the \LD\ blame tracking strategy have the same syntax
+as for \LUD\ (\figref{fig:hypercoercion}), but the definitions of $\id{T}$ and
+$\translate{\ccast{S}{l}{T}}$ and $\compose{c}{c}$ differ from \LUD.
+% Here composition $\compose{c_1}{c_2}$ makes the usual assumption that the
+% target type of $c_1$ matches the source type of $c_2$. 
+%
 \figref{fig:LazyD-Hypercoercions-composition} defines the composition
 operator \compose{c}{c} for \LD\ hypercoercions and
 \figref{fig:aux-hypercoercion-composition} defines some auxilliary
@@ -2802,271 +2993,6 @@ hypercoercions.
 \[\machineequiv{\LDMachine}{\SMachine{H}}\]
 \end{theorem}
 
-
-\subsection{\LUD\ Hypercoercions} \label{sec:LazyUD-Hypercoercions}
-
-\todo[inline]{JS: I'd recommend moving this subsection before that of
-  LazyD because a reader is more likely to be familiar with Lazy UD.}
-\todo[inline]{KC: will do}
-
-Hypercoercions for the \LUD\ blame tracking strategy have the same syntax
-as for \LD\ (\figref{fig:hypercoercion}), but the definitions of $\id{T}$ and
-$\translate{\ccast{S}{l}{T}}$ and $\compose{c}{c}$, differ from \LD. Here 
-composition $\compose{c_1}{c_2}$ makes the usual assumption that the
-target type of $c_1$ matches the source type of $c_2$. 
-%
-The definition of composition for \LUD\ is particularly straightforward.
-The first two lines say that \hcci\ acts as the identity on both the left
-and right.
-The third line handles the case when both hypercoercions have three parts. 
-%
-The first three lines of the middle composition $m \fatsemi t \fatsemi h 
-\fatsemi m$ function match its arguments in sequential order to determine which 
-label to blame. The forth and last line is straightforward recursion.
-
-\todo[inline]{KC: I need a better name for \compatibletailhead{t}{h},
-  any suggestion from Jeremy?}
-\todo[inline]{JS: how about $\sim$}
-
-%The third line handles the case when both the tail of $c_1$
-%and the head of $c_2$ are no-ops, in which case the middles types
-%$m_1$ and $m_2$ are composed via an auxiliary composition
-%operator. This compose operator for middle coercions assumes that its
-%inputs are shallowly consistent.  The fourth line handles the
-%important case when the tail of $c_1$ is an injection and the head of
-%$c_2$ is a projection. If the two middle coercions are shallowly
-%consistent, then they can be composed. If not, the tail of the result
-%is a failure coercion with the projection's label.  The last line
-%handles the case when the tail of $c_1$ is a failure, in which case
-%the result of composition is $c_1$. The definition of $id$ is straightforward.
-
-\begin{figure}[tp]
-	\fbox{$c \fatsemi c = c$}
-	\[
-	\begin{array}{rclcl}
-		\hcci          
-		& \fatsemi & d
-		& = & d \\
-		\hccc{h}{m}{t}
-		& \fatsemi & \hcci
-		& = & \hccc{h}{m}{t} \\
-		\hccc{h_1}{m_1}{t_1}
-		& \fatsemi & \hccc{h_2}{m_2}{t_2}
-		& = & \hccc{h_1}{(m_1 \fatsemi t_1 \fatsemi h_2 \fatsemi m_2)}{t_2}
-	\end{array}
-	\]
-
-	\fbox{$m \fatsemi t \fatsemi h \fatsemi m = m$}
-	\[
-	\begin{array}{rccccclclr}
-	\hcmfail{l} 
-	& \fatsemi & t
-	& \fatsemi & h
-	& \fatsemi & m_2
-	& = & \hcmfail{l} \\
-	m_1
-	& \fatsemi & \hcti{G}
-	& \fatsemi & \hchp{H}{l}
-	& \fatsemi & m_2
-	& = & \hcmfail{l}
-	& \sidecond{G \neq H \text{ and } \forall l. m_1 \neq \hcmfail{l}} \\
-	m_1
-	& \fatsemi & t
-	& \fatsemi & h
-	& \fatsemi & \hcmfail{l}
-	& = & \hcmfail{l}
-	& \sidecond{\compatibletailhead{t}{h}
-		\text{ and } \forall l. m_1 \neq \hcmfail{l}} \\
-	m_1
-	& \fatsemi & t
-	& \fatsemi & h
-	& \fatsemi & m_2
-	& = & m_1 \fatsemi m_2
-	& \sidecond{
-		\forall l. m_2 \neq \hcmfail{l}
-		\text{ and } \compatibletailhead{t}{h}
-		\text{ and } \forall l. m_1 \neq \hcmfail{l}} \\
-	\end{array}
-	\]
-	
-	\fbox{$m \fatsemi m = m$}
-	\[
-	\begin{array}{rclcl}
-	\hcmbool
-	& \fatsemi & \hcmbool
-	& = & \hcmbool \\
-	\hcmfunc{c_1}{d_1}
-	& \fatsemi & \hcmfunc{c_2}{d_2}
-	& = & \hcmfunc{c_2 \fatsemi c_1}{d_1 \fatsemi d_2} \\
-	\hcmprod{c_1}{d_1}
-	& \fatsemi & \hcmprod{c_2}{d_2}
-	& = & \hcmprod{c_2 \fatsemi c_1}{d_1 \fatsemi d_2} \\
-	\end{array}
-	\]
-	
-	\fbox{\compatibletailhead{t}{h}}
-	\begin{gather*}
-	\infr{}{\compatibletailhead{\hcte}{\hche}}
-	\quad
-	\infr{}{\compatibletailhead{\hcti{G}}{\hchp{G}{l}}}
-	\end{gather*}
-	
-\caption{\LUD\ Hypercoercions (1): composition}
-\label{fig:LazyUD-Hypercoercions-composition}
-\end{figure}
-
-\begin{figure}[tp]
-	\fbox{$\translate{\ccast{S}{l}{T}} = c$}
-	\[
-	\begin{array}{rcll}
-	\figequalto{\translate{\ccast{\Tdyn}{l}{\Tdyn}}}{\hcci}{}
-	\figequalto{\translate{\ccast{\Tdyn}{l}{Q}}}{\castFromDyn{l}{Q}}{}
-	\figequalto{\translate{\ccast{P}{l}{\Tdyn}}}{\castToDyn{P}{l}}{}
-	\figequalto{\translate{\ccast{P}{l}{Q}}}{
-		\hccc{\hche}{\hcmfail{l}}{\hcte}
-	}{\sidecond{\notshallowlyconsistent{P}{Q}}}
-	\figequalto{\translate{\ccast{\Pbool}{l}{\Pbool}}}{
-		\hccc{\hche}{\hcmbool}{\hcte}
-	}{}
-	\figequalto{\translate{\ccast{\Pfunc{S_1}{T_1}}{l}{\Pfunc{S_2}{T_2}}}}{
-		\hccc{\hche}{
-			\hcmfunc{
-				\translate{\ccast{S_2}{l}{S_1}}}{
-				\translate{\ccast{T_1}{l}{T_2}}}
-		}{\hcte}
-	}{}
-	\figequalto{\translate{\ccast{\Pprod{S_1}{T_1}}{l}{\Pprod{S_2}{T_2}}}}{
-		\hccc{\hche}{
-			\hcmprod{
-				\translate{\ccast{S_1}{l}{S_2}}}{
-				\translate{\ccast{T_1}{l}{T_2}}}
-		}{\hcte}
-	}{}
-	\end{array}
-	\]
-	
-	\fbox{$\castFromDyn{Q}{l}$}
-	\[
-	\begin{array}{rcll}
-\figequalto{\castFromDyn{\Tdyn}{l}}{\hcci}{}
-\figequalto{\castFromDyn{\Pbool}{l}}{
-	\hccc{\hchp{\Gbool}{l}}{
-		\hcmbool
-	}{\hcte}
-}{}
-\figequalto{\castFromDyn{\Pfunc{S}{T}}{l}}{
-	\hccc{\hchp{\Gfunc}{l}}{
-		\hcmfunc{\castToDyn{S}{l}}{\castFromDyn{T}{l}}
-	}{\hcte}
-}{}
-\figequalto{\castFromDyn{\Pprod{S}{T}}{l}}{
-	\hccc{\hchp{\Gprod}{l}}{
-		\hcmprod{\castFromDyn{S}{l}}{\castFromDyn{T}{l}}
-	}{\hcte}
-}{}
-	\end{array}
-	\]
-	
-	\fbox{$\castToDyn{Q}{l}$}
-	\[
-	\begin{array}{rcll}
-\figequalto{\castToDyn{\Tdyn}{l}}{\hcci}{}
-\figequalto{\castToDyn{\Pbool}{l}}{
-	\hccc{\hche}{
-		\hcmbool
-	}{\hcti{\Gbool}}
-}{}
-\figequalto{\castToDyn{\Pfunc{S}{T}}{l}}{
-	\hccc{\hche}{
-		\hcmfunc{\castFromDyn{S}{l}}{\castToDyn{T}{l}}
-	}{\hcti{\Gfunc}}
-}{}
-\figequalto{\castToDyn{\Pprod{S}{T}}{l}}{
-	\hccc{\hche}{
-		\hcmprod{\castToDyn{S}{l}}{\castToDyn{T}{l}}
-	}{\hcti{\Gprod}}
-}{}
-	\end{array}
-	\]
-\caption{\LUD\ Hypercoercions (2): translation}
-\label{fig:LazyUD-Hypercoercions-translation}
-\end{figure}
-
-The translation function \translate{\ccast{S}{l}{T}} is defined in 
-\figref{fig:LazyUD-Hypercoercions-translation}.  Prior
-presentations of this function do not use auxiliary functions, as we
-do here. The reason that we introduce the auxiliary functions
-$\mathrm{castToDyn}$ and $\mathrm{castFromDyn}$, is to ensure that each of them 
-is structurally recursive, which makes them straightforward to define in
-Agda.
-
-\begin{figure}[tp]
-	\fbox{$\denote{c}_c(v)=r$}
-	\[
-	\begin{array}{rclr}
-	\figequalto{\denote{\hcci}(v)}{v}{}
-	\figequalto{\denote{\hccc{h}{m}{t}}(v)}{
-		(\denote{h}(v) \mbind \denote{m})
-		\mbind \denote{t}
-	}{}
-	\end{array}
-	\]
-	
-	\fbox{$\denote{h}_h(v)=r$}
-	\[
-	\begin{array}{rclr}
-	\figequalto{\denote{\hche}(v)}{v}{}
-	\figequalto{\denote{\hchp{G}{l}}(\vdyn{G}{u})}{u}{}
-	\figequalto{\denote{\hchp{H}{l}}(\vdyn{G}{u})}{\error{l}}{
-		\sidecond{G \neq H}
-	}
-	\end{array}
-	\]
-	
-	\fbox{$\denote{m}_m(v)=r$}
-	\[
-	\begin{array}{rclr}
-	\figequalto{\denote{\hcmfail{l}}(v)}{\error{l}}{}
-	\figequalto{\denote{\hcmbool}(v)}{v}{}
-	\figequalto{\denote{\hcmfunc{d_1}{d_2}}(\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{c_1}{c_2}})}{
-		\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{(\compose{d_1}{c_1})}{(\compose{c_2}{d_2})}}
-	}{}
-	\figequalto{\denote{\hcmprod{d_1}{d_2}}(\ecast{\vcons{v_1}{v_2}}{\Pprod{c_1}{c_2}})}{
-		\ecast{\vcons{v_1}{v_2}}{\Pprod{(\compose{c_1}{d_1})}{(\compose{c_2}{d_2})}}
-	}{}
-	\end{array}
-	\]
-	
-	\fbox{$\denote{t}_t(v)=r$}
-	\[
-	\begin{array}{rclr}
-	\figequalto{\denote{\hcte}(v)}{v}{}
-	\figequalto{\denote{\hcti{G}}(v)}{\vdyn{G}{v}}{}
-	\end{array}
-	\]
-	\caption{Application of \LUD\ Hypercoercions}
-	\label{fig:LazyUD-Hypercoercions-application}
-\end{figure}
-
-Fig.~\ref{fig:LazyUD-Hypercoercions-application} defines the cast application 
-function for \LUD\ hypercoercions.
-Applying the identity cast for the dynamic type succeeds immediately. 
-Otherwise, we apply head, middle, and tail in sequence. 
-%
-In the two projection cases of applying a head coercion, the result
-depends on whether the source ground type ($G$) is the same as the
-target ($H$).
-%
-The application of a middle coercion raises an error if the middle is
-a failure and otherwise composes its sub-coercions with those in the
-value.
-
-\begin{proposition} Lazy UD Hypercoercions implement the Lazy UD Cast ADT
-\end{proposition}
-\begin{theorem}[Lazy UD Hypercoercions are Correct] Let $H$ be the Lazy UD 
-	hypercoercions.
-	\[\machineequiv{\LDMachine}{\SMachine{H}}\]
-\end{theorem}
 
 \subsection{A Compact Representation of Hypercoercions} \label{sec:hypercoercions-compact}
 
