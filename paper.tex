@@ -14,7 +14,7 @@
 %\usepackage{subcaption} %% For complex figures with subfigures/subcaptions
 %% http://ctan.org/pkg/subcaption
 \usepackage{xcolor} %% For \color
-\usepackage{todonotes} %% For \todo
+\usepackage[disable]{todonotes} %% For \todo
 \usepackage{mathtools} %% For \xRightarrow[sub]{sup}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -673,26 +673,20 @@ their cast representation,
 they prove a bisimulation relating $\lambda B$ to $\lambda C$
 and a bisimulation relating $\lambda C$ to $\lambda S$.
 
-Inspired by the approaches of \cite{Siek:2010:TWB:1706299.1706342}
-and \cite{Siek:2015:BCT:2737924.2737968}, 
-we also use the bisimulation technique. But our bisimulation have an
-important difference. Our bisimulation relation, unlike theirs, does
-not cover all possible states in the reduction. Instead, we ask both 
-sides of the bisimulation to reduce several steps before recovering
-the bisimulation relation (compare our Lemma~\ref{lem:weak-bisimulation}
-with Lemma~8 in \cite{Siek:2010:TWB:1706299.1706342}
-and Proposition~16 in \cite{Siek:2015:BCT:2737924.2737968}).
-This decision simplifies the bisimulation relation (Fig.~\ref{fig:bisim-SC-D})
-(compared to Figure~6 in \cite{Siek:2010:TWB:1706299.1706342} and
-Figure~6 in \cite{Siek:2015:BCT:2737924.2737968}).
-In particular, the function application case is a congruence
-(hence not shown in the figure) in our bisimulation relation
-but requires special rules in theirs.
-
-\todo[inline]{JS: there is a least one interesting difference regarding
-  the bisimulation: your lemma 3 has an ``upto reduction'' flavor to it
-  which makes your $\approx$ relation simpler. }
-\todo[inline]{KC: updated.}
+Inspired by the approaches of \cite{Siek:2010:TWB:1706299.1706342} and
+\cite{Siek:2015:BCT:2737924.2737968}, we also use the bisimulation
+technique. But our bisimulation have an important difference. Our
+bisimulation relation does not cover all possible states in the
+reduction. Instead, we ask both sides of the bisimulation to reduce
+several steps before recovering the bisimulation relation (compare our
+Lemma~\ref{lem:weak-bisimulation} with Lemma~8 in
+\cite{Siek:2010:TWB:1706299.1706342} and Proposition~16 in
+\cite{Siek:2015:BCT:2737924.2737968}).  This decision simplifies the
+bisimulation relation (Fig.~\ref{fig:bisim-SC-D}) (compared to
+Figure~6 in \cite{Siek:2010:TWB:1706299.1706342} and Figure~6 in
+\cite{Siek:2015:BCT:2737924.2737968}).  In particular, the function
+application case is a congruence (hence not shown in the figure) in
+our bisimulation relation but requires special rules in theirs.
 
 \subsection{Other Cast Representations}
 \label{subsec:related-work-other-cast-reprs}
@@ -709,8 +703,7 @@ motivates and inspires the design of hypercoercions.
 
 \subsection{Cast Calculi} \label{sec:cast-calculi}
 
-\begin{figure}[tp]
-Syntax
+\begin{figure}[t]
 \[
 \begin{array}{lrcl}
 \text{Blame Labels} & l,\bar{l} \\
@@ -746,73 +739,73 @@ Syntax
 \end{array}
 \]
 	
-	\fbox{\consistent{T}{T}} Consistency
-	\begin{gather*}
-	\infr{}{\consistent{\Tdyn}{\Tdyn}} \quad
-	\infr{}{\consistent{\Tdyn}{P}    } \quad
-	\infr{}{\consistent{P}{\Tdyn}    }
-	\\[1ex]
-	\infr{}{
-		\consistent{\Pbool}{\Pbool}
-	} \quad
-	\infr{
-		\consistent{S_1}{S_2} &
-		\consistent{T_1}{T_2}
-	}{
-		\consistent{\Pfunc{S_1}{T_1}}{\Pfunc{S_2}{T_2}}
-	} \quad
-	\infr{
-		\consistent{S_1}{S_2} &
-		\consistent{T_1}{T_2}
-	}{
-		\consistent{\Pprod{S_1}{T_1}}{\Pprod{S_2}{T_2}}
-	}
-	\end{gather*}
+%% 	\fbox{\consistent{T}{T}} Consistency
+%% 	\begin{gather*}
+%% 	\infr{}{\consistent{\Tdyn}{\Tdyn}} \quad
+%% 	\infr{}{\consistent{\Tdyn}{P}    } \quad
+%% 	\infr{}{\consistent{P}{\Tdyn}    }
+%% 	\\[1ex]
+%% 	\infr{}{
+%% 		\consistent{\Pbool}{\Pbool}
+%% 	} \quad
+%% 	\infr{
+%% 		\consistent{S_1}{S_2} &
+%% 		\consistent{T_1}{T_2}
+%% 	}{
+%% 		\consistent{\Pfunc{S_1}{T_1}}{\Pfunc{S_2}{T_2}}
+%% 	} \quad
+%% 	\infr{
+%% 		\consistent{S_1}{S_2} &
+%% 		\consistent{T_1}{T_2}
+%% 	}{
+%% 		\consistent{\Pprod{S_1}{T_1}}{\Pprod{S_2}{T_2}}
+%% 	}
+%% 	\end{gather*}
 		
-	\fbox{\shallowlyconsistent{T}{T}} Shallow consistency
-	\begin{gather*}
-	\inference{}{
-		\shallowlyconsistent{\Tdyn}{\Tdyn}
-	} \quad
-	\inference{}{
-		\shallowlyconsistent{\Tdyn}{P}
-	} \quad
-	\inference{}{
-		\shallowlyconsistent{P}{\Tdyn}
-	} \\
-	\inference{}{
-		\shallowlyconsistent{\Pbool}{\Pbool}
-	} \quad
-	\inference{}{
-		\shallowlyconsistent{\Pfunc{S_1}{T_1}}{\Pfunc{S_2}{T_2}}
-	} \quad
-	\inference{}{
-		\shallowlyconsistent{\Pprod{S_1}{T_1}}{\Pprod{S_2}{T_2}}
-	}
-	\end{gather*}
+%% 	\fbox{\shallowlyconsistent{T}{T}} Shallow consistency
+%% 	\begin{gather*}
+%% 	\inference{}{
+%% 		\shallowlyconsistent{\Tdyn}{\Tdyn}
+%% 	} \quad
+%% 	\inference{}{
+%% 		\shallowlyconsistent{\Tdyn}{P}
+%% 	} \quad
+%% 	\inference{}{
+%% 		\shallowlyconsistent{P}{\Tdyn}
+%% 	} \\
+%% 	\inference{}{
+%% 		\shallowlyconsistent{\Pbool}{\Pbool}
+%% 	} \quad
+%% 	\inference{}{
+%% 		\shallowlyconsistent{\Pfunc{S_1}{T_1}}{\Pfunc{S_2}{T_2}}
+%% 	} \quad
+%% 	\inference{}{
+%% 		\shallowlyconsistent{\Pprod{S_1}{T_1}}{\Pprod{S_2}{T_2}}
+%% 	}
+%% 	\end{gather*}
 
 
-\fbox{$\expressiontyping{\Gamma}{e}{T}$} Expression Typing
-\begin{gather*}
-\dots \quad
-\infr{
-	\expressiontyping{\Gamma}{e}{S}  &
-	\consistent{S}{T}
-}{
-	\expressiontyping{\Gamma}{(\ecast{e}{\ccast{S}{l}{T}})}{T}
-}
-\end{gather*}
+%% \fbox{$\expressiontyping{\Gamma}{e}{T}$} Expression Typing
+%% \begin{gather*}
+%% \dots \quad
+%% \infr{
+%% 	\expressiontyping{\Gamma}{e}{S}  &
+%% 	\consistent{S}{T}
+%% }{
+%% 	\expressiontyping{\Gamma}{(\ecast{e}{\ccast{S}{l}{T}})}{T}
+%% }
+%% \end{gather*}
 
-\caption{Syntax and static semantics of the Cast Calculus.}
+\caption{Syntax of the Cast Calculus.}
 \label{fig:statics}
 \end{figure}
 
-\paragraph{Syntax and Static Semantics}
+\paragraph{Syntax}
 
 \todo[inline]{KC: is this the right place to mention that in Agda
 code we use de Bruijn indexes?}
 
-The syntax and static semantics are the same for the \LD\ and
+The syntax is the same for the \LD\ and
 \LUD\ cast calculi. They are reviewed in \figref{fig:statics}.
 As usual, the important features are the cast expressions,
 $\ecast{e}{\ccast{S}{l}{T}}$, which are responsible for runtime type
@@ -827,8 +820,9 @@ The syntax and static semantics is the same as that of
 \item We separate types into those with a type constructor at the top,
   the \emph{pre-types}, versus the dynamic type \Tdyn.
 \end{itemize}
-As usual, in a cast $\ecast{e}{\ccast{S}{l}{T}}$, the source type $S$
-and the target $T$ must be consistent.
+
+\noindent The static semantics of the cast calculi is reviewed in the
+Appendix, \figref{fig:statics2}.
 
 \paragraph{Dynamic Semantics}
 
@@ -845,21 +839,18 @@ equivalence of this CEK machine and reduction semantics for cast
 calculi could be proved by standard
 techniques~\citep{Felleisen:2009aa}.
 
-
-\begin{figure}[tp]
+\begin{figure}[t]
 \[
 \begin{array}{lrcl}
 \stxrule{v,u}{Values}{
   	\vdyn{I}{v}  \mid
     \vtrue       \mid
-    \vfalse                     
+    \vfalse     \mid                    
+    \vfunc{x}{S}{e}{E}  
 }
 \stxrulecont{
-    \vfunc{x}{S}{e}{E}  \mid
-	\vfuncc{v}{S}{T}{l}{S}{T}
-}
-\stxrulecont{
-    \vcons{v}{v}               \mid
+	\vfuncc{v}{S}{T}{l}{S}{T} \mid
+        \vcons{v}{v}               \mid
 	\vconsc{v}{S}{T}{l}{S}{T}
 }
 \stxrule{I,J}{Injectable types}{
@@ -2167,14 +2158,16 @@ hypercoercions is motivated by the observation that a normal coercion has at mos
 parts. Hypercoercions make this structure explicit: a hypercoercion $c$ is
 either \hcci, the identity cast for \Tdyn, or it contains
 three parts: a head, middle, and tail, as defined in
-\figref{fig:hypercoercion}.
+\figref{fig:hypercoercion}. 
 \begin{itemize}
-	\item a head is either a projection or the no-op;
-	\item a middle $m$ involves coercions that preserve a type
-	constructor, i.e., coercions between Boolean, function, and pair, and 
-	failure coercions;
-	\item a tail is either an injection or the no-op.
+\item a head is either a projection or the no-op;
+\item a middle $m$ involves coercions that preserve a type
+  constructor, i.e., coercions between Boolean, function, and pair, and 
+  failure coercions;
+\item a tail is either an injection or the no-op.
 \end{itemize}
+The static semantics of hypercoercions is defined in the Appendix,
+\figref{fig:hypercoercion-statics}.
 
 \begin{figure}[tp]
 	Syntax of Hypercoercions
@@ -2226,52 +2219,7 @@ three parts: a head, middle, and tail, as defined in
 	\end{array}
 	\]
 	
-	\fbox{\casttyping{c}{S}{T}} Hypercoercion typing 
-	\begin{gather*}
-	\inference{}{\casttyping{\hcci}{\Tdyn}{\Tdyn}}
-	\quad
-	\inference{
-		\casttyping{h}{S}{P} &
-		\casttyping{m}{P}{Q} &
-		\casttyping{t}{Q}{T}
-	}{
-		\casttyping{\hccc{h}{m}{t}}{S}{T}
-	}
-	\end{gather*}
-	
-	\fbox{\casttyping{h}{T}{P}} Head typing
-	\begin{gather*}
-	\inference{}{\casttyping{\hche}{P}{P}}
-	\quad
-	\inference{}{\casttyping{\hchp{I}{l}}{\Tdyn}{I}}
-	\end{gather*}
-	
-	\fbox{$\casttyping{m}{T}{T}$} Middle typing
-	\begin{gather*}
-	\infr{}{\casttyping{\hcmfail{l}}{P}{Q}} \quad
-	\inference{}{\casttyping{\hcmbool}{\Pbool}{\Pbool}} \\
-	\inference{
-		\casttyping{c}{S_2}{S_1} &
-		\casttyping{d}{T_1}{T_2}
-	}{
-		\casttyping{\hcmfunc{c}{d}}{\Pfunc{S_1}{T_1}}{\Pfunc{S_2}{T_2}}
-	}
-	\quad
-	\inference{
-		\casttyping{c}{S_1}{S_2} &
-		\casttyping{d}{T_1}{T_2}
-	}{
-		\casttyping{\hcmprod{c}{d}}{\Pprod{S_1}{T_1}}{\Pprod{S_2}{T_2}}
-	}
-	\end{gather*}
-	
-	\fbox{\casttyping{t}{P}{T}} Tail typing
-	\begin{gather*}
-	\inference{}{\casttyping{\hcte}{P}{P}} \quad
-	\inference{}{\casttyping{\hcti{I}}{I}{\Tdyn}} \quad
-	\end{gather*}
-	
-	\caption{Definition of hypercoercions}
+	\caption{Hypercoercions: syntax and $\mathrm{id}$ operations.}
 	\label{fig:hypercoercion}
 \end{figure}
 
@@ -2426,7 +2374,7 @@ label to blame. The forth and last line is straightforward recursion.
 	\end{array}
 	\]
 	
-	\fbox{$\castFromDyn{Q}{l}$}
+%	\fbox{$\castFromDyn{Q}{l}$}
 	\[
 	\begin{array}{rcll}
 \figequalto{\castFromDyn{\Tdyn}{l}}{\hcci}{}
@@ -2448,7 +2396,7 @@ label to blame. The forth and last line is straightforward recursion.
 	\end{array}
 	\]
 	
-	\fbox{$\castToDyn{Q}{l}$}
+%	\fbox{$\castToDyn{Q}{l}$}
 	\[
 	\begin{array}{rcll}
 \figequalto{\castToDyn{\Tdyn}{l}}{\hcci}{}
@@ -2692,13 +2640,14 @@ value.
 
 
 \begin{figure}[tp]
-\fbox{$\goodgap{g}$}
+  % removing fbox's to save space -Jeremy
+%\fbox{$\goodgap{g}$}
 \begin{gather*}
 \infr{}{\goodgap{\gnone}} \quad
 \infr{\shallowlyconsistent{P}{Q}}{\goodgap{\gsome{P}{l}{Q}}}
 \end{gather*}
 
-\fbox{$\dom{g}=g$}
+%\fbox{$\dom{g}=g$}
 \[
 \begin{array}{rclr}
 \figequalto{\dom{\gnone}}{\gnone}{}
@@ -2708,7 +2657,7 @@ value.
 \end{array}
 \]
 
-\fbox{$\cod{g}=g$}
+%\fbox{$\cod{g}=g$}
 \[
 \begin{array}{rclr}
 \figequalto{\cod{\gnone}}{\gnone}{}
@@ -2718,7 +2667,7 @@ value.
 \end{array}
 \]
 
-\fbox{$\fst{g}=g$}
+%\fbox{$\fst{g}=g$}
 \[
 \begin{array}{rclr}
 \figequalto{\fst{\gnone}}{\gnone}{}
@@ -2728,7 +2677,7 @@ value.
 \end{array}
 \]
 
-\fbox{$\snd{g}=g$}
+%\fbox{$\snd{g}=g$}
 \[
 \begin{array}{rclr}
 \figequalto{\snd{\gnone}}{\gnone}{}
@@ -2974,5 +2923,133 @@ representation in comparison with coercions in normal forms.
 %\bibliographystyle{splncs04}
 \bibliographystyle{splncsnat}
 \bibliography{bibfile,all-modified}{}
+
+\section{Appendix}
+
+Figure~\ref{fig:statics2} defines the static semantics of the cast
+calculus.
+As usual, in a cast $\ecast{e}{\ccast{S}{l}{T}}$, the source type $S$
+and the target $T$ must be consistent.
+
+
+\begin{figure}[tp]
+	\fbox{\consistent{T}{T}} Consistency
+	\begin{gather*}
+	\infr{}{\consistent{\Tdyn}{\Tdyn}} \quad
+	\infr{}{\consistent{\Tdyn}{P}    } \quad
+	\infr{}{\consistent{P}{\Tdyn}    }
+	\\[1ex]
+	\infr{}{
+		\consistent{\Pbool}{\Pbool}
+	} \quad
+	\infr{
+		\consistent{S_1}{S_2} &
+		\consistent{T_1}{T_2}
+	}{
+		\consistent{\Pfunc{S_1}{T_1}}{\Pfunc{S_2}{T_2}}
+	} \quad
+	\infr{
+		\consistent{S_1}{S_2} &
+		\consistent{T_1}{T_2}
+	}{
+		\consistent{\Pprod{S_1}{T_1}}{\Pprod{S_2}{T_2}}
+	}
+	\end{gather*}
+		
+	\fbox{\shallowlyconsistent{T}{T}} Shallow consistency
+	\begin{gather*}
+	\inference{}{
+		\shallowlyconsistent{\Tdyn}{\Tdyn}
+	} \quad
+	\inference{}{
+		\shallowlyconsistent{\Tdyn}{P}
+	} \quad
+	\inference{}{
+		\shallowlyconsistent{P}{\Tdyn}
+	} \\
+	\inference{}{
+		\shallowlyconsistent{\Pbool}{\Pbool}
+	} \quad
+	\inference{}{
+		\shallowlyconsistent{\Pfunc{S_1}{T_1}}{\Pfunc{S_2}{T_2}}
+	} \quad
+	\inference{}{
+		\shallowlyconsistent{\Pprod{S_1}{T_1}}{\Pprod{S_2}{T_2}}
+	}
+	\end{gather*}
+
+
+\fbox{$\expressiontyping{\Gamma}{e}{T}$} Expression Typing
+\begin{gather*}
+\dots \quad
+\infr{
+	\expressiontyping{\Gamma}{e}{S}  &
+	\consistent{S}{T}
+}{
+	\expressiontyping{\Gamma}{(\ecast{e}{\ccast{S}{l}{T}})}{T}
+}
+\end{gather*}
+
+\caption{Static Semantics of the Cast Calculus.}
+\label{fig:statics2}
+\end{figure}
+
+
+
+\figref{fig:hypercoercion-statics} defines the static semantics of
+hypercoercions.
+
+\begin{figure}[tp]
+	\fbox{\casttyping{c}{S}{T}} Hypercoercion typing 
+	\begin{gather*}
+	\inference{}{\casttyping{\hcci}{\Tdyn}{\Tdyn}}
+	\quad
+	\inference{
+		\casttyping{h}{S}{P} &
+		\casttyping{m}{P}{Q} &
+		\casttyping{t}{Q}{T}
+	}{
+		\casttyping{\hccc{h}{m}{t}}{S}{T}
+	}
+	\end{gather*}
+	
+	\fbox{\casttyping{h}{T}{P}} Head typing
+	\begin{gather*}
+	\inference{}{\casttyping{\hche}{P}{P}}
+	\quad
+	\inference{}{\casttyping{\hchp{I}{l}}{\Tdyn}{I}}
+	\end{gather*}
+	
+	\fbox{$\casttyping{m}{T}{T}$} Middle typing
+	\begin{gather*}
+	\infr{}{\casttyping{\hcmfail{l}}{P}{Q}} \quad
+	\inference{}{\casttyping{\hcmbool}{\Pbool}{\Pbool}} \\
+	\inference{
+		\casttyping{c}{S_2}{S_1} &
+		\casttyping{d}{T_1}{T_2}
+	}{
+		\casttyping{\hcmfunc{c}{d}}{\Pfunc{S_1}{T_1}}{\Pfunc{S_2}{T_2}}
+	}
+	\quad
+	\inference{
+		\casttyping{c}{S_1}{S_2} &
+		\casttyping{d}{T_1}{T_2}
+	}{
+		\casttyping{\hcmprod{c}{d}}{\Pprod{S_1}{T_1}}{\Pprod{S_2}{T_2}}
+	}
+	\end{gather*}
+	
+	\fbox{\casttyping{t}{P}{T}} Tail typing
+	\begin{gather*}
+	\inference{}{\casttyping{\hcte}{P}{P}} \quad
+	\inference{}{\casttyping{\hcti{I}}{I}{\Tdyn}} \quad
+	\end{gather*}
+	
+	\caption{Static semantics of hypercoercions}
+	\label{fig:hypercoercion-statics}
+\end{figure}
+
+
+
 
 \end{document}
