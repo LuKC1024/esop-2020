@@ -315,34 +315,43 @@ Indiana University, Bloomington IN 47405, USA}
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
-Gradual typing aims at combining dynamic typing and static typing in one 
-language to provide the advantages of both typing disciplines. Implementing 
-gradual typing with reasonable overhead, however, is not trivial. Casts might 
-accumulate in higher-order values and continuations, thus change the overall 
-space complexity. Several space-efficient cast representations have been 
-proposed, notably coercions in normal forms and threesomes. But they are
-presented in different dynamic semantics, which make it difficult to compare
-the key differences between the cast representations. We present a abstrat
-data type, namely Cast ADT, that captures interface functions a cast representations
-typically includes, and an abstract machine parameterized over Cast ADTs.
-The Cast ADT brings another benefit: space-efficient cast representations 
-shall be proved not changing the 
+Gradual typing combines dynamic typing and static typing in one
+language to provide the advantages of both typing
+disciplines. Implementing gradual typing with reasonable overhead,
+however, is not trivial. Casts accumulate on higher-order values and
+continuations, changing the overall space complexity. Several
+space-efficient cast representations have been proposed, notably
+coercions in normal forms and threesomes. But they are presented in
+different dynamic semantics, which make it difficult to compare the
+key differences between the cast representations. We present a
+abstract data type, namely Cast ADT, that captures interface functions
+a cast representations typically includes, and an abstract machine
+parameterized over Cast ADTs.  The Cast ADT brings another benefit:
+space-efficient cast representations shall be proved not changing the
 overall behavior of language implementations except saving space.
-With our generic abstract machine, these proofs can be done by proving properties
-of a specific Cast ADT, which is simpler than going through a bisimulation proof 
-between a space-efficient dynamic semantics and the definitional dynamic semantics.
-We have successfully applied our new approach of proving the correctness of cast 
-representations to several known cast representations
+With our generic abstract machine, these proofs can be done by proving
+properties of a specific Cast ADT, which is simpler than proofs
+regarding the entire dynamic semantics.
+\todo[inline]{JS: The stuff above about ``make it difficult to compare''
+  is a weak argument. I would recommend deleting that argument and
+  instead focus on the benefits regarding the proofs of correctness.}
+
+We have successfully applied our new approach to the proofs of
+correctness for two space-efficient cast representations from the
+literature
 (\cite{Siek:2010:TWB:1706299.1706342,siek2012interpretations,Siek:2015:BCT:2737924.2737968})
-and believe this framework
-is also applicable to other cast representations (\cite{Garcia:2013:CTB:2500365.2500603,siek2012interpretations}).
-We also present a new cast representation, hypercoercions, that is more friendly
-to mechanized meta-theory and consumes less memory than coercions
-in normal forms.
+and believe this framework is also applicable to other cast
+representations
+(\cite{Garcia:2013:CTB:2500365.2500603,siek2012interpretations}).  We
+also present a new cast representation, hypercoercions, that is more
+friendly to mechanized meta-theory and consumes less memory than
+coercions in normal forms. We prove correctness for two variants of
+hypercoercions.
 
 \todo[inline]{KC: I feel ``going through a bisimulation proof'' is too specific.
 There should be other ways to prove equivalence of two dynamic semantics.
 How does Jeremy think?}
+\todo[inline]{JS: yes}
 
 % The abstract should briefly summarize the contents of the paper in
 % 15--250 words. 
