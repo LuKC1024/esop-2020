@@ -203,10 +203,10 @@
 \newcommand{\gsome}[3]{\ccast{#1}{#2}{#3}}
 
 % operators
-\newcommand{\mbind}[0]{\ensuremath{\;\gg=\;}}
+% \newcommand{\mbind}[0]{\ensuremath{\;\gg=\;}}
+% \newcommand{\mcomp}[0]{\ensuremath{\;>=>\;}}
 \newcommand{\mlet}[3]{\ensuremath{
-\mathtt{let}\ #1\leftarrow#2\ \mathtt{in}\;#3}}
-\newcommand{\mcomp}[0]{\ensuremath{\;>=>\;}}
+\mathit{let}\ {#1\leftarrow#2}\ \mathit{in}\;#3}}
 
 % functions
 \newcommand{\meet}[2]{\ensuremath{#1 \sqcap #2}}
@@ -436,7 +436,9 @@ cast after the recursive calls but \textit{before} returning from the
 current function. So the calls are not in fact tail calls and the
 space complexity is linear instead of constant.
 
-\todo[inline]{KC: in the next paragraph I cite \cite{breazu1991inheritance}}
+\todo[inline]{KC: in the next paragraph I cite \cite{breazu1991inheritance}
+and \cite{breazu1990computing}}
+
 Continuations are not the only place where casts can accumulate.
 Consider a variant of the above program written in
 continuation-passing style.  Here, both functions returns
@@ -450,7 +452,7 @@ recursive call because the type of \lstinline|k| is less precise in
 Every time a function is casted we record a pieces of
 cast information for the input and another piece for
 the output, following the approach in \cite{breazu1991inheritance}
-and \cite{Breazu-Tannen:1990vc},
+and \cite{breazu1990computing},
 so the space complexity is again linear.
 \begin{lstlisting}
 (define (even? [n : Int] [k : (-> $\star$ Bool)]) : Bool
@@ -1012,7 +1014,6 @@ In the Agda code we use the monad bind operator instead.
 %           a \mbind f & = & f(a)      & \text{otherwise}
 % \end{array}
 % \]
-\todo[inline]{KC: KC, you need to replace all uses of monad bind to let.}
 
 \begin{figure}[tp]
 	\fbox{\reducetoR{B}{s}{s}} Transition
@@ -1039,7 +1040,8 @@ In the Agda code we use the monad bind operator instead.
 		\sexpr{e}{E}{\Kcons{\Fcast{\ccast{S}{l}{T}}}{K}}
 	}{}
 	\figreducetoH{\scont{v}{\Kcons{\Fcast{\ccast{S}{l}{T}}}{K}}}{
-		\applyCast{v}{\ccast{S}{l}{T}} \; \mbind \; \lambda u. \scont{u}{K}
+	    \mlet{u}{\applyCast{v}{\ccast{S}{l}{T}}}{\scont{u}{K}}
+% 		\applyCast{v}{\ccast{S}{l}{T}} \; \mbind \; \lambda u. \scont{u}{K}
 	}{}
 	\figreduceto{\scont{v_1}{\Kcons{\FappXO{e_2}{E}}{K}}}{\sexpr{e_2}{E}{
 			\Kcons{\FappOX{v_1}}{K}}
@@ -1217,7 +1219,8 @@ sub-components are the dynamic type, such as \Pfunc{\Tdyn}{\Tdyn}.
 	\applyCastName(\vdyn{G}{u}, \ccast{\Tdyn}{l}{H}) &=&          
 	\project{u}{G}{l}{H}\\
 	\applyCastName(\vdyn{G}{u}, \ccast{\Tdyn}{l}{Q}) &=&
-	\project{u}{G}{l}{H} \mbind \lambda v. \proxy{v}{\ccast{H}{l}{Q}}
+	\mlet{v}{\project{u}{G}{l}{H}}{\proxy{v}{\ccast{H}{l}{Q}}}
+% 	\project{u}{G}{l}{H} \mbind \lambda v. \proxy{v}{\ccast{H}{l}{Q}}
 	\\
 	&& \text{if } H \sim Q, H \neq Q \\
 % 	& \text{if } H \sim Q, H \neq Q \\
@@ -1528,7 +1531,8 @@ Cast~ADT.
 		$ \casttyping{c}{T_1}{T_2} $ and
 		$ \casttyping{d}{T_2}{T_3} $ 
 		then 
-		$ \denote{\compose{c}{d}}(v) = (\denote{c}(v)\mbind\denote{d})$
+% 		$ \denote{\compose{c}{d}}(v) = (\denote{c}(v)\mbind\denote{d})$
+        $ \denote{\compose{c}{d}}(v) = \mlet{v}{\denote{c}(v)}{\denote{d}(v)}$
 \end{itemize}
 We use the syntax \casttyping{c}{S}{T} to mean $c$ is in the set 
 $\textit{Cast}_{S,T}$.
@@ -1556,7 +1560,7 @@ $K$ by using the composition operator $\fatsemi$.
 	\figreducetoH{
 		\sexpr{\elam{x}{S}{e}}{E}{K}
 	}{
-		\scont{\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{id(S)}{id(T)}}}{K}
+		\scont{\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{\id{S}}{\id{T}}}}{K}
 	}{}
 	& &
 	\highlight{
@@ -1589,7 +1593,8 @@ $K$ by using the composition operator $\fatsemi$.
 		\sexpr{e}{E}{\extCont{\translate{\ccast{S}{l}{T}}}{K}}
 	}{}
 	\figreducetoH{\scont{v}{\Kcons{\Fcast{c}}{k}}}{
-		\denote{c}(v) \; \mbind \; \lambda u. \applyCont{u}{K}
+	    \mlet{u}{\denote{c}(v)}{\applyCont{u}{K}}
+% 		\denote{c}(v) \; \mbind \; \lambda u. \applyCont{u}{K}
 	}{}
 	\end{array}
 	\]
@@ -1603,8 +1608,9 @@ $K$ by using the composition operator $\fatsemi$.
 	\figequaltoH{
 		\applyCont{v}{\Kcons{\FappOX{(\ecast{\vfunc{x}{S}{e}{E}}{\Pfunc{c}{d}})}}{K}}
 	}{
-		\denote{c}(v) \mbind \lambda u. \
-		\sexpr{e}{E[x:=u]}{\extCont{d}{K}}
+	    \mlet{u}{\denote{c}(v)}{\sexpr{e}{E[x:=u]}{\extCont{d}{K}}}
+% 		\denote{c}(v) \mbind \lambda u. \
+% 		\sexpr{e}{E[x:=u]}{\extCont{d}{K}}
 	}{}
 	\figequalto{\applyCont{\vtrue}{\Kcons{\Fif{e_2}{e_3}{E}}{K}}}{\sexpr{e_2}{E}{K}}{}
 	\figequalto{\applyCont{\vfalse}{\Kcons{\Fif{e_2}{e_3}{E}}{K}}}{\sexpr{e_3}{E}{K}}{}
@@ -1625,14 +1631,16 @@ $K$ by using the composition operator $\fatsemi$.
 	\figequaltoH{
 		\applyCont{\ecast{\vcons{v_1}{v_2}}{\Pprod{c_1}{c_2}}}{\Kcons{\Ffst}{K}}
 	}{
-		\denote{c_1}(v_1) \mbind \lambda u.
-		\scont{u}{K}
+	    \mlet{u}{\denote{c_1}(v_1)}{\scont{u}{K}}
+% 		\denote{c_1}(v_1) \mbind \lambda u.
+% 		\scont{u}{K}
 	}{}
 	\figequaltoH{
 		\applyCont{\ecast{\vcons{v_1}{v_2}}{\Pprod{c_1}{c_2}}}{\Kcons{\Fsnd}{K}}
 	}{
-		\denote{c_2}(v_2) \mbind \lambda u.
-		\scont{u}{K}
+	    \mlet{u}{\denote{c_2}(v_2)}{\scont{u}{K}}
+% 		\denote{c_2}(v_2) \mbind \lambda u.
+% 		\scont{u}{K}
 	}{}
 	\figequalto{\applyCont{v}{\Knil}}{\shalt{v}}{}
 	\end{array}
@@ -1767,15 +1775,19 @@ Lazy UD \applyCastName.
 	\item $\denote{\translate{\ccast{\Tdyn}{l}{\Tdyn}}}(v) = v$
 	\item $\denote{\translate{\ccast{G}{l}{\Tdyn}}}(v) = \vdyn{G}{v}$
 	\item $\denote{\translate{\ccast{P}{l}{\Tdyn}}}(v) = 
-		\denote{\translate{\ccast{P}{l}{G}}}(v) \mbind 
-		\denote{\ccast{G}{l}{\Tdyn}}$\\
+	    \mlet{v}{\denote{\translate{\ccast{P}{l}{G}}}(v)}{\denote{\ccast{G}{l}{\Tdyn}}(v)}
+% 		\denote{\translate{\ccast{P}{l}{G}}}(v) \mbind 
+% 		\denote{\ccast{G}{l}{\Tdyn}}
+        $\\
 		if $G \sim P$ and $G \neq P$	
 	\item $\denote{\translate{\ccast{\Tdyn}{l}{G}}}(\vdyn{G}{u}) = u$
 	\item $\denote{\translate{\ccast{\Tdyn}{l}{H}}}(\vdyn{G}{u}) = \error{l}$ \qquad
 		if $G \neq H$
 	\item $\denote{\translate{\ccast{\Tdyn}{l}{Q}}}(v) = 
-		\denote{\translate{\ccast{\Tdyn}{l}{H}}}(v) \mbind
-		\denote{\translate{\ccast{H}{l}{Q}}}$\\
+	    \mlet{v}{\denote{\translate{\ccast{\Tdyn}{l}{H}}}(v)}{\denote{\translate{\ccast{H}{l}{Q}}}(v)}
+% 		\denote{\translate{\ccast{\Tdyn}{l}{H}}}(v) \mbind
+% 		\denote{\translate{\ccast{H}{l}{Q}}}
+		$\\
 		if $H \sim Q$ and $H \neq Q$
 	\item $\denote{\translate{\ccast{\Pbool}{l}{\Pbool}}}(v) = v$
 		\item 
@@ -1815,7 +1827,7 @@ and that if $C$ is a Lazy UD Cast ADT then
 
 \fbox{\bisimc{\overline{\ccast{S}{l}{T}}}{c}{S}{T}}
 \begin{gather*}
-\infr{}{\bisimc{[]}{id(T)}{T}{T}} \quad
+\infr{}{\bisimc{[]}{\id{T}}{T}{T}} \quad
 \infr{}{\bisimc{[\ccast{S}{l}{T}]}{\translate{\ccast{S}{l}{T}}}{S}{T}}
 \\[1ex]
 %\infr{
@@ -1853,7 +1865,7 @@ and that if $C$ is a Lazy UD Cast ADT then
 			\Fcast{\ccast{S_1}{l_1}{S_2}}
 		}{\ldots\Kcons{\Fcast{\ccast{S_{n-1}}{l_{n-1}}{S_n}}}{K}}
 	}{
-		\Kcons{\Fcast{c'}}{k'}
+		\Kcons{\Fcast{c}}{k'}
 	}{S_1}{T}
 }
 \end{gather*}
@@ -1961,139 +1973,6 @@ and that if $C$ is a Lazy UD Cast ADT then
   right is in \SMachine{C}.}
 \label{fig:bisim-SC-D}
 \end{figure}
-
-% \begin{figure}
-
-% \fbox{\bisimc{Z}{c}{S}{T}}
-% \begin{gather*}
-% \infr{}{\bisimc{[]}{id(T)}{T}{T}} \quad
-% \infr{}{\bisimc{[\ccast{S}{l}{T}]}{\translate{\ccast{S}{l}{T}}}{S}{T}}
-% \\[1ex]
-% \infr{
-% 	\bisimc{Z_1}{c_1}{T_1}{T_2}\\
-% 	\bisimc{Z_2}{c_2}{T_2}{T_3}
-% }{
-% 	\bisimc{(Z_1 \mathrm{++} Z_2)}{(\compose{c_1}{c_2})}{T_1}{T_3}
-% }
-% \end{gather*}
-
-% \fbox{$\bisimK{K}{K}{S}{T}$}
-% \begin{gather*}
-% \infr{
-% 	\bisimK{K}{k'}{S_n}{T} \qquad
-% 	\bisimc{Z}{c}{S_1}{S_n}
-% }{
-% 	\bisimK{
-% 		\Kcons{\Fcast{Z}}{K}
-% 	}{
-% 		\Kcons{\Fcast{c'}}{k'}
-% 	}{S_1}{T}
-% }
-% \end{gather*}
-
-% \fbox{$\bisimv{v}{v}{T}$}
-% \begin{gather*}
-% \infr{
-% 	\expressiontyping{\Gamma,x : S_1}{e}{T_1}
-% 	\qquad
-% 	\bisimE{\Gamma}{E}{E'}
-% 	\\
-% 	\bisimc{
-% 		(\ccast{S_n}{\bar{l}_{n-1}}{S_{n-1}} \ldots
-% 		\ccast{S_2}{\bar{l}_1}{S_1})
-% 	}{c}{S_n}{S_1}
-% 	\\
-% 	\bisimc{
-% 		(		\ccast{T_1}{l_{1}}{T_2} \ldots
-% 		\ccast{T_{n-1}}{l_{n-1}}{T_n}
-% 		)	}{d}{T_1}{T_n}
-% 	\\
-% 	v = \vfuncc{
-% 		\vfuncc{
-% 			\vfunc{x}{S_1}{e}{E}
-% 		}{S_1}{T_1}{l_1}{S_2}{T_2}
-% 		\ldots
-% 	}{S_{n-1}}{T_{n-1}}{l_{n-1}}{S_n}{T_n}
-% }{
-% 	\bisimv{v}{
-% 		(\ecast{\vfunc{x}{S_1}{e}{E'}}{\Pfunc{c}{d}})
-% 	}{
-% 		\Pfunc{S_n}{T_n}}
-% }
-% \\[1ex]
-% \infr{
-% 	\bisimv{v_1}{v_1'}{S_1} \qquad
-% 	\bisimv{v_2}{v_2'}{T_1} \\
-% 	\bisimc{
-% 		(\ccast{S_1}{l_{1}}{S_2} \ldots
-% 		\ccast{S_{n-1}}{l_{n-1}}{S_n})
-% 	}{c}{S_1}{S_n} \\
-% 	\bisimc{
-% 		(\ccast{T_1}{l_{1}}{T_2} \ldots
-% 		\ccast{T_{n-1}}{l_{n-1}}{T_n})
-% 	}{d}{T_1}{T_n}
-% 	\\ v = \vconsc{
-% 		\vconsc{
-% 			\vcons{v_1}{u_1}
-% 		}{S_1}{T_1}{l_1}{S_2}{T_2}
-% 		\ldots
-% 	}{S_{n-1}}{T_{n-1}}{l_{n-1}}{S_n}{T_n}
-% }{
-% 	\bisimv{
-% 		v
-% 	}{
-% 		(\ecast{\vcons{v_2}{u_2}}{\Pprod{c}{d}})
-% 	}{
-% 		\Pprod{S_n}{T_n}}
-% }
-% \end{gather*}
-	
-% \fbox{\bisimE{\Gamma}{E}{E}}
-% \begin{gather*}
-% \inference{
-% }{
-% 	\bisimE{\emptyset}{\emptyset}{\emptyset}
-% }
-% \quad
-% \inference{
-% 	\Gamma \vdash E \approx E' \qquad
-% 	v \approx v' : T
-% }{
-% 	\Gamma , x : T \vdash 
-% 	E [ x := v' ] \approx E' [ x := v' ]
-% }
-% \end{gather*}
-
-% \fbox{\bisims{s}{s}{T}}
-% \begin{gather*}
-% \infr{}{\bisims{\error{l}}{\error{l}}{T}} \quad
-% \infr{
-% 	\bisimv{v}{v'}{T}
-% }{
-% 	\bisims{\shalt{v}}{\shalt{v'}}{T}
-% }
-% \\
-% \infr{
-% 	\bisimv{v}{v'}{S} \\
-% 	\bisimK{K}{K'}{S}{T}
-% }{
-% 	\bisims{\scont{v}{K}}{\scont{v}{K'}}{T}
-% } \quad
-% \infr{
-% 	\expressiontyping{\Gamma}{e}{S} \\
-% 	\bisimE{\Gamma}{E}{E'}          \\
-% 	\bisimK{K}{K'}{S}{T}
-% }{
-% 	\bisims{\sexpr{e}{E}{K}}{\sexpr{e}{E'}{K'}}{T}
-% }
-% \end{gather*}
-
-% \caption{Bisimulation between \CBMachine\ and \SMachine{C}. It is the smallest 
-% congruence relation containing the shown rules. Everything to the left (resp. 
-% right) of $\approx$ is in \CBMachine\ (resp. in \SMachine{C}).}
-% \label{fig:bisim-SC-D}
-% \end{figure}
-
 
 The central part of the proofs is a weak bisimulation between \CMachine{B} and \SMachine{C}.
 Fig.~\ref{fig:bisim-SC-D} defines the bisimulation relation
@@ -2243,6 +2122,7 @@ where the final predicate on states is defined as follows
 \todo[inline]{KC: that is possibly only if we steal some pages from elsewhere.
 The paper limit is 25 (excluding bib) and we have used 30 now.
 https://etaps.org/2021/call-for-papers}
+\todo[inline]{KC: [IMPORTANT]}
 
 \todo[inline]{JS: There should be some text regarding the following
 two theorems.}
@@ -2599,8 +2479,13 @@ Agda.
 	\begin{array}{rclr}
 	\figequalto{\denote{\hcci}(v)}{v}{}
 	\figequalto{\denote{\hccc{h}{m}{t}}(v)}{
-		(\denote{h}(v) \mbind \denote{m})
-		\mbind \denote{t}
+	    \mlet{v}{\denote{h}_h(v)}{
+	    \mlet{v}{\denote{m}_m(v)}{
+	    \denote{t}_t(v)}}
+	   % \mlet{v}{(\mlet{v}{\denote{h}(v)}{\denote{m}(v)})}{
+	   % \denote{t}(v)}
+% 		(\denote{h}(v) \mbind \denote{m})
+% 		\mbind \denote{t}
 	}{}
 	\end{array}
 	\]
@@ -2918,7 +2803,7 @@ composition.
 	\fbox{$\translate{\ccast{S}{l}{T}} = c$} Translation of \LD\ hypercoercions
 	\[
 	\begin{array}{rclr}
-	\figequalto{\translate{\ccast{S}{l}{T}}}{\composegap{id(S)}{(\gsome{S}{l}{T})}{id(T)}}{}
+	\figequalto{\translate{\ccast{S}{l}{T}}}{\composegap{\id{S}}{(\gsome{S}{l}{T})}{\id{T}}}{}
 	\end{array}
 	\]
 	\caption{Translation of \LD\ Hypercoercions}
@@ -2934,8 +2819,10 @@ is straightforward (\figref{fig:LazyD-Hypercoercions-translation}).
 \begin{array}{rclr}
 \figequalto{\denote{\hcci}(v)}{v}{}
 \figequalto{\denote{\hccc{h}{m}{t}}(v)}{
-	(\denote{h}_h(v) \mbind \denote{m}_m)
-	\mbind \denote{t}_t
+    \mlet{v}{\denote{h}_h(v)}{
+    \mlet{v}{\denote{m}_m(v)}{\denote{t}_t(v)}}
+% 	(\denote{h}_h(v) \mbind \denote{m}_m)
+% 	\mbind \denote{t}_t
 }{}
 \end{array}
 \]
