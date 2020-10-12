@@ -50,7 +50,6 @@
 \lstsetgrift
 
 % random stuff
-\newcommand{\todo}[1]{}
 \newcommand{\infr}[2]{\inference{#1}{#2}}
 \newcommand{\highlight}[1]{{\color{red} #1}}
 \newcommand{\sidecond}[1]{\text{if}\;#1}
@@ -316,43 +315,75 @@ Indiana University, Bloomington IN 47405, USA}
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
+% Background
 Gradual typing combines dynamic typing and static typing in one
 language to provide the advantages of both typing
 disciplines. Implementing gradual typing with reasonable overhead,
 however, is not trivial. Casts accumulate on higher-order values and
 continuations, changing the overall space complexity. Several
 space-efficient cast representations have been proposed, notably
-coercions in normal forms and threesomes. But they are presented in
-different dynamic semantics, which make it difficult to compare the
-key differences between the cast representations. We present a
-abstract data type, namely Cast ADT, that captures interface functions
-a cast representations typically includes, and an abstract machine
-parameterized over Cast ADTs.  The Cast ADT brings another benefit:
-space-efficient cast representations shall be proved not changing the
-overall behavior of language implementations except saving space.
-With our generic abstract machine, these proofs can be done by proving
-properties of a specific Cast ADT, which is simpler than proofs
-regarding the entire dynamic semantics.
+coercions in normal forms and threesomes.
+These cast representations shall be proved not changing the overall
+behavior of language implementations except saving space.
+Existing proofs typically go through a bisimulation between
+a space-efficient semantics, which use a specific cast representation,
+and the definitional but inefficient semantics \citep{Siek:2010:TWB:1706299.1706342,Siek:2015:BCT:2737924.2737968}.
+% Problem
+However, this technique imposes unnecessary burden to proof writer
+because a considerable portion of the semantics is irrelevant to
+casts.
+% Solution
+To isolate cast representations from the remaining part of 
+implementations, we present a abstract data type, namely Cast ADT,
+that captures interface functions a cast representations typically 
+includes, and an abstract machine parameterized over Cast ADTs.
+Our generic dynamic semantics comes with generic theorems,
+% Why is our solution a step forward
+with which the correctness proofs can be done by just proving 
+properties of a specific Cast ADT.
+% %
+% To isolate cast representations from the remaining part of 
+% implementations, we present a abstract data type, namely Cast ADT,
+% that captures interface functions a cast representations typically 
+% includes, and an abstract machine parameterized over Cast ADTs.
+% %
+% With our generic abstract machine, the correctness proofs can be
+% done by proving properties of a specific Cast ADT, which is simpler
+% than proofs regarding the entire dynamic semantics.
+%%%%%
+% %
+% But they are presented in
+% different dynamic semantics, which make it difficult to compare the
+% key differences between the cast representations.
+% %
+% We present a
+% abstract data type, namely Cast ADT, that captures interface functions
+% a cast representations typically includes, and an abstract machine
+% parameterized over Cast ADTs.
+% %
+% The Cast ADT brings another benefit:
+% space-efficient cast representations shall be proved not changing the
+% overall behavior of language implementations except saving space.
+% %
+% With our generic abstract machine, these proofs can be done by proving
+% properties of a specific Cast ADT, which is simpler than proofs
+% regarding the entire dynamic semantics.
 \todo[inline]{JS: The stuff above about ``make it difficult to compare''
   is a weak argument. I would recommend deleting that argument and
   instead focus on the benefits regarding the proofs of correctness.}
+\todo[inline]{KC: updated.}
 
 We have successfully applied our new approach to the proofs of
 correctness for two space-efficient cast representations from the
 literature
-(\cite{Siek:2010:TWB:1706299.1706342,siek2012interpretations,Siek:2015:BCT:2737924.2737968})
+\citep{Siek:2010:TWB:1706299.1706342,siek2012interpretations,Siek:2015:BCT:2737924.2737968}
 and believe this framework is also applicable to other cast
 representations
-(\cite{Garcia:2013:CTB:2500365.2500603,siek2012interpretations}).  We
+\citep{Garcia:2013:CTB:2500365.2500603,siek2012interpretations}.  We
 also present a new cast representation, hypercoercions, that is more
 friendly to mechanized meta-theory and consumes less memory than
 coercions in normal forms. We prove correctness for two variants of
 hypercoercions.
-
-\todo[inline]{KC: I feel ``going through a bisimulation proof'' is too specific.
-There should be other ways to prove equivalence of two dynamic semantics.
-How does Jeremy think?}
-\todo[inline]{JS: yes}
 
 % The abstract should briefly summarize the contents of the paper in
 % 15--250 words. 
@@ -369,47 +400,6 @@ dynamic typing and static typing, notably gradual typing
 \citep{siek2006gradual}, hybrid typing \citep{knowles2010hybrid},
 migratory typing \citep{tobin2006interlanguage}, and multi-language
 interoperability \citep{Gray:2005ij,Matthews:2007zr}.
-
-\todo[inline]{KC: Cite "Contracts for higher-order functions" for the proxy-based approach maybe?}
-\todo[inline]{JS: That paper doesn't exactly fit into what you're talking about in the above
-sentence. It might be appopriate to cite it elsewhere in the paper. Also,
-there are earlier papers about coercive subtyping (Computing with coercions by Breazu-Tannen et al)
-that use a proxy-based approach. The contracts paper may be the first to propose blame tracking.}
-\todo[inline]{KC: How about citing the origin of the proxy-based approach when we talk
-about the CPSed even-odd example?
-I am confused about which paper to cite. \cite{herman2010space} seems to be citing
-\cite{findler2002contracts} for the proxy-based approach of casting function.
-Here is the relevant sentences from \cite{herman2010space}:
-``In general, it is not possible to check if an untyped function satisfies a
-particular static type. A natural solution is to wrap the function in a proxy that, whenever
-it is applied, casts its argument and result values appropriately, ensuring that the function
-is only observed with its expected type. This proxy-based approach was formalized by Findler
-and Felleisen [15] ...''
-I am \textit{not} trying to say I don't believe in your statements about the origins of
-the proxy-based approach and blame tracking in functions.
-I want to know whether \citet{herman2010space} is citing the right paper.
-Maybe both papers came up independently with a similar idea but \cite{findler2002contracts}
-is more related to our work.
-}
-\todo[inline]{JS: In the above you've lumped proxy-based and blame
-  tracking together, which is incorrect. AFAIK,
-  \cite{findler2002contracts} is the origin of blame tracking. AFAIK,
-  \citet{Breazu-Tannen:1990vc} is the origin of proxy-based casts.
-  You can read both papers for yourself and be the judge.  BTW, TAPL
-  (section 15.6) cites Breazu-Tannen.  So \citet{herman2010space}
-  cited the wrong paper for function proxies, perhaps because they
-  didn't know about \citet{Breazu-Tannen:1990vc}. Also,
-  \cite{findler2002contracts} should have cited
-  \citet{Breazu-Tannen:1990vc} but did not. Perhaps because they did
-  not consider that papers about ``casts'' to be closely related to
-  their paper about ``contracts''.  Or perhaps they too did not know
-  about \citet{Breazu-Tannen:1990vc}.  Authors make mistakes all the
-  time regarding related work, and this is just yet another example of
-  that. For that matter, I should have cited
-  \citet{Breazu-Tannen:1990vc} in \citet{siek2006gradual} but did not,
-  probably because I had learned about it from TAPL and therefore
-  thought it was so standard that it didn't need a citation.  But it
-  would have been better for me to cite it.}
 
 Gradual typing \citep{siek2006gradual,siek2015refined} includes both static typing 
 and dynamic typing in the same language and enables a smooth transition between them while
@@ -447,7 +437,9 @@ current function. So the calls are not in fact tail calls and the
 space complexity is linear instead of constant.
 
 \todo[inline]{KC: in the next paragraph I cite \cite{breazu1991inheritance}
-and \cite{breazu1990computing}}
+and \cite{findler2002contracts}. My understanding is \cite{findler2002contracts}
+extends the approach in \cite{breazu1991inheritance} with
+blame labels.}
 
 Continuations are not the only place where casts can accumulate.
 Consider a variant of the above program written in
@@ -462,7 +454,7 @@ recursive call because the type of \lstinline|k| is less precise in
 Every time a function is casted we record a pieces of
 cast information for the input and another piece for
 the output, following the approach in \cite{breazu1991inheritance}
-and \cite{breazu1990computing},
+and \cite{findler2002contracts},
 so the space complexity is again linear.
 \begin{lstlisting}
 (define (even? [n : Int] [k : (-> $\star$ Bool)]) : Bool
@@ -596,7 +588,6 @@ and relationship between hypercoercions and other cast representations
 \subsection{Dynamics semantics parameterized over cast representations}
 \label{subsec:parameterized-dynamics}
 
-\todo[inline]{KC: how can I forget the interpretation paper!}
 \cite{siek2012interpretations} presents a definitional interpreter
 and a variant of the ECD abstract machine \citep{siek2012ECD}.
 Both systems are parameterized over 4 flavors of coercions in normal
@@ -611,19 +602,6 @@ of dynamic semantics by applying the correspondence described
 through the paper starting with a different set of coercion artefacts.''.
 It is unclear to us whether their system is just applicable
 to other flavor of coercions or also to other cast representations.
-
-\todo[inline]{JS: The above is too short of a description of that related
-work.}
-\todo[inline]{KC: I am actually very confused by \citet{garcia2014deriving}.
-They stated that ``Theorems 8.1 and 8.3 can be generalised for other choices
-of dynamic semantics by applying the correspondence described
-through the paper starting with a different set of coercion artefacts.''.
-However they didn't give a generalization and it is unclear to me over what
-their system is parameterized (cast representations? apply-coercion and seq?.}
-\todo[inline]{JS: your comment above says what you should say
-  (except the part about your confusion). Say it in a matter-of-fact
-way, and not a derogitory way.}
-\todo[inline]{KC: updated.}
 
 \citet{siek2020mechanized} defines two reduction semantics for cast
 calculi parameterized over cast representations. The first semantics,
@@ -2096,6 +2074,7 @@ the expressions in the machine are simply related by syntactic equality.
 
 We come to the main lemma, the weak bisimulation between
 \CBMachine\ and \SMachine{C}.
+A general description of the proof is in the Appendix.
 
 \begin{lemma}[Weak Bisimulation between \CMachine{B} and \SMachine{C}] \label{lem:weak-bisimulation}
 Assume
@@ -2118,11 +2097,6 @@ where the final predicate on states is defined as follows
 \infr{}{(\shalt{v})\text{ final}}
 \end{gather*}
 \end{lemma}
-\todo[inline]{KC: wouldn't it be great if I can describe the main ideas of the proof?}
-\todo[inline]{JS: Yes, that would be great.}
-\todo[inline]{KC: that is possibly only if we steal some pages from elsewhere.
-The paper limit is 25 (excluding bib) and we have used 30 now.
-https://etaps.org/2021/call-for-papers}
 
 \todo[inline]{JS: There should be some text regarding the following
 two theorems.}
@@ -2233,10 +2207,6 @@ suitable for implementation.
 
 \subsection{\LUD\ Hypercoercions} \label{sec:LazyUD-Hypercoercions}
 
-\todo[inline]{JS: I'd recommend moving this subsection before that of
-  LazyD because a reader is more likely to be familiar with Lazy UD.}
-\todo[inline]{KC: Updated.}
-
 % Hypercoercions for the \LUD\ blame tracking strategy have the same syntax
 % as for \LD\ (\figref{fig:hypercoercion}), but the definitions of $\id{T}$ and
 % $\translate{\ccast{S}{l}{T}}$ and $\compose{c}{c}$, differ from \LD. Here 
@@ -2251,11 +2221,6 @@ The third line handles the case when both hypercoercions have three parts.
 The first three lines of the middle composition $m \fatsemi t \fatsemi h 
 \fatsemi m$ function match its arguments in sequential order to determine which 
 label to blame. The forth and last line is straightforward recursion.
-
-\todo[inline]{KC: I need a better name for \compatibletailhead{t}{h},
-  any suggestion from Jeremy?}
-\todo[inline]{JS: how about $\sim$}
-\todo[inline]{KC: sounds good}
 
 %The third line handles the case when both the tail of $c_1$
 %and the head of $c_2$ are no-ops, in which case the middles types
@@ -2422,6 +2387,7 @@ label to blame. The forth and last line is straightforward recursion.
 \end{figure}
 
 \todo[inline]{KC: should we cite the place where ``Prior presentations'' locate?}
+
 The translation function \translate{\ccast{S}{l}{T}} is defined in 
 \figref{fig:LazyUD-Hypercoercions-translation}.  Prior
 presentations of this function do not use auxiliary functions, as we
@@ -3049,7 +3015,57 @@ hypercoercions.
 	\label{fig:hypercoercion-statics}
 \end{figure}
 
+\todo[inline]{KC: The general idea of Lemma~\ref{lem:weak-bisimulation}}
 
-
+Lemma~\ref{lem:weak-bisimulation} is proved by case analysis on \bisims{s_1}{s_1'}{T}.
+Function call is the most interesting case. In this case the function value in
+\CMachine{B}
+must be of the form 
+\[
+v_1 = \vfuncc{
+		\vfuncc{
+			\vfunc{x}{S_1}{e}{E}
+		}{S_1}{T_1}{l_1}{S_2}{T_2}
+		\ldots
+	}{S_{n-1}}{T_{n-1}}{l_{n-1}}{S_n}{T_n}
+\]
+By induction of the sequence of casts, we know \scont{v_2}{\Kcons{\FappOX{v_1}}{K}} will
+transition to
+\[
+\begin{array}{l}
+\mlet{v_2}{\applyCast{v_2}{\ccast{S_n}{\bar{l}}{S_{n-1}}}}{} \\
+\ldots \\
+\mlet{v_2}{\applyCast{v_2}{\ccast{S_2}{\bar{l}}{S_1}}}{} \\
+\sexpr{e}{E[x:=v_2]}{
+	\Kcons{\Fcast{\ccast{T_1}{l}{T_2}}}{
+	    \ldots
+	    \Kcons{\Fcast{\ccast{T_{n-1}}{l}{T_n}}}{K}}
+}
+\end{array}
+\]
+% Assuming \bisimv{v_1}{v_1'}{\Pfunc{S_n}{T_n}} and \bisimv{v_2}{v_2'}{S_n}.
+As for \SMachine{C}, the function value must be of the form
+\[
+v_1' = \ecast{\vfunc{x}{S}{e}{E'}}{\Pfunc{c}{d}}
+\]
+where
+\[
+\begin{array}{l}
+\bisimc{(\ccast{S_n}{\bar{l}}{S_{n-1}} \ldots \ccast{S_2}{\bar{l}}{S_1})}{c}{S_n}{S_1} \\
+\bisimc{(\ccast{T_1}{l}{T_1} \ldots \ccast{T_{n-1}}{l}{T_n})}{d}{T_1}{T_n} \\
+\end{array}
+\]
+By the definition of \applyContName\ we know \applyCont{v_2'}{\Kcons{\FappOX{v_1'}}{K}} will
+transition to
+\[
+\begin{array}{l}
+\mlet{v_2'}{\denote{c}(v_2')}{} \\
+\sexpr{e}{E'[x:=v_2']}{\extCont{d}{K'}}
+\end{array}
+\]
+Intuitively, we need to show the sequence of let bindings in \CMachine{B}
+bisimulate the single let binding in \SMachine{C}, and that the two 
+extended continuations bisimulate. Both of them are straightforward to
+proof.
 
 \end{document}
