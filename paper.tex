@@ -299,7 +299,7 @@ Jeremy G. Siek\inst{2} \and
 Andre Kuhlenschmidt\inst{2}
 }
 %
-\authorrunning{F. Author et al.}
+\authorrunning{Lu et al.}
 % First names are abbreviated in the running head.
 % If there are more than two authors, 'et al.' is used.
 %
@@ -329,12 +329,12 @@ Existing proofs typically go through a bisimulation between
 a space-efficient semantics, which use a specific cast representation,
 and the definitional but inefficient semantics \citep{Siek:2010:TWB:1706299.1706342,Siek:2015:BCT:2737924.2737968}.
 % Problem
-However, this technique imposes unnecessary burden to proof writer
+This technique imposes unnecessary burden in proving such theorems
 because a considerable portion of the semantics is irrelevant to
 casts.
 % Solution
 To isolate cast representations from the remaining part of 
-implementations, we present a abstract data type, namely Cast ADT,
+semantics, we present a abstract data type, namely Cast ADT,
 that captures interface functions a cast representations typically 
 includes, and an abstract machine parameterized over Cast ADTs.
 Our generic dynamic semantics comes with generic theorems,
