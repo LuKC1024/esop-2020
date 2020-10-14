@@ -3065,5 +3065,8 @@ transition to
 Intuitively, we need to show the sequence of let bindings in \CMachine{B}
 bisimulate the single let binding in \SMachine{C}, and that the two 
 extended continuations bisimulate each other. The first part follows from 
+the properties of Cast ADT (Definition~\ref{def:cast-rep}) and the premise that 
+cast applications preserve the bisimulation relation. The second part
+is straightforward to prove.
 
 \end{document}
