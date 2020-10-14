@@ -323,23 +323,42 @@ however, is not trivial. Casts accumulate on higher-order values and
 continuations, changing the overall space complexity. Several
 space-efficient cast representations have been proposed, notably
 coercions in normal forms and threesomes.
-A correct cast representations shall be proved not changing the overall
-behavior of language implementations except saving space.
-Existing proofs typically go through a bisimulation between
-the language semantics and a space-efficient one 
-\citep{Siek:2010:TWB:1706299.1706342,Siek:2015:BCT:2737924.2737968}.
 % Problem
-The similarity of these proofs suggests that people should be able
-to prove correctness for a cast representation by proving it holds
-certain properties.
+The proofs of correctness of these cast representations are
+challenging, involving a bisimulation between the language semantics
+and a space-efficient implementation
+\citep{Siek:2010:TWB:1706299.1706342,Siek:2015:BCT:2737924.2737968}.
+The prospect of mechanizing these proofs is even more daunting.
 % Solution
-We present an abstract data type, namely Cast ADT,
-that captures interface functions a cast representations typically 
-provides, and an abstract machine parameterized over Cast ADTs.
-Our abstract machine comes with generic theorems,
-% Why is our solution a step forward
-with which the correctness proofs can be done by just proving 
-properties of a specific Cast ADT.
+In this paper we present a framework in Agda that reduces the cost of
+mechanized proofs of correctness for cast representations.
+
+%% The abstract is too long... I wrote the following but I'm now
+%% cutting it. No need for that much detail here. -Jeremy
+%% We present
+%% an abstract data type, the Cast ADT, that defines an interface for
+%% cast representations and we specify which properties are necessary for
+%% a Cast ADT to be correct. We then define an abstract machine
+%% parameterized over Cast ADTs and prove its correctness.  A user of our
+%% framework proves the correctness of their cast representation by
+%% implementing the Cast ADT, proving that it satisfies the correctness
+%% properties, and then instantiating our generic theorem.
+
+%% A correct cast representations shall be proved not changing the overall
+%% behavior of language implementations except saving space.
+%% Existing proofs typically go through a 
+%% % Problem
+%% The similarity of these proofs suggests that people should be able
+%% to prove correctness for a cast representation by proving it holds
+%% certain properties.
+%% % Solution
+%% We present an abstract data type, namely Cast ADT,
+%% that captures interface functions a cast representations typically 
+%% provides, and an abstract machine parameterized over Cast ADTs.
+%% Our abstract machine comes with generic theorems,
+%% % Why is our solution a step forward
+%% with which the correctness proofs can be done by just proving 
+%% properties of a specific Cast ADT.
 % %
 % To isolate cast representations from the remaining part of 
 % implementations, we present a abstract data type, namely Cast ADT,
@@ -372,17 +391,16 @@ properties of a specific Cast ADT.
   instead focus on the benefits regarding the proofs of correctness.}
 \todo[inline]{KC: updated.}
 
-We have successfully applied our new approach to the proofs of
-correctness for two space-efficient cast representations from the
-literature
+We apply our framework to obtain proofs of correctness for two
+space-efficient cast representations from the literature
 \citep{Siek:2010:TWB:1706299.1706342,siek2012interpretations,Siek:2015:BCT:2737924.2737968}
 and believe this framework is also applicable to other cast
 representations
-\citep{Garcia:2013:CTB:2500365.2500603,siek2012interpretations}.  We
-also present a new cast representation, hypercoercions, that is more
-friendly to mechanized meta-theory and consumes less memory than
+\citep{Garcia:2013:CTB:2500365.2500603,siek2012interpretations}.
+Finally, we present a new cast representation, named hypercoercions,
+that is more friendly to mechanization and consumes less memory than
 coercions in normal forms. We prove correctness for two variants of
-hypercoercions.
+hypercoercions using our framework.
 
 % The abstract should briefly summarize the contents of the paper in
 % 15--250 words. 
@@ -2848,11 +2866,10 @@ and $\hchp{P}{l}$ and then 50 bits could be used for the label $l$.
 \item The tail requires 1 bits to differentiate between $\hcte$ and $\hcti{P}$, 
 where $P$ must be equal to the middle type.
 \end{itemize}
-The bits for blame labels represent an index into a table of blame information.
-In the event that a program requires too many blame labels, then the 
-implementation
-can fallback to using the heap-allocated structure for more
-coercions.
+The bits for blame labels represent an index into a table of blame
+information.  If a program requires too many blame labels, then the
+implementation can fallback to using the heap-allocated structure for
+more coercions.
 \end{itemize}
 
 \section{Conclusion} \label{sec:conclusion}
@@ -2860,9 +2877,9 @@ coercions.
 We present the first framework for mechanized proofs of correctness
 for space-efficient cast representations.
 %
-The framework includes abstract data types for cast representations
-(Cast ADT and its refinements Lazy D Cast ADT and \LUD\ \CastADT), a
-parameterized abstract machine \SMachine{C}, a theorem stating that
+The framework includes abstract data types for cast representations,
+%(Cast ADT and its refinements Lazy D Cast ADT and \LUD\ \CastADT)
+a parameterized abstract machine \SMachine{C}, a theorem stating that
 \SMachine{C} is equivalent to \LDMachine\ when $C$ is a Lazy D Cast
 ADT, and a theorem which states that \SMachine{C} is equivalent to
 \LUDMachine\ when $C$ is a Lazy UD Cast ADT.
