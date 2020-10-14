@@ -323,21 +323,20 @@ however, is not trivial. Casts accumulate on higher-order values and
 continuations, changing the overall space complexity. Several
 space-efficient cast representations have been proposed, notably
 coercions in normal forms and threesomes.
-These cast representations shall be proved not changing the overall
+A correct cast representations shall be proved not changing the overall
 behavior of language implementations except saving space.
 Existing proofs typically go through a bisimulation between
-a space-efficient semantics, which use a specific cast representation,
-and the definitional but inefficient semantics \citep{Siek:2010:TWB:1706299.1706342,Siek:2015:BCT:2737924.2737968}.
+the language semantics and a space-efficient one 
+\citep{Siek:2010:TWB:1706299.1706342,Siek:2015:BCT:2737924.2737968}.
 % Problem
-This technique imposes unnecessary burden in proving such theorems
-because a considerable portion of the semantics is irrelevant to
-casts.
+The similarity of these proofs suggests that people should be able
+to prove correctness for a cast representation by proving it holds
+certain properties.
 % Solution
-To isolate cast representations from the remaining part of 
-semantics, we present a abstract data type, namely Cast ADT,
+We present an abstract data type, namely Cast ADT,
 that captures interface functions a cast representations typically 
-includes, and an abstract machine parameterized over Cast ADTs.
-Our generic dynamic semantics comes with generic theorems,
+provides, and an abstract machine parameterized over Cast ADTs.
+Our abstract machine comes with generic theorems,
 % Why is our solution a step forward
 with which the correctness proofs can be done by just proving 
 properties of a specific Cast ADT.
@@ -3065,7 +3064,6 @@ transition to
 \]
 Intuitively, we need to show the sequence of let bindings in \CMachine{B}
 bisimulate the single let binding in \SMachine{C}, and that the two 
-extended continuations bisimulate. Both of them are straightforward to
-proof.
+extended continuations bisimulate each other. The first part follows from 
 
 \end{document}
