@@ -10,7 +10,7 @@ If a user want to prove a Lazy UD cast representation is correct, the user shoul
 2. define a Cast ADT (said `c`);
 3. prove that `c` is a Lazy UD Cast ADT.
 
-For illustration, please refer to [illustration](./illustration). There each file applies our framework to a known cast representation.
+For illustration, please refer to [illustration](./illustration), where each file applies our framework to a known cast representation.
 We recommand starting with [coercions in normal form](./illustration/LazyUDCoercionsInNormalForm.agda) if you know coercions, coercions in normal form, or canonical coercions.
 Otherwise, [Lazy UD hypercoercions](illustration/LazyUDHypercoercions.agda) is recommanded because 
 this cast representation is described in details in our paper.
